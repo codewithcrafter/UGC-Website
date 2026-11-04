@@ -1,0 +1,10 @@
+# Protect uploads directory from executable scripts
+<FilesMatch "(?i)\.(php|phtml|php3|php4|php5|php7|php8|phps|pht|phar|cgi|pl|py|sh|bash)$">
+  Order Deny,Allow
+  Deny from all
+</FilesMatch>
+
+# Prevent direct script execution
+Options -ExecCGI -Indexes
+php_flag engine off
+

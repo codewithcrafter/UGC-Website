@@ -1,0 +1,34 @@
+# =========================================================================
+# MY UGC VIDEO - Apache URL Rewriting & Security Directives
+# =========================================================================
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Protect sensitive configuration, environment and database files
+  RewriteRule ^(\.env|\.git|database/schema\.sql|logs/) - [F,L,NC]
+
+  # 1. Old Static Blog URL 301 Redirects to Dynamic Clean /blog/slug/ Routes
+  RewriteRule ^blogs/([^/]+)\.html$ blog.php?slug=$1 [L,QSA]
+  RewriteRule ^blogs\.html$ blogs.php [L]
+
+  # 2. Clean SEO-Friendly Blog Detail Route: /blog/slug/ -> blog.php?slug=slug
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^blog/([^/]+)/?$ blog.php?slug=$1 [L,QSA]
+
+  # 3. Clean Blog Listing Route: /blogs/ -> blogs.php
+  RewriteRule ^blogs/?$ blogs.php [L,QSA]
+
+  # 4. Secure Markdown Router (protects drafts, enforces traversal security)
+  RewriteRule ^markdown/(.+\.(?:md|txt))$ markdown/view.php?file=$1 [L,QSA]
+</IfModule>
+
+# Prevent directory browsing
+Options -Indexes
+
+# Protect .htaccess and dotfiles
+<FilesMatch "^\.">
+  Order allow,deny
+  Deny from all
+</FilesMatch>

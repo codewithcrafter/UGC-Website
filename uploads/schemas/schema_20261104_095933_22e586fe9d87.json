@@ -1,0 +1,13 @@
+{
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "Organization",
+            "name": "MY UGC VIDEO"
+        },
+        {
+            "@type": "BlogPosting",
+            "headline": "Graph Headline"
+        }
+    ]
+}
