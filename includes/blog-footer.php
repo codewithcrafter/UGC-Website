@@ -31,26 +31,26 @@ if (!defined('CMS_ROOT')) {
         <div>
           <h4 class="footer-title">Navigation</h4>
           <ul class="footer-links">
-            <li><a href="<?= SITE_URL ?>/index.html" class="footer-link">Home</a></li>
-            <li><a href="<?= SITE_URL ?>/about.html" class="footer-link">About Studio</a></li>
-            <li><a href="<?= SITE_URL ?>/services.html" class="footer-link">Services</a></li>
-            <li><a href="<?= SITE_URL ?>/blogs.php" class="footer-link">Blogs</a></li>
-            <li><a href="<?= SITE_URL ?>/contact.html" class="footer-link">Contact Us</a></li>
+            <li><a href="<?= SITE_URL ?>/" class="footer-link">Home</a></li>
+            <li><a href="<?= SITE_URL ?>/about" class="footer-link">About Studio</a></li>
+            <li><a href="<?= SITE_URL ?>/services" class="footer-link">Services</a></li>
+            <li><a href="<?= SITE_URL ?>/blogs" class="footer-link">Blogs</a></li>
+            <li><a href="<?= SITE_URL ?>/contact" class="footer-link">Contact Us</a></li>
           </ul>
         </div>
 
         <div>
           <h4 class="footer-title">Our Services</h4>
           <ul class="footer-links">
-            <li><a href="<?= SITE_URL ?>/services/ugc-video-creation-company.html" class="footer-link">UGC Video Creation Services</a></li>
-            <li><a href="<?= SITE_URL ?>/services/ugc-video-ads-company.html" class="footer-link">UGC Video Ads</a></li>
-            <li><a href="<?= SITE_URL ?>/services/ai-ugc-videos-company.html" class="footer-link">AI UGC Video Creation</a></li>
-            <li><a href="<?= SITE_URL ?>/services/ugc-product-videos-company.html" class="footer-link">UGC Product Video</a></li>
-            <li><a href="<?= SITE_URL ?>/services/ugc-product-reviews-videos-company.html" class="footer-link">UGC Product Reviews Videos</a></li>
-            <li><a href="<?= SITE_URL ?>/services/ugc-video-service-in-delhi-company.html" class="footer-link">UGC Video Company in Delhi</a></li>
-            <li><a href="<?= SITE_URL ?>/services/ugc-unboxing-videos-company.html" class="footer-link">UGC Unboxing Videos</a></li>
-            <li><a href="<?= SITE_URL ?>/services/ugc-testimonial-videos-company.html" class="footer-link">UGC Testimonial Videos</a></li>
-            <li><a href="<?= SITE_URL ?>/services/ugc-video-editing-service-company.html" class="footer-link">UGC Video Editing Service</a></li>
+            <li><a href="<?= SITE_URL ?>/services/ugc-video-creation-services-company" class="footer-link">UGC Video Creation Services</a></li>
+            <li><a href="<?= SITE_URL ?>/services/ugc-video-ads-company" class="footer-link">UGC Video Ads</a></li>
+            <li><a href="<?= SITE_URL ?>/services/ai-ugc-video-creation-company" class="footer-link">AI UGC Video Creation</a></li>
+            <li><a href="<?= SITE_URL ?>/services/ugc-product-video-company" class="footer-link">UGC Product Video</a></li>
+            <li><a href="<?= SITE_URL ?>/services/ugc-product-review-videos-company" class="footer-link">UGC Product Reviews Videos</a></li>
+            <li><a href="<?= SITE_URL ?>/services/ugc-video-company-in-delhi-company" class="footer-link">UGC Video Company in Delhi</a></li>
+            <li><a href="<?= SITE_URL ?>/services/ugc-unboxing-videos-company" class="footer-link">UGC Unboxing Videos</a></li>
+            <li><a href="<?= SITE_URL ?>/services/ugc-testimonial-videos-company" class="footer-link">UGC Testimonial Videos</a></li>
+            <li><a href="<?= SITE_URL ?>/services/ugc-video-editing-service-company" class="footer-link">UGC Video Editing Service</a></li>
           </ul>
         </div>
 
@@ -74,7 +74,7 @@ if (!defined('CMS_ROOT')) {
         </div>
         <div class="contact-placeholder-strip">
           <span class="tag-mono" style="background: rgba(0, 34, 30, 0.6); border-color: var(--border-medium); color: var(--text-secondary);">
-            Inquiries: hello@myugcvideo.example.com
+            Inquiries: hello@myugcvideo.example.in
           </span>
         </div>
       </div>

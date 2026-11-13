@@ -6,12 +6,13 @@
 
 define('CMS_ROOT', dirname(dirname(__DIR__)));
 require_once CMS_ROOT . '/config/config.php';
+requireAuth();
 
 $activeNav = 'posts';
 $pageTitle = 'All Blog Articles';
 $breadcrumbs = [
-    ['name' => 'Dashboard', 'url' => ADMIN_URL . '/dashboard.php'],
-    ['name' => 'All Articles', 'url' => ADMIN_URL . '/posts/index.php']
+    ['name' => 'Dashboard', 'url' => ADMIN_URL . '/dashboard'],
+    ['name' => 'All Articles', 'url' => ADMIN_URL . '/posts']
 ];
 
 $db = getDb();
@@ -25,8 +26,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
     $stmt = $db->prepare("UPDATE blog_posts SET status = :status WHERE id = :id");
     $stmt->execute([':status' => $newStatus, ':id' => $postId]);
-    setFlash('success', "Article status updated to " . ucfirst($newStatus) . ".");
-    header('Location: ' . ADMIN_URL . '/posts/index.php');
+
+    // Automatically synchronize artifacts and reconciliation
+    if (function_exists('syncBlogPostArtifacts')) {
+        syncBlogPostArtifacts($postId);
+    }
+    if (function_exists('runFullReconciliation')) {
+        runFullReconciliation();
+    }
+
+    setFlash('success', "Article status updated to " . ucfirst($newStatus) . " & synchronization updated.");
+    header('Location: ' . ADMIN_URL . '/posts');
     exit;
 }
 
@@ -44,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $stmt = $db->prepare("UPDATE blog_posts SET is_featured = :feat WHERE id = :id");
     $stmt->execute([':feat' => $newFeatured, ':id' => $postId]);
     setFlash('success', $newFeatured ? "Article marked as Featured Spotlight." : "Article removed from Featured.");
-    header('Location: ' . ADMIN_URL . '/posts/index.php');
+    header('Location: ' . ADMIN_URL . '/posts');
     exit;
 }
 
@@ -76,7 +86,7 @@ include CMS_ROOT . '/admin/includes/header.php';
     </p>
   </div>
   <div class="page-header-actions">
-    <a href="<?= ADMIN_URL ?>/posts/create.php" class="btn btn-primary">
+    <a href="<?= ADMIN_URL ?>/posts/create" class="btn btn-primary">
       <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
       <span>Add New Article</span>
     </a>
@@ -116,7 +126,7 @@ include CMS_ROOT . '/admin/includes/header.php';
       </button>
 
       <?php if ($search || $categorySlug || $status): ?>
-        <a href="<?= ADMIN_URL ?>/posts/index.php" class="btn btn-secondary" style="font-size: 0.82rem;">Reset</a>
+        <a href="<?= ADMIN_URL ?>/posts" class="btn btn-secondary" style="font-size: 0.82rem;">Reset</a>
       <?php endif; ?>
     </form>
   </div>
@@ -140,7 +150,7 @@ include CMS_ROOT . '/admin/includes/header.php';
             <td colspan="7" style="text-align: center; padding: 3.5rem 1.5rem; color: var(--text-muted);">
               No blog articles found matching your criteria.
               <div style="margin-top: 1rem;">
-                <a href="<?= ADMIN_URL ?>/posts/create.php" class="btn btn-primary btn-sm">Create New Blog</a>
+                <a href="<?= ADMIN_URL ?>/posts/create" class="btn btn-primary btn-sm">Create New Blog</a>
               </div>
             </td>
           </tr>
@@ -149,7 +159,7 @@ include CMS_ROOT . '/admin/includes/header.php';
             $thumb = !empty($post['featured_image']) 
               ? (str_starts_with($post['featured_image'], 'http') ? $post['featured_image'] : SITE_URL . '/' . ltrim($post['featured_image'], '/')) 
               : SITE_URL . '/images/blogs/blog-1.jpg';
-            $previewUrl = SITE_URL . '/blog.php?slug=' . urlencode($post['slug']);
+            $previewUrl = SITE_URL . '/blog/' . urlencode($post['slug']);
           ?>
             <tr>
               <td>
@@ -159,12 +169,31 @@ include CMS_ROOT . '/admin/includes/header.php';
               </td>
               <td>
                 <div>
-                  <a href="<?= ADMIN_URL ?>/posts/edit.php?id=<?= $post['id'] ?>" style="font-weight: 700; color: var(--text-white); font-size: 0.95rem;">
+                  <a href="<?= ADMIN_URL ?>/posts/edit?id=<?= $post['id'] ?>" style="font-weight: 700; color: var(--text-white); font-size: 0.95rem;">
                     <?= e($post['title']) ?>
                   </a>
                 </div>
                 <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.25rem;">
                   Slug: <code style="color: var(--accent-mint);"><?= e($post['slug']) ?></code> &bull; By <?= e($post['author_name']) ?>
+                </div>
+                <?php
+                $isPub = ($post['status'] === 'published');
+                if ($isPub) {
+                    $hasMd = file_exists(CMS_ROOT . DIRECTORY_SEPARATOR . 'markdown' . DIRECTORY_SEPARATOR . 'blogs' . DIRECTORY_SEPARATOR . 'post-' . $post['id'] . '-' . $post['slug'] . '.md');
+                    $hasSchema = file_exists(CMS_ROOT . DIRECTORY_SEPARATOR . 'schemas' . DIRECTORY_SEPARATOR . 'blog-' . $post['id'] . '-' . $post['slug'] . '.json');
+                } else {
+                    $hasMd = file_exists(CMS_ROOT . DIRECTORY_SEPARATOR . 'markdown' . DIRECTORY_SEPARATOR . 'staging' . DIRECTORY_SEPARATOR . 'post-' . $post['id'] . '-' . $post['slug'] . '.md');
+                    $hasSchema = file_exists(CMS_ROOT . DIRECTORY_SEPARATOR . 'schemas' . DIRECTORY_SEPARATOR . 'staging' . DIRECTORY_SEPARATOR . 'blog-' . $post['id'] . '-' . $post['slug'] . '.json');
+                }
+                ?>
+                <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.3rem; display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                  <span>Markdown: <strong style="color: <?= $hasMd ? 'var(--accent-mint)' : '#ff5252' ?>;"><?= $hasMd ? ($isPub ? 'Generated' : 'Staged (Draft)') : 'Missing' ?></strong></span>
+                  <span>&bull;</span>
+                  <span>Schema: <strong style="color: <?= $hasSchema ? 'var(--accent-mint)' : '#ff5252' ?>;"><?= $hasSchema ? ($isPub ? 'Generated' : 'Staged (Draft)') : 'Missing' ?></strong></span>
+                  <?php if (!empty($post['updated_at'])): ?>
+                    <span>&bull;</span>
+                    <span style="font-family: var(--font-mono); opacity: 0.85;">Synced: <?= date('M j, H:i', strtotime($post['updated_at'])) ?></span>
+                  <?php endif; ?>
                 </div>
               </td>
               <td>
@@ -201,7 +230,7 @@ include CMS_ROOT . '/admin/includes/header.php';
                     <svg fill="none" viewBox="0 0 24 24" stroke-width="2" style="width: 14px; height: 14px;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline></svg>
                     <span>View</span>
                   </a>
-                  <a href="<?= ADMIN_URL ?>/posts/edit.php?id=<?= $post['id'] ?>" class="btn btn-primary btn-sm">Edit</a>
+                  <a href="<?= ADMIN_URL ?>/posts/edit?id=<?= $post['id'] ?>" class="btn btn-primary btn-sm">Edit</a>
                   <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete(<?= $post['id'] ?>, '<?= e(addslashes($post['title'])) ?>')">Delete</button>
                 </div>
               </td>

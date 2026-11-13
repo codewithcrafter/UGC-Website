@@ -11,7 +11,7 @@ require_once CMS_ROOT . '/config/config.php';
 
 $slug = trim($_GET['slug'] ?? '');
 if (empty($slug)) {
-    header('Location: ' . SITE_URL . '/blogs.php');
+    header('Location: ' . SITE_URL . '/blogs');
     exit;
 }
 
@@ -29,7 +29,7 @@ if (!$post) {
       <div class="container-narrow">
         <h1 class="font-display" style="font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 1.5rem;">Article Not Found</h1>
         <p style="color: var(--text-secondary); margin-bottom: 2rem;">The blog article you are looking for may have been moved, unpublished, or does not exist.</p>
-        <a href="<?= SITE_URL ?>/blogs.php" class="btn btn-primary">&larr; Return to All Blogs</a>
+        <a href="<?= SITE_URL ?>/blogs" class="btn btn-primary">&larr; Return to All Blogs</a>
       </div>
     </main>
     <?php
@@ -43,7 +43,10 @@ $relatedPosts = getRelatedPosts((int) $post['id'], $post['category_id'] ? (int) 
 // Prepare SEO metadata
 $pageTitle = !empty($post['meta_title']) ? $post['meta_title'] : ($post['title'] . ' | MY UGC VIDEO');
 $metaDescription = !empty($post['meta_description']) ? $post['meta_description'] : $post['excerpt'];
-$canonicalUrl = !empty($post['canonical_url']) ? $post['canonical_url'] : (SITE_URL . '/blog.php?slug=' . urlencode($post['slug']));
+$canonicalBase = function_exists('getLlmCanonicalBaseUrl') ? getLlmCanonicalBaseUrl() : 'https://myugcvideo.in';
+$canonicalUrl = (!empty($post['canonical_url']) && str_starts_with($post['canonical_url'], 'https://') && !str_contains($post['canonical_url'], 'example.com') && !str_contains($post['canonical_url'], 'demo.myugcvideo') && !str_ends_with($post['canonical_url'], '.html') && !str_contains($post['canonical_url'], 'blog.php')) 
+    ? rtrim($post['canonical_url'], '/') 
+    : ($canonicalBase . '/blog/' . urlencode($post['slug']));
 
 $featuredImgUrl = !empty($post['featured_image'])
     ? (str_starts_with($post['featured_image'], 'http') ? $post['featured_image'] : SITE_URL . '/' . ltrim($post['featured_image'], '/'))
@@ -70,17 +73,11 @@ if (!empty($post['faqs_json'])) {
 
 // Structured Data (Intelligent Dynamic Schema Generation)
 // IMPORTANT: Draft articles must NEVER expose public schema!
+// Centralized Schema Rendering (Respects Schema Manager priority rules, individual overrides & global templates)
 $structuredData = null;
 if ($post['status'] === 'published') {
-    $schemaType = $post['schema_type'] ?? 'recommended';
-    if (($schemaType === 'upload' || $schemaType === 'custom') && !empty($post['custom_schema'])) {
-        $check = validateJsonLd($post['custom_schema']);
-        if ($check['valid']) {
-            $structuredData = $check['cleanJson'] ?? $post['custom_schema'];
-        } else {
-            // Fallback to recommended schema if uploaded schema has syntax errors
-            $structuredData = generateBlogSchema($post, $faqs);
-        }
+    if (function_exists('renderCentralizedBlogSchema')) {
+        $structuredData = renderCentralizedBlogSchema($post, $faqs);
     } else {
         $structuredData = generateBlogSchema($post, $faqs);
     }
@@ -101,9 +98,9 @@ include CMS_ROOT . '/includes/blog-header.php';
 
         <!-- 1. BREADCRUMB -->
         <nav class="breadcrumbs" aria-label="Breadcrumb">
-          <a href="<?= SITE_URL ?>/index.html">Home</a>
+          <a href="<?= SITE_URL ?>/">Home</a>
           <span class="separator">/</span>
-          <a href="<?= SITE_URL ?>/blogs.php">Blogs</a>
+          <a href="<?= SITE_URL ?>/blogs">Blogs</a>
           <span class="separator">/</span>
           <span><?= e($post['title']) ?></span>
         </nav>
@@ -179,8 +176,8 @@ include CMS_ROOT . '/includes/blog-header.php';
           <h2 class="article-cta-title">Ready to Create Content That Converts?</h2>
           <p class="article-cta-desc">MY UGC VIDEO connects ambitious brands with vetted creators to produce authentic, scroll-stopping UGC video content engineered for results.</p>
           <div class="article-cta-actions">
-            <a href="<?= SITE_URL ?>/contact.html" class="btn btn-primary">Start a Project</a>
-            <a href="<?= SITE_URL ?>/services.html" class="btn btn-secondary">Explore Services</a>
+            <a href="<?= SITE_URL ?>/contact" class="btn btn-primary">Start a Project</a>
+            <a href="<?= SITE_URL ?>/services" class="btn btn-secondary">Explore Services</a>
           </div>
         </div>
 
@@ -194,11 +191,11 @@ include CMS_ROOT . '/includes/blog-header.php';
           <div class="blog-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
             <?php foreach ($relatedPosts as $rel): 
               $relImg = !empty($rel['featured_image']) ? (str_starts_with($rel['featured_image'], 'http') ? $rel['featured_image'] : SITE_URL . '/' . ltrim($rel['featured_image'], '/')) : SITE_URL . '/images/blogs/blog-1.jpg';
-              $relUrl = SITE_URL . '/blog.php?slug=' . urlencode($rel['slug']);
+              $relUrl = SITE_URL . '/blog/' . urlencode($rel['slug']);
             ?>
             <article class="blog-card" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column;">
-              <div class="blog-card-media" style="position: relative; aspect-ratio: 16/10; overflow: hidden; background: #000c0a;">
-                <img src="<?= e($relImg) ?>" alt="<?= e($rel['featured_image_alt'] ?: $rel['title']) ?>" width="600" height="375" loading="lazy" style="width: 100%; height: 100%; object-fit: cover;">
+              <div class="blog-card-media">
+                <img src="<?= e($relImg) ?>" alt="<?= e($rel['featured_image_alt'] ?: $rel['title']) ?>" loading="lazy">
                 <span class="category-pill-badge"><?= e($rel['category_name'] ?? 'UGC') ?></span>
               </div>
               <div class="blog-card-body" style="padding: 1.75rem 1.5rem; display: flex; flex-direction: column; flex-grow: 1;">

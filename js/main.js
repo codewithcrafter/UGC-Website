@@ -381,6 +381,59 @@ function initBlogFilters() {
 /* --------------------------------------------------------------------------
    6. CONTACT FORM VALIDATION & AUDIENCE TOGGLE
    -------------------------------------------------------------------------- */
+/**
+ * Helper to dynamically determine the API endpoint for leads submission
+ * Handles both local subfolder (e.g. /UGC%20Website/api/contact or /UGC Website/api/contact) and production (/api/contact)
+ */
+function getLeadApiEndpoint() {
+  try {
+    const cleanPath = decodeURIComponent(window.location.pathname || '');
+    if (cleanPath.toLowerCase().startsWith('/ugc website')) {
+      return '/UGC%20Website/api/contact';
+    }
+  } catch (e) {
+    // Fallback if decodeURIComponent fails
+    if ((window.location.pathname || '').toLowerCase().includes('ugc')) {
+      return '/UGC%20Website/api/contact';
+    }
+  }
+  return '/api/contact';
+}
+
+/**
+ * Cached CSRF token for asynchronous lead submissions
+ */
+let cachedLeadCsrfToken = null;
+
+async function getLeadCsrfToken() {
+  if (cachedLeadCsrfToken) return cachedLeadCsrfToken;
+  try {
+    const res = await fetch(getLeadApiEndpoint(), {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.csrf_token) {
+        cachedLeadCsrfToken = data.csrf_token;
+        return cachedLeadCsrfToken;
+      }
+    }
+  } catch (err) {
+    console.warn('Could not fetch initial CSRF token:', err);
+  }
+  return '';
+}
+
+// Prefetch CSRF token early when DOM loads
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    getLeadCsrfToken();
+  });
+} else {
+  getLeadCsrfToken();
+}
+
 function initContactForm() {
   const form = document.querySelector('#contactForm');
   const pathButtons = document.querySelectorAll('.path-btn');
@@ -435,7 +488,7 @@ function initContactForm() {
 
   const statusAlert = document.querySelector('#formStatusAlert');
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     let isValid = true;
 
@@ -479,24 +532,72 @@ function initContactForm() {
 
     if (!isValid) return;
 
-    // Simulated working submission with UI feedback
+    // Working submission with UI feedback
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
     submitBtn.disabled = true;
     submitBtn.innerHTML = 'Submitting Inquiry...';
 
-    setTimeout(() => {
+    try {
+      // Prepare Form Data for centralized endpoint
+      const csrfToken = await getLeadCsrfToken();
+      const formData = new FormData(form);
+      formData.set('source', 'Contact Page Form');
+      formData.set('csrf_token', csrfToken);
+
+      // Map field IDs to standardized API keys
+      if (nameInput) formData.set('name', nameInput.value.trim());
+      if (emailInput) formData.set('email', emailInput.value.trim());
+      if (companyInput) formData.set('brand', companyInput.value.trim());
+      const phoneInput = form.querySelector('#phoneNumber');
+      if (phoneInput) formData.set('phone', phoneInput.value.trim());
+      if (roleSelect) formData.set('service', roleSelect.value);
+      const budgetSelect = form.querySelector('#approxBudget');
+      if (budgetSelect) formData.set('budget', budgetSelect.value);
+      if (msgInput) formData.set('message', msgInput.value.trim());
+
+      const response = await fetch(getLeadApiEndpoint(), {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': csrfToken
+        },
+        body: formData
+      });
+
+      const result = await response.json();
+
       submitBtn.disabled = false;
       submitBtn.innerHTML = originalText;
-      form.reset();
 
-      if (statusAlert) {
-        statusAlert.classList.add('success');
-        statusAlert.style.display = 'block';
-        statusAlert.innerHTML = '<strong>Inquiry Received.</strong> Thank you for connecting with MY UGC VIDEO. Our creative directors review every brief and will respond within 24 business hours.';
-        statusAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      if (result.success) {
+        form.reset();
+        if (statusAlert) {
+          statusAlert.className = 'form-status-alert success';
+          statusAlert.style.display = 'block';
+          const emailNote = result.email_sent ? ' A confirmation email has been sent to your address.' : '';
+          statusAlert.innerHTML = `<strong>Thank you! Your enquiry has been received successfully.</strong> We'll get back to you soon.${emailNote}`;
+          statusAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      } else {
+        if (statusAlert) {
+          statusAlert.className = 'form-status-alert error';
+          statusAlert.style.display = 'block';
+          const msg = result.message || 'We could not submit your inquiry at this moment. Please check your inputs and try again.';
+          statusAlert.innerHTML = `<strong>Submission Error:</strong> ${msg}`;
+          statusAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
       }
-    }, 700);
+    } catch (err) {
+      console.error('Lead submission network error:', err);
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalText;
+      if (statusAlert) {
+        statusAlert.className = 'form-status-alert error';
+        statusAlert.style.display = 'block';
+        statusAlert.innerHTML = '<strong>Network Error:</strong> Unable to connect to the server. Please check your internet connection or email us directly.';
+      }
+    }
   });
 
   function showError(inputElement, message) {
@@ -832,7 +933,7 @@ function initDualInquiryForms() {
   if (detailedForm) {
     const alertBox = detailedForm.querySelector('.form-status-alert');
 
-    detailedForm.addEventListener('submit', (e) => {
+    detailedForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       let isValid = true;
 
@@ -871,18 +972,65 @@ function initDualInquiryForms() {
       submitBtn.disabled = true;
       submitBtn.innerHTML = 'Submitting Scope...';
 
-      setTimeout(() => {
+      try {
+        const csrfToken = await getLeadCsrfToken();
+        const formData = new FormData(detailedForm);
+        formData.set('source', 'Contact Page Form');
+        formData.set('csrf_token', csrfToken);
+
+        if (name) formData.set('name', name.value.trim());
+        if (email) formData.set('email', email.value.trim());
+        if (brand) formData.set('brand', brand.value.trim());
+        const phone = detailedForm.querySelector('#detailedPhone');
+        if (phone) formData.set('phone', phone.value.trim());
+        const service = detailedForm.querySelector('#detailedService');
+        if (service) formData.set('service', service.value);
+        const volume = detailedForm.querySelector('#detailedVolume');
+        if (volume) formData.set('budget', volume.value);
+        if (details) formData.set('message', details.value.trim());
+
+        const response = await fetch(getLeadApiEndpoint(), {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+          },
+          body: formData
+        });
+
+        const result = await response.json();
+
         submitBtn.disabled = false;
         submitBtn.innerHTML = origText;
-        detailedForm.reset();
 
-        if (alertBox) {
-          alertBox.className = 'form-status-alert success';
-          alertBox.style.display = 'block';
-          alertBox.innerHTML = '<strong>Project Scope Received.</strong> Our executive production team will review your creative specifications and schedule a discovery call within 24 business hours.';
-          alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        if (result.success) {
+          detailedForm.reset();
+          if (alertBox) {
+            alertBox.className = 'form-status-alert success';
+            alertBox.style.display = 'block';
+            const emailNote = result.email_sent ? ' A confirmation email has been sent to your address.' : '';
+            alertBox.innerHTML = `<strong>Thank you! Your enquiry has been received successfully.</strong> We'll get back to you soon.${emailNote}`;
+            alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        } else {
+          if (alertBox) {
+            alertBox.className = 'form-status-alert error';
+            alertBox.style.display = 'block';
+            const msg = result.message || 'We could not submit your project scope at this time. Please check your inputs and try again.';
+            alertBox.innerHTML = `<strong>Submission Error:</strong> ${msg}`;
+            alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
         }
-      }, 750);
+      } catch (err) {
+        console.error('Detailed inquiry submission error:', err);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = origText;
+        if (alertBox) {
+          alertBox.className = 'form-status-alert error';
+          alertBox.style.display = 'block';
+          alertBox.innerHTML = '<strong>Network Error:</strong> Unable to connect to the server. Please check your connection or email us directly.';
+        }
+      }
     });
   }
 
@@ -1119,6 +1267,7 @@ function initHomepageInquiryForm() {
   const brandInput = form.querySelector('#inquiryBrand');
   const serviceInput = form.querySelector('#inquiryService');
   const detailsInput = form.querySelector('#inquiryDetails');
+  const budgetInput = form.querySelector('#inquiryBudget');
   const submitBtn = form.querySelector('.inquiry-submit-btn');
 
   const setFieldError = (input, message) => {
@@ -1148,7 +1297,7 @@ function initHomepageInquiryForm() {
     inp.addEventListener('change', () => clearFieldError(inp));
   });
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     let hasError = false;
 
@@ -1200,23 +1349,70 @@ function initHomepageInquiryForm() {
     }
 
     // Form submission state
+    const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '';
     if (submitBtn) {
       submitBtn.disabled = true;
       submitBtn.innerHTML = `<span>SUBMITTING INQUIRY...</span>`;
     }
 
-    // Simulate instant secure submission
-    setTimeout(() => {
-      form.reset();
+    try {
+      const csrfToken = await getLeadCsrfToken();
+      const formData = new FormData(form);
+      formData.set('source', 'Homepage Inquiry Form');
+      formData.set('csrf_token', csrfToken);
+
+      if (nameInput) formData.set('name', nameInput.value.trim());
+      if (emailInput) formData.set('email', emailInput.value.trim());
+      if (brandInput) formData.set('brand', brandInput.value.trim());
+      if (serviceInput) formData.set('service', serviceInput.value);
+      if (budgetInput) formData.set('budget', budgetInput.value);
+      if (detailsInput) formData.set('message', detailsInput.value.trim());
+
+      const response = await fetch(getLeadApiEndpoint(), {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': csrfToken
+        },
+        body: formData
+      });
+
+      const result = await response.json();
+
       if (submitBtn) {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = `<span>SEND PROJECT INQUIRY</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
+        submitBtn.innerHTML = originalBtnHtml || `<span>SEND PROJECT INQUIRY</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
+      }
+
+      if (result.success) {
+        form.reset();
+        if (alertBox) {
+          const emailNote = result.email_sent ? '<br>A confirmation email has been dispatched to your inbox.' : '';
+          alertBox.innerHTML = `<strong>Thank you! Your enquiry has been received successfully.</strong> We'll get back to you soon.${emailNote}`;
+          alertBox.className = 'inquiry-status-alert success';
+          alertBox.style.display = 'block';
+          alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      } else {
+        if (alertBox) {
+          const msg = result.message || 'Please check your inputs and try again.';
+          alertBox.innerHTML = `<strong>Submission Error:</strong> ${msg}`;
+          alertBox.className = 'inquiry-status-alert error';
+          alertBox.style.display = 'block';
+          alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }
+    } catch (err) {
+      console.error('Homepage inquiry submission error:', err);
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHtml || `<span>SEND PROJECT INQUIRY</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
       }
       if (alertBox) {
-        alertBox.innerHTML = `<strong>Thank you! Your project inquiry has been received.</strong><br>Our creative director will review your requirements and reach out within 24 business hours with custom creator recommendations and a tailored quote.`;
-        alertBox.classList.add('success');
+        alertBox.innerHTML = `<strong>Network Error:</strong> Unable to connect to the server. Please try again or reach out to us directly.`;
+        alertBox.className = 'inquiry-status-alert error';
         alertBox.style.display = 'block';
       }
-    }, 750);
+    }
   });
 }

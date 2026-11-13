@@ -6,12 +6,13 @@
 
 define('CMS_ROOT', dirname(dirname(__DIR__)));
 require_once CMS_ROOT . '/config/config.php';
+requireAuth();
 
 $activeNav = 'categories';
 $pageTitle = 'Blog Categories';
 $breadcrumbs = [
-    ['name' => 'Dashboard', 'url' => ADMIN_URL . '/dashboard.php'],
-    ['name' => 'Categories', 'url' => ADMIN_URL . '/categories/index.php']
+    ['name' => 'Dashboard', 'url' => ADMIN_URL . '/dashboard'],
+    ['name' => 'Categories', 'url' => ADMIN_URL . '/categories']
 ];
 
 $db = getDb();
@@ -44,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $stmt = $db->prepare("INSERT INTO categories (name, slug, description) VALUES (:name, :slug, :desc)");
         $stmt->execute([':name' => $name, ':slug' => $slug, ':desc' => $desc]);
         setFlash('success', 'Category "' . $name . '" created successfully!');
-        header('Location: ' . ADMIN_URL . '/categories/index.php');
+        header('Location: ' . ADMIN_URL . '/categories');
         exit;
     }
 }
@@ -57,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $stmt = $db->prepare("DELETE FROM categories WHERE id = :id");
         $stmt->execute([':id' => $catId]);
         setFlash('success', 'Category deleted successfully. Associated articles have been set to Uncategorized.');
-        header('Location: ' . ADMIN_URL . '/categories/index.php');
+        header('Location: ' . ADMIN_URL . '/categories');
         exit;
     }
 }

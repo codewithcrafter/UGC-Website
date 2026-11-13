@@ -6,7 +6,12 @@ status: "published"
 is_featured: 0
 category: "UGC Trends"
 author: "MY UGC VIDEO Editorial Team"
-published_at: "2026-10-15 09:00:00"
+author_role: "UGC Creative Studio"
+published_at: "2026-10-15T09:00:00+02:00"
+updated_at: "2026-11-13T10:59:55+01:00"
+canonical_url: "https://myugcvideo.in/blog/what-is-ugc"
+featured_image: "https://myugcvideo.in/images/blogs/blog-1.jpg"
+featured_image_alt: "Creative UGC video creator filming product demonstration in natural light studio"
 reading_time: "8 Min Read"
 excerpt: "How authentic, creator-led storytelling replaced corporate commercials to become the single most influential driver of modern e-commerce growth."
 meta_title: "What Is User Generated Content? Complete Guide for Modern Brands | MY UGC VIDEO"
@@ -64,7 +69,7 @@ For decades, corporate marketing operated on a straightforward playbook: hire a 
 ### 2. Commissioned Studio UGC
 
           
-            This is the sweet spot managed by specialized studios like [MY UGC VIDEO](about.html). We brief vetted creators who record in natural domestic environments using high-end smartphones and studio microphones. They speak directly to specific value propositions, address known customer hesitations, and deliver multiple hook variations while retaining effortless authenticity.
+            This is the sweet spot managed by specialized studios like [MY UGC VIDEO](/about). We brief vetted creators who record in natural domestic environments using high-end smartphones and studio microphones. They speak directly to specific value propositions, address known customer hesitations, and deliver multiple hook variations while retaining effortless authenticity.
           
 
           
@@ -113,7 +118,7 @@ For decades, corporate marketing operated on a straightforward playbook: hire a 
 
             - **The Problem-Solution Hook:** The creator opens by naming a frustrating, relatable dilemma (“I spent three years searching for a non-greasy sunscreen...”) before revealing the product as the effortless resolution.
 
-            - **The Tactile Unboxing:** Highlighting packaging craftsmanship, satisfying peeling sounds, and genuine initial reactions, which our [video production team](services.html#product-review-videos) frequently crafts for luxury consumer goods.
+            - **The Tactile Unboxing:** Highlighting packaging craftsmanship, satisfying peeling sounds, and genuine initial reactions, which our [video production team](/services#product-review-videos) frequently crafts for luxury consumer goods.
 
             - **The Direct Product Demonstration:** Showing the physical application, texture, and tangible results in high-resolution macro detail.
 

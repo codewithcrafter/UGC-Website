@@ -26,8 +26,8 @@ function getCurrentAdmin(): ?array {
 
 function requireAuth(): void {
     if (!isLoggedIn()) {
-        $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'] ?? (ADMIN_URL . '/dashboard.php');
-        header('Location: ' . ADMIN_URL . '/login.php');
+        $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'] ?? (ADMIN_URL . '/dashboard');
+        header('Location: ' . ADMIN_URL . '/login');
         exit;
     }
 }

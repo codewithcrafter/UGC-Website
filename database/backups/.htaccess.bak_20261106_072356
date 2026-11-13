@@ -1,0 +1,101 @@
+# =========================================================================
+# MY UGC VIDEO - Apache URL Rewriting & Security Directives
+# =========================================================================
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Protect sensitive directories, configurations, environment, logs, and database files
+  RewriteRule ^(\.env|\.git|config/|logs/|database/(?!sync_llms\.php)) - [F,L,NC]
+
+  # -------------------------------------------------------------------------
+  # 1. 301 Permanent Redirects: Old Extensions & Legacy Routes -> Clean Routes
+  # -------------------------------------------------------------------------
+
+  # I. Redirect mistaken /blogs/*.php requests to clean canonical counterparts
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blogs/about\.(?:php|html) [NC]
+  RewriteRule ^ %1/about? [R=301,L,NE]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blogs/services?\.(?:php|html) [NC]
+  RewriteRule ^ %1/services? [R=301,L,NE]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blogs/contact\.(?:php|html) [NC]
+  RewriteRule ^ %1/contact? [R=301,L,NE]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blogs/[^/\s]+\.php [NC]
+  RewriteRule ^ %1/blogs? [R=301,L,NE]
+
+  # A. Redirect /index.html, /index.php, /index -> /
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/index(?:\.(?:html|php))?[\s?] [NC]
+  RewriteRule ^ %1/? [R=301,L,NE]
+
+  # B. Redirect /about.html, /about.php -> /about
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/about\.(?:html|php) [NC]
+  RewriteRule ^ %1/about? [R=301,L,NE]
+
+  # C. Redirect /services.html, /services.php -> /services
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services\.(?:html|php) [NC]
+  RewriteRule ^ %1/services? [R=301,L,NE]
+
+  # D. Redirect /contact.html, /contact.php -> /contact
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/contact\.(?:html|php) [NC]
+  RewriteRule ^ %1/contact? [R=301,L,NE]
+
+  # E. Redirect /blogs.php or /blogs.html -> /blogs
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blogs\.(?:php|html) [NC]
+  RewriteRule ^ %1/blogs? [R=301,L,NE]
+
+  # F. Redirect /services/xxx.html -> /services/xxx
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/([^/\s?]+)\.html [NC]
+  RewriteRule ^ %1/services/%2? [R=301,L,NE]
+
+  # G. Redirect old query-string URLs: blog.php?slug=xxx -> /blog/xxx
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blog\.php\?slug=([^\s&]+) [NC]
+  RewriteRule ^ %1/blog/%2? [R=301,L,NE]
+
+  # H. Redirect old static URLs: blogs/xxx.html -> /blog/xxx
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blogs/([^/\s]+)\.html [NC]
+  RewriteRule ^ %1/blog/%2? [R=301,L,NE]
+
+  # -------------------------------------------------------------------------
+  # 2. Administrative and System Routing
+  # -------------------------------------------------------------------------
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/admin[\s?] [NC]
+  RewriteRule ^ %1/admin/? [R=301,L,NE]
+  RewriteRule ^markdown/(.+\.(?:md|txt))$ markdown/view.php?file=$1 [L,QSA]
+
+  # -------------------------------------------------------------------------
+  # 3. Internal Rewriting: Clean Extensionless URLs -> Physical Files
+  # -------------------------------------------------------------------------
+
+  # Core Clean Routes
+  RewriteRule ^about/?$ about.html [L]
+  RewriteRule ^services/?$ services.html [L]
+  RewriteRule ^contact/?$ contact.html [L]
+  RewriteRule ^blogs/?$ blogs.php [L,QSA]
+
+  # Dedicated Service Detail Route: /services/slug -> services/slug.html (if file exists)
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME}.html -f
+  RewriteRule ^services/([^/]+)/?$ services/$1.html [L]
+
+  # J. Redirect /blog or /blog/ (missing slug) -> /blogs
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blog/?[\s?] [NC]
+  RewriteRule ^ %1/blogs? [R=301,L,NE]
+
+  # Clean SEO-Friendly Blog Detail Route: /blog/slug -> blog.php?slug=slug
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^blog/([^/]+)/?$ blog.php?slug=$1 [L,QSA]
+</IfModule>
+
+# Directory Options
+Options -Indexes
+DirectorySlash Off
+
+# Protect .htaccess and dotfiles
+<FilesMatch "^\.">
+  Order allow,deny
+  Deny from all
+</FilesMatch>

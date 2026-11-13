@@ -1,0 +1,30 @@
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "UGC vs Influencer Marketing: Understanding the Strategic Differences",
+    "description": "Understand the critical differences between UGC and influencer marketing: asset rights, distribution reach, cost structures, and how to allocate your creative budget.",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://myugcvideo.in/blog/ugc-vs-influencer-marketing"
+    },
+    "url": "https://myugcvideo.in/blog/ugc-vs-influencer-marketing",
+    "author": {
+        "@type": "Person",
+        "name": "MY UGC VIDEO Editorial Team",
+        "jobTitle": "UGC Creative Studio"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://myugcvideo.in/images/logo.png"
+        }
+    },
+    "datePublished": "2026-10-20T11:00:00+02:00",
+    "dateModified": "2026-11-13T10:59:55+01:00",
+    "image": "https://myugcvideo.in/images/blogs/blog-3.jpg",
+    "articleSection": "UGC Marketing",
+    "keywords": "UGC Marketing, UGC video, creator marketing"
+}

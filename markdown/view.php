@@ -1,7 +1,7 @@
 <?php
 /**
- * MY UGC VIDEO — Public & Secure Markdown Viewer
- * Serves managed markdown files and llms.txt with directory traversal protection
+ * MY UGC VIDEO — Public & Secure Markdown & Schema Viewer
+ * Serves managed markdown files, public schemas, and llms.txt with directory traversal protection
  * and strict Draft article privacy enforcement.
  */
 
@@ -9,37 +9,54 @@ define('CMS_ROOT', dirname(__DIR__));
 require_once CMS_ROOT . '/config/config.php';
 
 $requestedFile = trim($_GET['file'] ?? '');
-$format = trim($_GET['format'] ?? 'raw'); // 'raw' (text/markdown) or 'html'
+$format = trim($_GET['format'] ?? 'raw'); // 'raw' or 'html'
 
 if (empty($requestedFile)) {
     http_response_code(400);
-    echo "Bad Request: No markdown file specified.";
+    echo "Bad Request: No file specified.";
     exit;
 }
 
 // Normalize path separators
 $requestedFile = str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $requestedFile);
 
-// Check if requested file is root llms.txt
-$isLlmsTxt = ($requestedFile === 'llms.txt' || basename($requestedFile) === 'llms.txt' && dirname($requestedFile) === '.');
-$targetFullPath = $isLlmsTxt ? CMS_ROOT . DIRECTORY_SEPARATOR . 'llms.txt' : MARKDOWN_DIR . DIRECTORY_SEPARATOR . ltrim($requestedFile, DIRECTORY_SEPARATOR);
+// Check if requested file is root llms.txt or schema or markdown
+$isLlmsTxt = ($requestedFile === 'llms.txt' || (basename($requestedFile) === 'llms.txt' && dirname($requestedFile) === '.'));
+
+if ($isLlmsTxt) {
+    $targetFullPath = CMS_ROOT . DIRECTORY_SEPARATOR . 'llms.txt';
+} elseif (str_starts_with($requestedFile, 'schemas' . DIRECTORY_SEPARATOR)) {
+    $targetFullPath = CMS_ROOT . DIRECTORY_SEPARATOR . $requestedFile;
+} elseif (str_starts_with($requestedFile, 'uploads' . DIRECTORY_SEPARATOR . 'schemas' . DIRECTORY_SEPARATOR)) {
+    $targetFullPath = CMS_ROOT . DIRECTORY_SEPARATOR . $requestedFile;
+} else {
+    $cleanRel = $requestedFile;
+    if (str_starts_with($cleanRel, 'markdown' . DIRECTORY_SEPARATOR)) {
+        $cleanRel = substr($cleanRel, strlen('markdown' . DIRECTORY_SEPARATOR));
+    }
+    $targetFullPath = MARKDOWN_DIR . DIRECTORY_SEPARATOR . ltrim($cleanRel, DIRECTORY_SEPARATOR);
+}
 
 // Resolve realpath
 $realTarget = realpath($targetFullPath);
 $realMarkdownDir = realpath(MARKDOWN_DIR);
 $realRoot = realpath(CMS_ROOT);
+$realSchemasDir = realpath(CMS_ROOT . DIRECTORY_SEPARATOR . 'schemas');
+$realUploadsSchemasDir = realpath(CMS_ROOT . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'schemas');
 
 // Traversal Security Check
 if (!$realTarget || !file_exists($realTarget)) {
     http_response_code(404);
-    echo "404 Not Found: Requested markdown file does not exist.";
+    echo "404 Not Found: Requested resource does not exist.";
     exit;
 }
 
 $withinMarkdownDir = ($realMarkdownDir && str_starts_with($realTarget, $realMarkdownDir));
+$withinSchemasDir = ($realSchemasDir && str_starts_with($realTarget, $realSchemasDir));
+$withinUploadsDir = ($realUploadsSchemasDir && str_starts_with($realTarget, $realUploadsSchemasDir));
 $isRootLlms = ($realTarget === realpath($realRoot . DIRECTORY_SEPARATOR . 'llms.txt'));
 
-if (!$withinMarkdownDir && !$isRootLlms) {
+if (!$withinMarkdownDir && !$isRootLlms && !$withinSchemasDir && !$withinUploadsDir) {
     http_response_code(403);
     echo "403 Forbidden: Access denied.";
     exit;
@@ -47,44 +64,60 @@ if (!$withinMarkdownDir && !$isRootLlms) {
 
 // File extension check
 $ext = strtolower(pathinfo($realTarget, PATHINFO_EXTENSION));
-if ($ext !== 'md' && $ext !== 'txt') {
+if (!in_array($ext, ['md', 'txt', 'json', 'sql'])) {
     http_response_code(403);
-    echo "403 Forbidden: Only markdown (.md) and directive (.txt) files can be viewed.";
+    echo "403 Forbidden: Only documentation and schema files can be viewed.";
     exit;
 }
 
-// Draft Security Enforcement for Blog Markdown
+// Draft Security Enforcement for Blog Markdown & Schemas
 $filename = basename($realTarget);
-if (preg_match('/^post-(\d+)-/i', $filename, $matches)) {
+$isStagingOrDraftPath = (str_contains($requestedFile, 'staging') || str_contains($requestedFile, 'draft'));
+
+if (preg_match('/^(?:post|blog)-(\d+)-/i', $filename, $matches)) {
     $postId = (int) $matches[1];
     $db = getDb();
     $stmt = $db->prepare("SELECT id, status, title FROM blog_posts WHERE id = :id");
     $stmt->execute([':id' => $postId]);
     $post = $stmt->fetch();
 
-    if ($post && $post['status'] === 'draft') {
-        // Only authenticated admins may view draft markdown
+    if (($post && $post['status'] === 'draft') || $isStagingOrDraftPath) {
         if (!isLoggedIn()) {
             http_response_code(404); // Obscure existence of draft
-            echo "404 Not Found: The requested article is not publicly available.";
+            echo "404 Not Found: The requested resource is not publicly available.";
             exit;
         }
         header('X-Robots-Tag: noindex, nofollow');
     }
+} elseif ($isStagingOrDraftPath) {
+    if (!isLoggedIn()) {
+        http_response_code(404);
+        echo "404 Not Found: Access denied to staging resources.";
+        exit;
+    }
+    header('X-Robots-Tag: noindex, nofollow');
 }
 
 $content = file_get_contents($realTarget);
 
 if ($format === 'html') {
-    $parsedHtml = markdownToHtml($content);
     $pageTitle = htmlspecialchars(pathinfo($filename, PATHINFO_FILENAME));
+    if ($ext === 'json') {
+        $dec = json_decode($content);
+        $preview = $dec !== null ? json_encode($dec, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) : $content;
+        $parsedBody = '<pre><code>' . htmlspecialchars($preview) . '</code></pre>';
+    } elseif ($ext === 'sql') {
+        $parsedBody = '<pre><code>' . htmlspecialchars($content) . '</code></pre>';
+    } else {
+        $parsedBody = markdownToHtml($content);
+    }
     ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><?= $pageTitle ?> — MY UGC VIDEO Markdown</title>
+  <title><?= $pageTitle ?> — MY UGC VIDEO Documentation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -181,10 +214,10 @@ if ($format === 'html') {
   <div class="container">
     <div class="doc-header">
       <span class="badge"><?= htmlspecialchars($filename) ?></span>
-      <a href="?file=<?= urlencode($requestedFile) ?>&format=raw" class="raw-link">&larr; View Raw Markdown</a>
+      <a href="?file=<?= urlencode($requestedFile) ?>&format=raw" class="raw-link">&larr; View Raw File</a>
     </div>
     <div class="prose">
-      <?= $parsedHtml ?>
+      <?= $parsedBody ?>
     </div>
   </div>
 </body>
@@ -194,8 +227,13 @@ if ($format === 'html') {
 }
 
 // Raw view
-header('Content-Type: text/markdown; charset=utf-8');
+if ($ext === 'json') {
+    header('Content-Type: application/json; charset=utf-8');
+} elseif ($ext === 'sql') {
+    header('Content-Type: text/plain; charset=utf-8');
+} else {
+    header('Content-Type: text/markdown; charset=utf-8');
+}
 header('Content-Disposition: inline; filename="' . $filename . '"');
 echo $content;
 exit;
-

@@ -1,0 +1,30 @@
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "How to Create Engaging UGC Videos for Your Brand",
+    "description": "A comprehensive studio production blueprint: mastering the first 3 seconds, natural lighting techniques, audio clarity, script structure, and editing velocity.",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://myugcvideo.in/blog/how-to-create-ugc-videos"
+    },
+    "url": "https://myugcvideo.in/blog/how-to-create-ugc-videos",
+    "author": {
+        "@type": "Person",
+        "name": "MY UGC VIDEO Editorial Team",
+        "jobTitle": "UGC Creative Studio"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://myugcvideo.in/images/logo.png"
+        }
+    },
+    "datePublished": "2026-10-22T08:30:00+02:00",
+    "dateModified": "2026-11-13T10:59:55+01:00",
+    "image": "https://myugcvideo.in/images/blogs/blog-4.jpg",
+    "articleSection": "Creator Tips",
+    "keywords": "Creator Tips, UGC video, creator marketing"
+}

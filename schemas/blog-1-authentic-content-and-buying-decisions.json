@@ -1,0 +1,30 @@
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "The Psychology of Authenticity: How UGC Directly Influences Consumer Purchasing",
+    "description": "Explore behavioral economics and consumer psychology: System 1 heuristics, mirror neurons, the Pratfall effect, and why human authenticity drives e-commerce sales.",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://myugcvideo.in/blog/authentic-content-and-buying-decisions"
+    },
+    "url": "https://myugcvideo.in/blog/authentic-content-and-buying-decisions",
+    "author": {
+        "@type": "Person",
+        "name": "MY UGC VIDEO Editorial Team",
+        "jobTitle": "UGC Creative Studio"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://myugcvideo.in/images/logo.png"
+        }
+    },
+    "datePublished": "2026-10-26T10:00:00+01:00",
+    "dateModified": "2026-11-13T11:52:36+01:00",
+    "image": "https://myugcvideo.in/images/blogs/blog-8.jpg",
+    "articleSection": "UGC Trends",
+    "keywords": "UGC Trends, UGC video, creator marketing"
+}

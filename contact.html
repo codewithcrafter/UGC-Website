@@ -1,54 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contact Us | MY UGC VIDEO — UGC Video Production Agency</title>
-  <meta name="description" content="Connect with MY UGC VIDEO. Start your creator-led video campaign, request custom project scopes, or discuss high-converting UGC video production for your brand.">
-  <link rel="canonical" href="https://myugcvideo.example.com/contact.html">
+  <meta name="description"
+    content="Connect with MY UGC VIDEO. Start your creator-led video campaign, request custom project scopes, or discuss high-converting UGC video production for your brand.">
+  <link rel="canonical" href="https://myugcvideo.in/contact">
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://myugcvideo.example.com/contact.html">
+  <meta property="og:url" content="https://myugcvideo.in/contact">
   <meta property="og:title" content="Contact Us | MY UGC VIDEO — Creative Agency">
-  <meta property="og:description" content="Creator-led content. Made for brands. Connect with our production directors to discuss your upcoming video campaign.">
-  <meta property="og:image" content="https://myugcvideo.example.com/images/hero/hero-ugc-production.jpg">
+  <meta property="og:description"
+    content="Creator-led content. Made for brands. Connect with our production directors to discuss your upcoming video campaign.">
+  <meta property="og:image" content="https://myugcvideo.in/images/hero/hero-ugc-production.jpg">
 
   <!-- Twitter / X -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Contact Us | MY UGC VIDEO — Creative Agency">
-  <meta name="twitter:description" content="Creator-led content. Made for brands. Connect with our production directors to discuss your upcoming video campaign.">
-  <meta name="twitter:image" content="https://myugcvideo.example.com/images/hero/hero-ugc-production.jpg">
+  <meta name="twitter:description"
+    content="Creator-led content. Made for brands. Connect with our production directors to discuss your upcoming video campaign.">
+  <meta name="twitter:image" content="https://myugcvideo.in/images/hero/hero-ugc-production.jpg">
 
   <!-- Fonts & Stylesheet -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 
   <!-- JSON-LD Structured Data: ContactPage -->
+        <!-- Centralized Schema Manager JSON-LD -->
   <script type="application/ld+json">
-  {
+{
     "@context": "https://schema.org",
-    "@type": "ContactPage",
-    "name": "Contact MY UGC VIDEO",
-    "description": "Contact channels and project inquiry form for MY UGC VIDEO production agency.",
-    "url": "https://myugcvideo.example.com/contact.html",
-    "mainEntity": {
-      "@type": "ProfessionalService",
-      "name": "MY UGC VIDEO",
-      "telephone": "+91-98765-43210",
-      "email": "hello@myugcvideo.com",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Delhi",
-        "addressRegion": "DL",
-        "addressCountry": "IN"
-      }
-    }
-  }
+    "@graph": [
+        {
+            "@type": "ContactPage",
+            "@id": "https://myugcvideo.in/contact#contactpage",
+            "url": "https://myugcvideo.in/contact",
+            "name": "Contact MY UGC VIDEO",
+            "description": "Contact channels and project inquiry form for MY UGC VIDEO production agency.",
+            "mainEntity": {
+                "@type": "ProfessionalService",
+                "@id": "https://myugcvideo.in/#organization",
+                "name": "MY UGC VIDEO",
+                "telephone": "+91-98765-43210",
+                "email": "hello@myugcvideo.in",
+                "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": "Delhi",
+                    "addressRegion": "DL",
+                    "addressCountry": "IN"
+                }
+            }
+        },
+        {
+            "@type": "Organization",
+            "@id": "https://myugcvideo.in/#organization",
+            "name": "MY UGC VIDEO",
+            "url": "https://myugcvideo.in",
+            "logo": {
+                "@type": "ImageObject",
+                "@id": "https://myugcvideo.in/#logo",
+                "url": "https://myugcvideo.in/images/hero/hero-creator.jpg",
+                "caption": "MY UGC VIDEO Studio Logo"
+            },
+            "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
+            "description": "Premier performance-driven UGC video production studio and creator network connecting brands with authentic creator-led video content.",
+            "email": "hello@myugcvideo.in",
+            "sameAs": [
+                "https://instagram.com",
+                "https://linkedin.com"
+            ],
+            "contactPoint": [
+                {
+                    "@type": "ContactPoint",
+                    "contactType": "customer service",
+                    "email": "hello@myugcvideo.in",
+                    "availableLanguage": [
+                        "English",
+                        "Hindi"
+                    ]
+                }
+            ],
+            "areaServed": [
+                {
+                    "@type": "Country",
+                    "name": "India"
+                }
+            ]
+        },
+        {
+            "@type": "BreadcrumbList",
+            "@id": "https://myugcvideo.in/contact#breadcrumb",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Home",
+                    "item": "https://myugcvideo.in"
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Contact Us",
+                    "item": "https://myugcvideo.in/contact"
+                }
+            ]
+        }
+    ]
+}
   </script>
 </head>
+
 <body>
 
   <!-- =========================================================================
@@ -57,40 +125,49 @@
   <header class="site-header" role="banner">
     <div class="container">
       <div class="nav-wrapper">
-        <a href="index.html" class="brand-logo" aria-label="MY UGC VIDEO Home">
+        <a href="./" class="brand-logo" aria-label="MY UGC VIDEO Home">
           <span class="brand-title">MY UGC VIDEO</span>
           <span class="brand-subtitle">UGC Creative Agency</span>
         </a>
 
         <nav class="nav-menu" role="navigation" aria-label="Primary Navigation">
-          <a href="index.html" class="nav-link">Home</a>
-          <a href="about.html" class="nav-link">About</a>
+          <a href="./" class="nav-link">Home</a>
+          <a href="about" class="nav-link">About</a>
 
           <!-- Hover-Triggered Services Dropdown -->
           <div class="nav-item-dropdown">
-            <a href="services.html" class="nav-link nav-link-dropdown" aria-haspopup="true" aria-expanded="false">
+            <a href="services" class="nav-link nav-link-dropdown" aria-haspopup="true" aria-expanded="false">
               Services
-              <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2.5">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
             </a>
             <div class="dropdown-menu" role="menu" aria-label="Services Menu">
-              <a href="services/ugc-video-creation-company.html" class="dropdown-link" role="menuitem">UGC Video Creation Services</a>
-              <a href="services/ugc-video-ads-company.html" class="dropdown-link" role="menuitem">UGC Video Ads</a>
-              <a href="services/ai-ugc-videos-company.html" class="dropdown-link" role="menuitem">AI UGC Video Creation</a>
-              <a href="services/ugc-product-videos-company.html" class="dropdown-link" role="menuitem">UGC Product Video</a>
-              <a href="services/ugc-product-reviews-videos-company.html" class="dropdown-link" role="menuitem">UGC Product Reviews Videos</a>
-              <a href="services/ugc-video-service-in-delhi-company.html" class="dropdown-link" role="menuitem">UGC Video Company in Delhi</a>
-              <a href="services/ugc-unboxing-videos-company.html" class="dropdown-link" role="menuitem">UGC Unboxing Videos</a>
-              <a href="services/ugc-testimonial-videos-company.html" class="dropdown-link" role="menuitem">UGC Testimonial Videos</a>
-              <a href="services/ugc-video-editing-service-company.html" class="dropdown-link" role="menuitem">UGC Video Editing Service</a>
+              <a href="services/ugc-video-creation-services-company" class="dropdown-link" role="menuitem">UGC Video Creation
+                Services</a>
+              <a href="services/ugc-video-ads-company" class="dropdown-link" role="menuitem">UGC Video Ads</a>
+              <a href="services/ai-ugc-video-creation-company" class="dropdown-link" role="menuitem">AI UGC Video Creation</a>
+              <a href="services/ugc-product-video-company" class="dropdown-link" role="menuitem">UGC Product Video</a>
+              <a href="services/ugc-product-review-videos-company" class="dropdown-link" role="menuitem">UGC Product
+                Reviews Videos</a>
+              <a href="services/ugc-video-company-in-delhi-company" class="dropdown-link" role="menuitem">UGC Video
+                Company in Delhi</a>
+              <a href="services/ugc-unboxing-videos-company" class="dropdown-link" role="menuitem">UGC Unboxing
+                Videos</a>
+              <a href="services/ugc-testimonial-videos-company" class="dropdown-link" role="menuitem">UGC Testimonial
+                Videos</a>
+              <a href="services/ugc-video-editing-service-company" class="dropdown-link" role="menuitem">UGC Video
+                Editing Service</a>
             </div>
           </div>
 
-          <a href="blogs.html" class="nav-link">Blogs</a>
-          <a href="contact.html" class="nav-link active">Contact</a>
+          <a href="blogs" class="nav-link">Blogs</a>
+          <a href="contact" class="nav-link active">Contact</a>
         </nav>
 
         <div class="header-cta">
-          <a href="contact.html" class="btn btn-primary">Start a Project</a>
+          <a href="contact" class="btn btn-primary">Start a Project</a>
           <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
             <span></span>
             <span></span>
@@ -111,37 +188,44 @@
       </div>
     </div>
     <nav class="mobile-nav-links">
-      <a href="index.html" class="mobile-nav-link">Home <span>&rarr;</span></a>
-      <a href="about.html" class="mobile-nav-link">About <span>&rarr;</span></a>
+      <a href="./" class="mobile-nav-link">Home <span>&rarr;</span></a>
+      <a href="about" class="mobile-nav-link">About <span>&rarr;</span></a>
 
       <div class="mobile-dropdown-wrap">
-        <a href="services.html" class="mobile-nav-link mobile-dropdown-toggle" aria-expanded="false">
+        <a href="services" class="mobile-nav-link mobile-dropdown-toggle" aria-expanded="false">
           Services
-          <svg class="dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          <svg class="dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
         </a>
         <div class="mobile-dropdown-content">
-          <a href="services/ugc-video-creation-company.html" class="mobile-sub-link">&bull; UGC Video Creation Services</a>
-          <a href="services/ugc-video-ads-company.html" class="mobile-sub-link">&bull; UGC Video Ads</a>
-          <a href="services/ai-ugc-videos-company.html" class="mobile-sub-link">&bull; AI UGC Video Creation</a>
-          <a href="services/ugc-product-videos-company.html" class="mobile-sub-link">&bull; UGC Product Video</a>
-          <a href="services/ugc-product-reviews-videos-company.html" class="mobile-sub-link">&bull; UGC Product Reviews Videos</a>
-          <a href="services/ugc-video-service-in-delhi-company.html" class="mobile-sub-link">&bull; UGC Video Company in Delhi</a>
-          <a href="services/ugc-unboxing-videos-company.html" class="mobile-sub-link">&bull; UGC Unboxing Videos</a>
-          <a href="services/ugc-testimonial-videos-company.html" class="mobile-sub-link">&bull; UGC Testimonial Videos</a>
-          <a href="services/ugc-video-editing-service-company.html" class="mobile-sub-link">&bull; UGC Video Editing Service</a>
+          <a href="services/ugc-video-creation-services-company" class="mobile-sub-link">&bull; UGC Video Creation Services</a>
+          <a href="services/ugc-video-ads-company" class="mobile-sub-link">&bull; UGC Video Ads</a>
+          <a href="services/ai-ugc-video-creation-company" class="mobile-sub-link">&bull; AI UGC Video Creation</a>
+          <a href="services/ugc-product-video-company" class="mobile-sub-link">&bull; UGC Product Video</a>
+          <a href="services/ugc-product-review-videos-company" class="mobile-sub-link">&bull; UGC Product Reviews
+            Videos</a>
+          <a href="services/ugc-video-company-in-delhi-company" class="mobile-sub-link">&bull; UGC Video Company in
+            Delhi</a>
+          <a href="services/ugc-unboxing-videos-company" class="mobile-sub-link">&bull; UGC Unboxing Videos</a>
+          <a href="services/ugc-testimonial-videos-company" class="mobile-sub-link">&bull; UGC Testimonial Videos</a>
+          <a href="services/ugc-video-editing-service-company" class="mobile-sub-link">&bull; UGC Video Editing
+            Service</a>
         </div>
       </div>
 
-      <a href="blogs.html" class="mobile-nav-link">Blogs <span>&rarr;</span></a>
-      <a href="contact.html" class="mobile-nav-link active">Contact <span>&rarr;</span></a>
+      <a href="blogs" class="mobile-nav-link">Blogs <span>&rarr;</span></a>
+      <a href="contact" class="mobile-nav-link active">Contact <span>&rarr;</span></a>
     </nav>
     <div class="mobile-drawer-footer">
-      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Creator-led content. Made for brands.</p>
-      <a href="contact.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Start a Project</a>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Creator-led content. Made for
+        brands.</p>
+      <a href="contact" class="btn btn-primary" style="width: 100%; justify-content: center;">Start a Project</a>
     </div>
   </div>
 
-    <main id="main-content" class="contact-page-editorial">
+  <main id="main-content" class="contact-page-editorial">
 
     <!-- =========================================================================
          SECTION 1: CONTACT HERO (EDITORIAL EDITOHUB-INSPIRED COMPOSITION)
@@ -150,24 +234,25 @@
       <div class="container">
         <!-- Breadcrumb Navigation -->
         <nav class="contact-breadcrumbs" aria-label="Breadcrumb">
-          <a href="index.html">Home</a>
+          <a href="./">Home</a>
           <span class="sep">/</span>
           <span class="current">Contact</span>
         </nav>
 
         <!-- Eyebrow Badge -->
         <div class="contact-eyebrow-wrap">
-          <span class="contact-eyebrow">LET'S CONNECT</span>
+          <span class="contact-eyebrow">GET IN TOUCH</span>
         </div>
 
         <!-- Main Editorial Heading -->
         <h1 id="contact-hero-title" class="contact-hero-title">
-          LET'S CREATE SOMETHING THAT MAKES PEOPLE <span class="contact-title-accent">STOP AND WATCH.</span>
+          YOUR NEXT SCROLL-STOPPING VIDEO STARTS WITH A HELLO.</span>
         </h1>
 
         <!-- Supporting Lead -->
         <p class="contact-hero-desc">
-          Have a product, campaign or creative idea in mind? Tell us what you're building. We'll help you explore the right UGC video and creative production approach for your brand.
+          Got a new product, a campaign in progress or just a loose idea? Share it with us and we’ll point you to the
+          UGC video style that suits your brand.
         </p>
       </div>
     </section>
@@ -181,7 +266,7 @@
 
           <!-- Left Column: Verified Contact Information & Channels -->
           <div class="contact-info-column">
-            
+
             <div class="contact-info-header">
               <h2 class="contact-info-title font-display">Direct Creative Channels</h2>
               <p class="contact-info-subtitle">
@@ -200,7 +285,7 @@
                 </div>
                 <div class="contact-card-details">
                   <span class="contact-card-label">Email us</span>
-                  <a href="mailto:hello@myugcvideo.com" class="contact-card-link">hello@myugcvideo.com</a>
+                  <a href="mailto:hello@myugcvideo.in" class="contact-card-link">hello@myugcvideo.in</a>
                   <p class="contact-card-meta">Campaign briefs &amp; agency RFPs</p>
                 </div>
               </div>
@@ -209,7 +294,9 @@
               <div class="contact-info-card">
                 <div class="contact-card-icon" aria-hidden="true">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    <path
+                      d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                    </path>
                   </svg>
                 </div>
                 <div class="contact-card-details">
@@ -223,12 +310,15 @@
               <div class="contact-info-card">
                 <div class="contact-card-icon" aria-hidden="true">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2a10 10 0 00-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1112 20z"></path>
+                    <path
+                      d="M12 2a10 10 0 00-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1112 20z">
+                    </path>
                   </svg>
                 </div>
                 <div class="contact-card-details">
                   <span class="contact-card-label">WhatsApp</span>
-                  <a href="https://wa.me/919876543210?text=Hi%20MY%20UGC%20VIDEO%20Team%2C%20I%20would%20like%20to%20discuss%20a%20UGC%20video%20project%20for%20our%20brand." target="_blank" rel="noopener noreferrer" class="contact-card-link">+91 98765 43210</a>
+                  <a href="https://wa.me/919876543210?text=Hi%20MY%20UGC%20VIDEO%20Team%2C%20I%20would%20like%20to%20discuss%20a%20UGC%20video%20project%20for%20our%20brand."
+                    target="_blank" rel="noopener noreferrer" class="contact-card-link">+91 98765 43210</a>
                   <p class="contact-card-meta">Fastest response for active campaigns</p>
                 </div>
               </div>
@@ -253,7 +343,8 @@
             <div class="contact-social-strip">
               <span class="social-strip-label">Follow Studio:</span>
               <div class="social-strip-links">
-                <a href="https://instagram.com" class="social-strip-link" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <a href="https://instagram.com" class="social-strip-link" target="_blank" rel="noopener noreferrer"
+                  aria-label="Instagram">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
@@ -261,13 +352,16 @@
                   </svg>
                   <span>Instagram</span>
                 </a>
-                <a href="https://tiktok.com" class="social-strip-link" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+                <a href="https://tiktok.com" class="social-strip-link" target="_blank" rel="noopener noreferrer"
+                  aria-label="TikTok">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.86.12V9.41a6.33 6.33 0 0 0-.86-.06 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V9.08a8.28 8.28 0 0 0 4.85 1.56V7.18a4.82 4.82 0 0 1-1.08-.49z"/>
+                    <path
+                      d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.86.12V9.41a6.33 6.33 0 0 0-.86-.06 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V9.08a8.28 8.28 0 0 0 4.85 1.56V7.18a4.82 4.82 0 0 1-1.08-.49z" />
                   </svg>
                   <span>TikTok</span>
                 </a>
-                <a href="https://linkedin.com" class="social-strip-link" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <a href="https://linkedin.com" class="social-strip-link" target="_blank" rel="noopener noreferrer"
+                  aria-label="LinkedIn">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
                     <rect x="2" y="9" width="4" height="12"></rect>
@@ -283,20 +377,23 @@
           <!-- Right Column: Prominent Project Inquiry Form Card -->
           <div class="contact-form-column" id="form-wrapper">
             <div class="contact-form-card">
-              
+
               <div class="contact-form-card-header">
                 <h3 class="contact-form-card-title font-display">Send Us Your Brief</h3>
                 <p class="contact-form-card-desc">
-                  Tell us about your product, required formats and timeline. We'll review your brief and reply within 24 business hours.
+                  Tell us about your product, required formats and timeline. We'll review your brief and reply within 24
+                  business hours.
                 </p>
               </div>
 
               <!-- Dual Inquiry Mode Tabs -->
               <div class="inquiry-tabs-header" role="tablist">
-                <button type="button" class="inquiry-tab-trigger active" data-target="contactTabGeneral" role="tab" aria-selected="true">
+                <button type="button" class="inquiry-tab-trigger active" data-target="contactTabGeneral" role="tab"
+                  aria-selected="true">
                   Quick Inquiry
                 </button>
-                <button type="button" class="inquiry-tab-trigger" data-target="contactTabDetailed" role="tab" aria-selected="false">
+                <button type="button" class="inquiry-tab-trigger" data-target="contactTabDetailed" role="tab"
+                  aria-selected="false">
                   Detailed Project Scope
                 </button>
               </div>
@@ -304,7 +401,8 @@
               <!-- Tab 1: General Inquiry Form -->
               <div class="inquiry-tab-content active" id="contactTabGeneral" role="tabpanel">
                 <form id="contactForm" class="contact-form-editorial" novalidate>
-                  
+                  <input type="text" name="website_hp" style="display:none !important;" tabindex="-1"
+                    autocomplete="off">
                   <div id="formStatusAlert" class="form-status-alert" style="display: none;" role="alert"></div>
 
                   <div class="editorial-form-grid">
@@ -321,8 +419,10 @@
                     </div>
 
                     <div class="form-group">
-                      <label for="companyName" id="companyLabel" class="form-label">Company / Brand Name <span class="req">*</span></label>
-                      <input type="text" id="companyName" class="form-control" placeholder="e.g. Lumina Skincare" required>
+                      <label for="companyName" id="companyLabel" class="form-label">Company / Brand Name <span
+                          class="req">*</span></label>
+                      <input type="text" id="companyName" class="form-control" placeholder="e.g. Lumina Skincare"
+                        required>
                       <span class="form-error-msg"></span>
                     </div>
 
@@ -333,7 +433,8 @@
                     </div>
 
                     <div class="form-group">
-                      <label for="inquiryRole" id="serviceLabel" class="form-label">Service Required <span class="req">*</span></label>
+                      <label for="inquiryRole" id="serviceLabel" class="form-label">Service Required <span
+                          class="req">*</span></label>
                       <select id="inquiryRole" class="form-control">
                         <option value="ugc-video-creation">UGC Video Creation Services</option>
                         <option value="ugc-video-ads">UGC Video Ads</option>
@@ -361,15 +462,19 @@
                   </div>
 
                   <div class="form-group" style="margin-top: 1.25rem;">
-                    <label for="messageInput" class="form-label">Project Details / Message <span class="req">*</span></label>
-                    <textarea id="messageInput" class="form-control" rows="4" placeholder="Tell us about your brand, target audience, preferred video formats, and timeline..." required></textarea>
+                    <label for="messageInput" class="form-label">Project Details / Message <span
+                        class="req">*</span></label>
+                    <textarea id="messageInput" class="form-control" rows="4"
+                      placeholder="Tell us about your brand, target audience, preferred video formats, and timeline..."
+                      required></textarea>
                     <span class="form-error-msg"></span>
                   </div>
 
                   <div class="editorial-form-footer">
                     <button type="submit" class="btn btn-primary contact-submit-btn">
                       <span>Send Project Inquiry</span>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.2">
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                         <polyline points="12 5 19 12 12 19"></polyline>
                       </svg>
@@ -385,25 +490,30 @@
               <!-- Tab 2: Detailed Project Scope Form -->
               <div class="inquiry-tab-content" id="contactTabDetailed" role="tabpanel">
                 <form id="detailedInquiryForm" class="contact-form-editorial" novalidate>
-                  
+                  <input type="text" name="website_hp" style="display:none !important;" tabindex="-1"
+                    autocomplete="off">
                   <div class="form-status-alert" style="display: none;" role="alert"></div>
 
                   <div class="editorial-form-grid">
                     <div class="form-group">
                       <label for="detailedName" class="form-label">Your Name <span class="req">*</span></label>
-                      <input type="text" id="detailedName" class="form-control" placeholder="e.g. Sarah Jenkins" required>
+                      <input type="text" id="detailedName" class="form-control" placeholder="e.g. Sarah Jenkins"
+                        required>
                       <span class="form-error-msg"></span>
                     </div>
 
                     <div class="form-group">
                       <label for="detailedEmail" class="form-label">Work Email <span class="req">*</span></label>
-                      <input type="email" id="detailedEmail" class="form-control" placeholder="sarah@company.com" required>
+                      <input type="email" id="detailedEmail" class="form-control" placeholder="sarah@company.com"
+                        required>
                       <span class="form-error-msg"></span>
                     </div>
 
                     <div class="form-group">
-                      <label for="detailedBrand" class="form-label">Company / Brand Name <span class="req">*</span></label>
-                      <input type="text" id="detailedBrand" class="form-control" placeholder="Brand Name & Website URL" required>
+                      <label for="detailedBrand" class="form-label">Company / Brand Name <span
+                          class="req">*</span></label>
+                      <input type="text" id="detailedBrand" class="form-control" placeholder="Brand Name & Website URL"
+                        required>
                       <span class="form-error-msg"></span>
                     </div>
 
@@ -414,7 +524,8 @@
                     </div>
 
                     <div class="form-group">
-                      <label for="detailedService" class="form-label">Required Video Service <span class="req">*</span></label>
+                      <label for="detailedService" class="form-label">Required Video Service <span
+                          class="req">*</span></label>
                       <select id="detailedService" class="form-control">
                         <option value="ugc-video-creation">UGC Video Creation Services</option>
                         <option value="ugc-video-ads">UGC Video Ads</option>
@@ -439,15 +550,19 @@
                   </div>
 
                   <div class="form-group" style="margin-top: 1.25rem;">
-                    <label for="detailedRequirements" class="form-label">Project Scope, Target Platforms &amp; Hooks <span class="req">*</span></label>
-                    <textarea id="detailedRequirements" class="form-control" rows="4" placeholder="Detail your target platforms (Meta, TikTok, YouTube Shorts), core value propositions, product shipping timeline, and any specific creator demographics required..." required></textarea>
+                    <label for="detailedRequirements" class="form-label">Project Scope, Target Platforms &amp; Hooks
+                      <span class="req">*</span></label>
+                    <textarea id="detailedRequirements" class="form-control" rows="4"
+                      placeholder="Detail your target platforms (Meta, TikTok, YouTube Shorts), core value propositions, product shipping timeline, and any specific creator demographics required..."
+                      required></textarea>
                     <span class="form-error-msg"></span>
                   </div>
 
                   <div class="editorial-form-footer">
                     <button type="submit" class="btn btn-primary contact-submit-btn">
                       <span>Submit Detailed Scope</span>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.2">
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                         <polyline points="12 5 19 12 12 19"></polyline>
                       </svg>
@@ -476,19 +591,23 @@
           <div class="whatsapp-banner-content">
             <div class="whatsapp-icon-badge" aria-hidden="true">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2a10 10 0 00-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1112 20z"></path>
+                <path
+                  d="M12 2a10 10 0 00-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1112 20z">
+                </path>
               </svg>
             </div>
             <div class="whatsapp-banner-text">
-              <h3 id="wa-heading" class="whatsapp-banner-title font-display">Prefer Fast Communication? Message Us on WhatsApp</h3>
+              <h3 id="wa-heading" class="whatsapp-banner-title font-display">Want a quick reply? Chat with us on
+                WhatsApp</h3>
               <p class="whatsapp-banner-desc">
-                Chat directly with our creative coordination desk for fast answers regarding creator availability, pricing tiers, and turnaround times.
+                Message our coordination team to check creator availability, pricing and how long your video will take
               </p>
             </div>
           </div>
           <div class="whatsapp-banner-action">
-            <a href="https://wa.me/919876543210?text=Hi%20MY%20UGC%20VIDEO%20Team%2C%20I%20would%20like%20to%20discuss%20a%20UGC%20video%20project%20for%20our%20brand." target="_blank" rel="noopener noreferrer" class="btn btn-outline whatsapp-btn">
-              <span>Open WhatsApp Chat</span>
+            <a href="https://wa.me/919876543210?text=Hi%20MY%20UGC%20VIDEO%20Team%2C%20I%20would%20like%20to%20discuss%20a%20UGC%20video%20project%20for%20our%20brand."
+              target="_blank" rel="noopener noreferrer" class="btn btn-outline whatsapp-btn">
+              <span>OPEN WHATSAPP CHAT</span>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                 <path d="M5 12h14M13 6l6 6-6 6"></path>
               </svg>
@@ -504,14 +623,15 @@
     <section class="contact-closing-cta-section" aria-labelledby="closing-cta-heading">
       <div class="container">
         <div class="contact-closing-cta-box">
-          <span class="contact-eyebrow">READY TO SCALE</span>
-          <h2 id="closing-cta-heading" class="contact-closing-title font-display">HAVE A PROJECT IN MIND?</h2>
+          <span class="contact-eyebrow">LET’S GET STARTED</span>
+          <h2 id="closing-cta-heading" class="contact-closing-title font-display">READY TO START YOUR PROJECT?</h2>
           <p class="contact-closing-desc">
-            Let's discuss your brand, your audience and the kind of content you want to create. Our creative directors will help you select the exact creator demographics and performance frameworks that fit your growth goals.
+            Tell us about your customers, your product and the kind of video you can picture. Our creative directors
+            will suggest creators and an approach that suit what you’re trying to achieve.
           </p>
           <div class="contact-closing-actions">
             <a href="#form-wrapper" class="btn btn-primary">Start a Project Inquiry</a>
-            <a href="services.html" class="btn btn-outline">Explore Our Services</a>
+            <a href="services" class="btn btn-outline">Explore Our Services</a>
           </div>
         </div>
       </div>
@@ -523,12 +643,13 @@
     <div class="container">
       <div class="footer-top">
         <div class="footer-brand">
-          <a href="index.html" class="brand-logo" aria-label="MY UGC VIDEO Home">
+          <a href="./" class="brand-logo" aria-label="MY UGC VIDEO Home">
             <span class="brand-title">MY UGC VIDEO</span>
             <span class="brand-subtitle">UGC Creative Agency</span>
           </a>
           <p>
-            A modern creative agency engineering authentic, scroll-stopping UGC video production, creator-led content, and performance marketing video ads for ambitious brands.
+            A modern creative agency engineering authentic, scroll-stopping UGC video production, creator-led content,
+            and performance marketing video ads for ambitious brands.
           </p>
           <div class="social-links">
             <a href="https://instagram.com" class="social-link" target="_blank" rel="noopener noreferrer">Instagram</a>
@@ -540,36 +661,41 @@
         <div>
           <h4 class="footer-title">Navigation</h4>
           <ul class="footer-links">
-            <li><a href="index.html" class="footer-link">Home</a></li>
-            <li><a href="about.html" class="footer-link">About Studio</a></li>
-            <li><a href="services.html" class="footer-link">Services</a></li>
-            <li><a href="blogs.html" class="footer-link">Blogs</a></li>
-            <li><a href="contact.html" class="footer-link">Contact Us</a></li>
+            <li><a href="./" class="footer-link">Home</a></li>
+            <li><a href="about" class="footer-link">About Studio</a></li>
+            <li><a href="services" class="footer-link">Services</a></li>
+            <li><a href="blogs" class="footer-link">Blogs</a></li>
+            <li><a href="contact" class="footer-link">Contact Us</a></li>
           </ul>
         </div>
 
         <div>
           <h4 class="footer-title">Our Services</h4>
           <ul class="footer-links">
-            <li><a href="services/ugc-video-creation-company.html" class="footer-link">UGC Video Creation Services</a></li>
-            <li><a href="services/ugc-video-ads-company.html" class="footer-link">UGC Video Ads</a></li>
-            <li><a href="services/ai-ugc-videos-company.html" class="footer-link">AI UGC Video Creation</a></li>
-            <li><a href="services/ugc-product-videos-company.html" class="footer-link">UGC Product Video</a></li>
-            <li><a href="services/ugc-product-reviews-videos-company.html" class="footer-link">UGC Product Reviews Videos</a></li>
-            <li><a href="services/ugc-video-service-in-delhi-company.html" class="footer-link">UGC Video Company in Delhi</a></li>
-            <li><a href="services/ugc-unboxing-videos-company.html" class="footer-link">UGC Unboxing Videos</a></li>
-            <li><a href="services/ugc-testimonial-videos-company.html" class="footer-link">UGC Testimonial Videos</a></li>
-            <li><a href="services/ugc-video-editing-service-company.html" class="footer-link">UGC Video Editing Service</a></li>
+            <li><a href="services/ugc-video-creation-services-company" class="footer-link">UGC Video Creation Services</a></li>
+            <li><a href="services/ugc-video-ads-company" class="footer-link">UGC Video Ads</a></li>
+            <li><a href="services/ai-ugc-video-creation-company" class="footer-link">AI UGC Video Creation</a></li>
+            <li><a href="services/ugc-product-video-company" class="footer-link">UGC Product Video</a></li>
+            <li><a href="services/ugc-product-review-videos-company" class="footer-link">UGC Product Reviews Videos</a>
+            </li>
+            <li><a href="services/ugc-video-company-in-delhi-company" class="footer-link">UGC Video Company in Delhi</a>
+            </li>
+            <li><a href="services/ugc-unboxing-videos-company" class="footer-link">UGC Unboxing Videos</a></li>
+            <li><a href="services/ugc-testimonial-videos-company" class="footer-link">UGC Testimonial Videos</a></li>
+            <li><a href="services/ugc-video-editing-service-company" class="footer-link">UGC Video Editing Service</a>
+            </li>
           </ul>
         </div>
 
         <div class="footer-newsletter">
           <h4 class="footer-title">Studio Dispatches</h4>
-          <p>Join brand marketing leaders receiving our bi-weekly breakdown on UGC video performance, creative frameworks, and algorithmic updates.</p>
+          <p>Join brand marketing leaders receiving our bi-weekly breakdown on UGC video performance, creative
+            frameworks, and algorithmic updates.</p>
           <form class="newsletter-form" action="#" method="POST" novalidate>
             <div class="newsletter-input-wrap">
               <label for="newsletterEmailFooter" class="sr-only">Email address</label>
-              <input type="email" id="newsletterEmailFooter" class="newsletter-input" placeholder="Your work email" required>
+              <input type="email" id="newsletterEmailFooter" class="newsletter-input" placeholder="Your work email"
+                required>
             </div>
             <button type="submit" class="newsletter-submit">Subscribe</button>
             <div class="newsletter-feedback" aria-live="polite"></div>
@@ -582,8 +708,9 @@
           &copy; 2026 MY UGC VIDEO Creative Agency. All rights reserved.
         </div>
         <div class="contact-placeholder-strip">
-          <span class="tag-mono" style="background: rgba(0, 34, 30, 0.6); border-color: var(--border-medium); color: var(--text-secondary);">
-            Inquiries: hello@myugcvideo.example.com
+          <span class="tag-mono"
+            style="background: rgba(0, 34, 30, 0.6); border-color: var(--border-medium); color: var(--text-secondary);">
+            Inquiries: hello@myugcvideo.example.in
           </span>
         </div>
       </div>
@@ -592,4 +719,5 @@
 
   <script src="js/main.js"></script>
 </body>
+
 </html>

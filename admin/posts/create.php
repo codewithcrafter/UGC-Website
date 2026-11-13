@@ -6,13 +6,14 @@
 
 define('CMS_ROOT', dirname(dirname(__DIR__)));
 require_once CMS_ROOT . '/config/config.php';
+requireAuth();
 
 $activeNav = 'create_post';
 $pageTitle = 'Add New Blog Article';
 $breadcrumbs = [
-    ['name' => 'Dashboard', 'url' => ADMIN_URL . '/dashboard.php'],
-    ['name' => 'All Articles', 'url' => ADMIN_URL . '/posts/index.php'],
-    ['name' => 'Create Article', 'url' => ADMIN_URL . '/posts/create.php']
+    ['name' => 'Dashboard', 'url' => ADMIN_URL . '/dashboard'],
+    ['name' => 'All Articles', 'url' => ADMIN_URL . '/posts'],
+    ['name' => 'Create Article', 'url' => ADMIN_URL . '/posts/create']
 ];
 
 $db = getDb();
@@ -130,6 +131,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
+        if (empty($canonicalUrl) || str_contains($canonicalUrl, 'example.com') || str_contains($canonicalUrl, 'demo.myugcvideo') || str_ends_with($canonicalUrl, '.html') || str_contains($canonicalUrl, 'blog.php')) {
+            $canonicalUrl = 'https://myugcvideo.in/blog/' . $slug;
+        }
+
         if ($isFeatured) {
             $db->query("UPDATE blog_posts SET is_featured = 0");
         }
@@ -176,12 +181,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $newId = (int) $db->lastInsertId();
 
-        // Automatically synchronize to Markdown & LLMs
-        $syncRes = syncBlogPostToMarkdown($newId);
-        $syncNote = $syncRes['success'] ? ' & Markdown generated' : '';
+        // Automatically synchronize to Markdown & BlogPosting Schema
+        $syncRes = syncBlogPostArtifacts($newId);
+        $syncNote = $syncRes['success'] ? ' & Markdown/Schema generated' : '';
 
-        setFlash('success', 'Article "' . $title . '" saved successfully' . $syncNote . '!');
-        header('Location: ' . ADMIN_URL . '/posts/edit.php?id=' . $newId);
+        // Automatically regenerate discovery systems for published articles
+        if ($status === 'published') {
+            $canonicalBase = function_exists('getLlmCanonicalBaseUrl') ? getLlmCanonicalBaseUrl() : 'https://myugcvideo.in';
+            $postUrl = $canonicalBase . '/blog/' . urlencode($slug);
+            if (function_exists('runFullReconciliation')) {
+                runFullReconciliation(['changed_urls' => [$postUrl, $canonicalBase . '/blogs']]);
+            } else {
+                syncLlmsTxt();
+            }
+        }
+
+        setFlash('success', 'Article "' . $title . '" saved successfully' . $syncNote . ' & LLM documentation synchronized!');
+        header('Location: ' . ADMIN_URL . '/posts/edit?id=' . $newId);
         exit;
     }
 }
@@ -520,26 +536,78 @@ include CMS_ROOT . '/admin/includes/header.php';
 
         <!-- Option A: Recommended View -->
         <div id="recommendedSchemaSection" style="<?= ($schemaType ?? 'recommended') === 'upload' ? 'display: none;' : '' ?>">
-          <div class="schema-chips-row">
-            <span class="schema-chip-item active" id="chipBlogPosting">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              BlogPosting
-            </span>
-            <span class="schema-chip-item active" id="chipBreadcrumbs">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              BreadcrumbList
-            </span>
-            <span class="schema-chip-item active" id="chipOrg">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              Organization (MY UGC VIDEO)
-            </span>
-            <span class="schema-chip-item" id="chipFaqPage">
-              <span id="chipFaqIcon">&bull;</span>
-              <span id="chipFaqLabel">FAQPage (0 FAQs)</span>
-            </span>
+          
+          <!-- Schema Type Checkboxes -->
+          <div class="schema-checkboxes-row" style="display: flex; flex-wrap: wrap; gap: 1.25rem; margin: 0.75rem 0 1rem; padding: 0.75rem 1rem; background: #001411; border: 1px solid var(--border-sage-subtle); border-radius: var(--radius-sm);">
+            <label style="display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-white); font-size: 0.88rem; font-weight: 500;">
+              <input type="checkbox" id="schemaCheckOrg" class="schema-checkbox" value="organization" onchange="handleSchemaCheckboxChange(this)">
+              <span>Organization Schema</span>
+            </label>
+            <label style="display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-white); font-size: 0.88rem; font-weight: 500;">
+              <input type="checkbox" id="schemaCheckBreadcrumb" class="schema-checkbox" value="breadcrumb" onchange="handleSchemaCheckboxChange(this)">
+              <span>Breadcrumb Schema</span>
+            </label>
+            <label style="display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-white); font-size: 0.88rem; font-weight: 500;">
+              <input type="checkbox" id="schemaCheckFaq" class="schema-checkbox" value="faq" onchange="handleSchemaCheckboxChange(this)">
+              <span>FAQ Schema</span>
+            </label>
+            <label style="display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-white); font-size: 0.88rem; font-weight: 500;">
+              <input type="checkbox" id="schemaCheckBlog" class="schema-checkbox" value="blog" onchange="handleSchemaCheckboxChange(this)">
+              <span>Blog Schema</span>
+            </label>
           </div>
 
-          <div style="position: relative;">
+          
+
+          <!-- Individual Schema Editors (Toggled by Checkboxes) -->
+          <div id="schemaEditorsContainer">
+            <!-- 1. Organization Schema Editor -->
+            <div id="schemaEditorOrgContainer" class="schema-editor-pane" style="display: none; margin-bottom: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                <span style="font-size: 0.74rem; font-family: var(--font-mono); color: var(--accent-mint); font-weight: 600;">Organization Schema Editor (JSON-LD)</span>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="copySchemaEditorText('schemaEditorOrg')" style="padding: 0.15rem 0.5rem; font-size: 0.72rem;">
+                  Copy JSON
+                </button>
+              </div>
+              <textarea id="schemaEditorOrg" name="schema_editor_org" class="form-control" style="font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.6; min-height: 220px; background: #000f0c; color: #a7dfcf; border-color: var(--border-sage); resize: vertical; white-space: pre;" spellcheck="false" placeholder="Organization Schema JSON..."></textarea>
+            </div>
+
+            <!-- 2. Breadcrumb Schema Editor -->
+            <div id="schemaEditorBreadcrumbContainer" class="schema-editor-pane" style="display: none; margin-bottom: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                <span style="font-size: 0.74rem; font-family: var(--font-mono); color: var(--accent-mint); font-weight: 600;">Breadcrumb Schema Editor (JSON-LD)</span>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="copySchemaEditorText('schemaEditorBreadcrumb')" style="padding: 0.15rem 0.5rem; font-size: 0.72rem;">
+                  Copy JSON
+                </button>
+              </div>
+              <textarea id="schemaEditorBreadcrumb" name="schema_editor_breadcrumb" class="form-control" style="font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.6; min-height: 220px; background: #000f0c; color: #a7dfcf; border-color: var(--border-sage); resize: vertical; white-space: pre;" spellcheck="false" placeholder="Breadcrumb Schema JSON..."></textarea>
+            </div>
+
+            <!-- 3. FAQ Schema Editor -->
+            <div id="schemaEditorFaqContainer" class="schema-editor-pane" style="display: none; margin-bottom: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                <span style="font-size: 0.74rem; font-family: var(--font-mono); color: var(--accent-mint); font-weight: 600;">FAQ Schema Editor (JSON-LD)</span>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="copySchemaEditorText('schemaEditorFaq')" style="padding: 0.15rem 0.5rem; font-size: 0.72rem;">
+                  Copy JSON
+                </button>
+              </div>
+              <textarea id="schemaEditorFaq" name="schema_editor_faq" class="form-control" style="font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.6; min-height: 220px; background: #000f0c; color: #a7dfcf; border-color: var(--border-sage); resize: vertical; white-space: pre;" spellcheck="false" placeholder="FAQ Schema JSON..."></textarea>
+            </div>
+
+            <!-- 4. Blog Schema Editor -->
+            <div id="schemaEditorBlogContainer" class="schema-editor-pane" style="display: none; margin-bottom: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                <span style="font-size: 0.74rem; font-family: var(--font-mono); color: var(--accent-mint); font-weight: 600;">Blog Schema Editor (JSON-LD)</span>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="copySchemaEditorText('schemaEditorBlog')" style="padding: 0.15rem 0.5rem; font-size: 0.72rem;">
+                  Copy JSON
+                </button>
+              </div>
+              <textarea id="schemaEditorBlog" name="schema_editor_blog" class="form-control" style="font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.6; min-height: 220px; background: #000f0c; color: #a7dfcf; border-color: var(--border-sage); resize: vertical; white-space: pre;" spellcheck="false" placeholder="Blog Schema JSON..."></textarea>
+            </div>
+          </div>
+
+          <!-- Default Full Combined Preview (Visible when no specific schema editor is selected) -->
+          <div id="autoSchemaPreviewContainer" style="position: relative;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
               <span style="font-size: 0.74rem; font-family: var(--font-mono); color: var(--text-muted);">Generated Schema JSON-LD (Read-Only Preview)</span>
               <button type="button" class="btn btn-secondary btn-sm" onclick="copyAutoSchemaJson()" style="padding: 0.15rem 0.5rem; font-size: 0.72rem;">
@@ -792,7 +860,7 @@ include CMS_ROOT . '/admin/includes/header.php';
       </div>
       <div class="browser-address-bar">
         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-        <span id="previewAddressUrl">myugcvideo.com/blog/<?= e($slug ?: 'new-article') ?>/</span>
+        <span id="previewAddressUrl">myugcvideo.in/blog/<?= e($slug ?: 'new-article') ?>/</span>
       </div>
       <div id="previewDraftIndicator" style="display: none;">
         <span style="font-size: 0.68rem; font-weight: 700; background: var(--status-draft-bg); color: var(--status-draft); border: 1px solid rgba(229, 185, 90, 0.4); padding: 0.15rem 0.45rem; border-radius: 4px; text-transform: uppercase;">Draft</span>
@@ -956,7 +1024,7 @@ function onSlugInput(val) {
   const clean = slugifyClient(val);
   const preview = '<?= SITE_URL ?>/blog/' + (clean || 'article-slug') + '/';
   document.getElementById('slugUrlPreview').textContent = preview;
-  document.getElementById('previewAddressUrl').textContent = 'myugcvideo.com/blog/' + (clean || 'article-slug') + '/';
+  document.getElementById('previewAddressUrl').textContent = 'myugcvideo.in/blog/' + (clean || 'article-slug') + '/';
   updateLiveSchema();
 }
 
@@ -1851,17 +1919,17 @@ function updateLiveSchema() {
   const catSelect = document.getElementById('category_id');
   const catText = catSelect.selectedIndex > 0 ? catSelect.options[catSelect.selectedIndex].text : '';
   const catSlug = catText ? slugifyClient(catText) : '';
-  const canonical = '<?= SITE_URL ?>/blog/' + slug + '/';
+  const canonical = '<?= SITE_URL ?>/blog/' + slug;
 
   const validFaqs = faqs.filter(f => f.question.trim() && f.answer.trim());
 
   const breadcrumbs = [
     { "@type": "ListItem", "position": 1, "name": "Home", "item": "<?= SITE_URL ?>/" },
-    { "@type": "ListItem", "position": 2, "name": "Blogs", "item": "<?= SITE_URL ?>/blogs.php" }
+    { "@type": "ListItem", "position": 2, "name": "Blogs", "item": "<?= SITE_URL ?>/blogs" }
   ];
   let pos = 3;
   if (catText) {
-    breadcrumbs.push({ "@type": "ListItem", "position": pos, "name": catText, "item": "<?= SITE_URL ?>/blogs.php?category=" + encodeURIComponent(catSlug) });
+    breadcrumbs.push({ "@type": "ListItem", "position": pos, "name": catText, "item": "<?= SITE_URL ?>/blogs?category=" + encodeURIComponent(catSlug) });
     pos++;
   }
   breadcrumbs.push({ "@type": "ListItem", "position": pos, "name": title, "item": canonical });
@@ -1922,6 +1990,71 @@ function updateLiveSchema() {
 
   document.getElementById('autoSchemaPreview').textContent = JSON.stringify(schemaData, null, 2);
 
+  // Sync individual schema editor textareas if user hasn't typed custom content
+  const edOrg = document.getElementById('schemaEditorOrg');
+  const edBreadcrumb = document.getElementById('schemaEditorBreadcrumb');
+  const edFaq = document.getElementById('schemaEditorFaq');
+  const edBlog = document.getElementById('schemaEditorBlog');
+
+  if (edOrg && !edOrg.dataset.userEdited) {
+    edOrg.value = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": "<?= SITE_URL ?>/#organization",
+      "name": "MY UGC VIDEO",
+      "url": "<?= SITE_URL ?>/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "<?= SITE_URL ?>/images/hero/hero-creator.jpg"
+      },
+      "description": "Premier performance-driven UGC video production, creator management and content marketing studio."
+    }, null, 2);
+  }
+
+  if (edBreadcrumb && !edBreadcrumb.dataset.userEdited) {
+    edBreadcrumb.value = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "@id": canonical + "#breadcrumb",
+      "itemListElement": breadcrumbs
+    }, null, 2);
+  }
+
+  if (edFaq && !edFaq.dataset.userEdited) {
+    edFaq.value = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "@id": canonical + "#faq",
+      "mainEntity": validFaqs.map(f => ({
+        "@type": "Question",
+        "name": f.question.trim(),
+        "acceptedAnswer": { "@type": "Answer", "text": f.answer.trim() }
+      }))
+    }, null, 2);
+  }
+
+  if (edBlog && !edBlog.dataset.userEdited) {
+    edBlog.value = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "@id": canonical + "#article",
+      "isPartOf": {
+        "@type": "WebSite",
+        "@id": "<?= SITE_URL ?>/#website",
+        "name": "MY UGC VIDEO",
+        "url": "<?= SITE_URL ?>/"
+      },
+      "headline": title,
+      "description": excerpt,
+      "image": uploadedDataUrl || "<?= SITE_URL ?>/images/blogs/blog-1.jpg",
+      "datePublished": new Date().toISOString(),
+      "dateModified": new Date().toISOString(),
+      "mainEntityOfPage": { "@type": "WebPage", "@id": canonical },
+      "author": { "@type": "Person", "name": author, "jobTitle": role },
+      "publisher": { "@id": "<?= SITE_URL ?>/#organization" }
+    }, null, 2);
+  }
+
   const chipFaq = document.getElementById('chipFaqPage');
   const chipFaqLabel = document.getElementById('chipFaqLabel');
   const chipFaqIcon = document.getElementById('chipFaqIcon');
@@ -1947,6 +2080,62 @@ function copyAutoSchemaJson() {
   const text = document.getElementById('autoSchemaPreview').textContent;
   navigator.clipboard.writeText(text).then(() => {
     alert('Dynamic Schema JSON copied to clipboard!');
+  });
+}
+
+function handleSchemaCheckboxChange(checkbox) {
+  const schemaType = checkbox.value;
+  const checkboxes = document.querySelectorAll('.schema-checkbox');
+  const editors = {
+    organization: document.getElementById('schemaEditorOrgContainer'),
+    breadcrumb: document.getElementById('schemaEditorBreadcrumbContainer'),
+    faq: document.getElementById('schemaEditorFaqContainer'),
+    blog: document.getElementById('schemaEditorBlogContainer')
+  };
+  const defaultPreview = document.getElementById('autoSchemaPreviewContainer');
+
+  if (!checkbox.checked) {
+    // When currently selected checkbox is clicked again: deselect and hide editor
+    if (editors[schemaType]) {
+      editors[schemaType].style.display = 'none';
+    }
+    if (defaultPreview) {
+      defaultPreview.style.display = 'block';
+    }
+    return;
+  }
+
+  // When a checkbox is selected:
+  // 1. Automatically deselect the previously selected checkbox
+  checkboxes.forEach(cb => {
+    if (cb !== checkbox) {
+      cb.checked = false;
+    }
+  });
+
+  // 2. Display only its corresponding schema editor below the checkbox options
+  // 3. Hide the previously selected schema editor
+  Object.keys(editors).forEach(type => {
+    if (editors[type]) {
+      if (type === schemaType) {
+        editors[type].style.display = 'block';
+      } else {
+        editors[type].style.display = 'none';
+      }
+    }
+  });
+
+  // Hide the default preview while a specific editor is active
+  if (defaultPreview) {
+    defaultPreview.style.display = 'none';
+  }
+}
+
+function copySchemaEditorText(editorId) {
+  const el = document.getElementById(editorId);
+  if (!el) return;
+  navigator.clipboard.writeText(el.value).then(() => {
+    alert('Schema JSON copied to clipboard!');
   });
 }
 
@@ -2100,6 +2289,16 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
+
+  // Preserve unsaved input when typing into any schema editor
+  ['schemaEditorOrg', 'schemaEditorBreadcrumb', 'schemaEditorFaq', 'schemaEditorBlog'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', function() {
+        this.dataset.userEdited = 'true';
+      });
+    }
+  });
 
   // Render initial FAQs and Schema
   renderFaqItems();

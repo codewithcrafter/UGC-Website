@@ -1,0 +1,44 @@
+# MY UGC VIDEO
+
+> Premier performance-driven User Generated Content (UGC) video production and creator management studio. We conceptualize, script, shoot, edit, and optimize direct-response video advertising for high-growth brands.
+
+Website: https://myugcvideo.com/
+
+This file indexes website pages, services, articles, and resources intended for AI systems, language models, and search agents seeking structured information about MY UGC VIDEO.
+
+## Home
+- [Homepage](https://myugcvideo.com/): Studio positioning, featured video showcases, performance metrics, and client proof.
+
+## Company
+- [About Us](https://myugcvideo.com/about): Team ethos, creator casting philosophy, and studio production infrastructure.
+- [Contact](https://myugcvideo.com/contact): Direct project onboarding, creator brief submission, and 30-minute strategy call booking.
+
+## Services
+- [UGC Video Creation Services](https://myugcvideo.com/services/ugc-video-creation-company): Bespoke UGC video creation services engineered for direct-to-consumer brands. Authentic storytelling, demographic casting, and direct-response performance.
+- [UGC Video Ads](https://myugcvideo.com/services/ugc-video-ads-company): High-converting UGC video ads engineered for paid social performance. 3-second scroll-stopping hooks, direct-response scripting, and ROAS optimization.
+- [AI UGC Video Creation](https://myugcvideo.com/services/ai-ugc-videos-company): Scalable AI UGC video creation for high-velocity creative testing. AI presenter modeling, multi-language localization, and dynamic hook variations.
+- [UGC Product Video](https://myugcvideo.com/services/ugc-product-videos-company): Tactile UGC product video demonstrations showing real functional utility, texture details, formula application, and everyday benefits.
+- [UGC Product Reviews Videos](https://myugcvideo.com/services/ugc-product-reviews-videos-company): Authentic UGC product reviews videos that build undeniable buyer trust. First-hand customer evaluations, pros and cons, and honest experiences.
+- [UGC Video Company in Delhi](https://myugcvideo.com/services/ugc-video-service-in-delhi-company): Leading UGC video company in Delhi NCR. Local creator talent network, studio facilities in Gurgaon & Noida, and dedicated creative direction for D2C brands.
+- [UGC Unboxing Videos](https://myugcvideo.com/services/ugc-unboxing-videos-company): Tactile UGC unboxing videos that capture parcel arrival anticipation, premium packaging details, sensory reveals, and spontaneous first reactions.
+- [UGC Testimonial Videos](https://myugcvideo.com/services/ugc-testimonial-videos-company): Relatable UGC testimonial videos that validate product claims, dismantle buyer skepticism, and guide hesitant shoppers to completed checkout.
+- [UGC Video Editing Service](https://myugcvideo.com/services/ugc-video-editing-service-company): Professional UGC video editing service for direct-to-consumer brands. Kinetic subtitles, hook variations, sound design, and ad formatting.
+
+## Blog
+- [How Product Photography Shapes Online Shopping Today](https://myugcvideo.com/blog/product-photography-shapes-online): Learn how premium brands maintain aesthetic coherence and brand DNA while embracing diverse creator voices across TikTok, Instagram, and paid media.
+- [UGC Content Strategy for Instagram and TikTok](https://myugcvideo.com/blog/ugc-instagram-tiktok-strategy): Master platform-specific vertical video strategy: algorithmic retention mechanics on TikTok, aesthetic dynamics on Instagram Reels, and search intent on YouTube Shorts.
+- [The Psychology of Authenticity: How UGC Directly Influences Consumer Purchasing](https://myugcvideo.com/blog/authentic-content-and-buying-decisions): Explore behavioral economics and consumer psychology: System 1 heuristics, mirror neurons, the Pratfall effect, and why human authenticity drives e-commerce sales.
+- [The Role of Product Photography in Modern E-commerce](https://myugcvideo.com/blog/product-photography-guide): Discover how context-rich, lifestyle product photography bridges the digital touch gap, elevates perceived product value, and decreases e-commerce returns.
+- [How Brands Can Work Effectively With UGC Creators](https://myugcvideo.com/blog/working-with-ugc-creators): Master creator collaboration: crafting airtight creative briefs, managing shipping logistics, structuring legal usage rights, and providing constructive feedback.
+- [10 Creative UGC Content Ideas Every E-commerce Brand Should Try](https://myugcvideo.com/blog/ugc-content-ideas): Break through ad creative fatigue with 10 proven UGC concepts: ASMR unboxings, competitor switch breakdowns, myth-busting reviews, and day-in-the-life vlogs.
+- [How to Create Engaging UGC Videos for Your Brand](https://myugcvideo.com/blog/how-to-create-ugc-videos): A comprehensive studio production blueprint: mastering the first 3 seconds, natural lighting techniques, audio clarity, script structure, and editing velocity.
+- [UGC vs Influencer Marketing: Understanding the Strategic Differences](https://myugcvideo.com/blog/ugc-vs-influencer-marketing): Understand the critical differences between UGC and influencer marketing: asset rights, distribution reach, cost structures, and how to allocate your creative budget.
+- [Why UGC Marketing Is Essential for Building Brand Trust](https://myugcvideo.com/blog/why-ugc-marketing-matters): Discover why User Generated Content has become the primary trust anchor for modern consumers and how authenticity impacts brand equity and e-commerce conversions.
+- [What Is User Generated Content? A Complete Guide for Modern Brands](https://myugcvideo.com/blog/what-is-ugc): Discover what User Generated Content (UGC) is, why it outperforms traditional advertising, and how modern brands leverage creator storytelling to scale trust.
+
+## Important Website Resources
+- [Schema.org Graph: Organization & BlogPosting](https://myugcvideo.com/uploads/schemas/schema_20261104_095933_22e586fe9d87.json): Schema.org graph defining Organization, BlogPosting structured data entities for MY UGC VIDEO.
+- [About MY UGC VIDEO](https://myugcvideo.com/pages/about.md): India's leading specialized User Generated Content (UGC) video production agency helping direct-to-consumer (D2C) and e-commerce brands scale conversions through creator-led, authentic video ads.
+- [Contact MY UGC VIDEO](https://myugcvideo.com/pages/contact.md): Connect with our creative strategy team to plan, script, produce, and scale your brand's next high-performing UGC video campaign.
+- [UGC Video Creation Company — MY UGC VIDEO](https://myugcvideo.com/services/ugc-video-creation-company.md): End-to-end creator-led video production engineered specifically for high-growth direct-to-consumer (D2C) brands, e-commerce retailers, and mobile apps.
+- [Case Study: D2C Skincare Brand Scales 3.8x ROAS with Creator UGC](https://myugcvideo.com/case-studies/brand-campaign.md): How MY UGC VIDEO engineered 15 creator-led TikTok & Meta ad creatives to reduce Customer Acquisition Cost (CAC) by 42% in 60 days.

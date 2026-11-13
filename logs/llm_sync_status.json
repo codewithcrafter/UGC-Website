@@ -1,0 +1,32 @@
+{
+    "status": "active",
+    "last_sync_time": "2026-11-13T08:24:34+01:00",
+    "last_sync_formatted": "November 13, 2026 at 8:24 AM",
+    "last_sitemap_time": "2026-11-13T08:24:34+01:00",
+    "last_sitemap_formatted": "November 13, 2026 at 8:24 AM",
+    "last_reconciliation_time": "2026-11-13T08:24:34+01:00",
+    "last_reconciliation_formatted": "November 13, 2026 at 8:24 AM",
+    "last_error": null,
+    "public_markdown_count": 25,
+    "approved_schema_count": 11,
+    "approved_json_count": 11,
+    "approved_sql_count": 0,
+    "published_blog_count": 10,
+    "core_pages_count": 5,
+    "service_pages_count": 9,
+    "sitemap_url_count": 24,
+    "total_entries": 60,
+    "google_search_console": {
+        "configured": false,
+        "status": "unconfigured",
+        "message": "Google service account not configured. Sitemap remains accessible at https://myugcvideo.in/sitemap.xml for search crawler discovery.",
+        "last_submission": null,
+        "last_response_code": null
+    },
+    "indexnow": {
+        "success": true,
+        "status_code": 202,
+        "count": 2,
+        "response": ""
+    }
+}

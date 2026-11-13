@@ -9,7 +9,7 @@ require_once CMS_ROOT . '/config/config.php';
 
 // If already logged in, redirect to dashboard
 if (isLoggedIn()) {
-    header('Location: ' . ADMIN_URL . '/dashboard.php');
+    header('Location: ' . ADMIN_URL . '/dashboard');
     exit;
 }
 
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 clearLoginAttempts($ip);
                 loginAdmin($admin);
                 
-                $redirect = $_SESSION['redirect_after_login'] ?? (ADMIN_URL . '/dashboard.php');
+                $redirect = $_SESSION['redirect_after_login'] ?? (ADMIN_URL . '/dashboard');
                 unset($_SESSION['redirect_after_login']);
                 header('Location: ' . $redirect);
                 exit;

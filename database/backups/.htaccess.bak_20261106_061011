@@ -1,0 +1,40 @@
+# =========================================================================
+# MY UGC VIDEO - Apache URL Rewriting & Security Directives
+# =========================================================================
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Protect sensitive directories, configurations, environment, logs, and database files
+  RewriteRule ^(\.env|\.git|config/|logs/|database/(?!sync_llms\.php)) - [F,L,NC]
+
+  # 1. 301 Redirect old query-string URLs: blog.php?slug=xxx -> /blog/xxx
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blog\.php\?slug=([^\s&]+) [NC]
+  RewriteRule ^ %1/blog/%2? [R=301,L,NE]
+
+  # 2. 301 Redirect old static URLs: blogs/xxx.html -> /blog/xxx
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blogs/([^/\s]+)\.html [NC]
+  RewriteRule ^ %1/blog/%2? [R=301,L,NE]
+
+  RewriteRule ^blogs\.html$ blogs.php [L]
+
+  # 3. Clean SEO-Friendly Blog Detail Route: /blog/slug -> blog.php?slug=slug
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^blog/([^/]+)/?$ blog.php?slug=$1 [L,QSA]
+
+  # 3. Clean Blog Listing Route: /blogs/ -> blogs.php
+  RewriteRule ^blogs/?$ blogs.php [L,QSA]
+
+  # 4. Secure Markdown Router (protects drafts, enforces traversal security)
+  RewriteRule ^markdown/(.+\.(?:md|txt))$ markdown/view.php?file=$1 [L,QSA]
+</IfModule>
+
+# Prevent directory browsing
+Options -Indexes
+
+# Protect .htaccess and dotfiles
+<FilesMatch "^\.">
+  Order allow,deny
+  Deny from all
+</FilesMatch>

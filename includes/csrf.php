@@ -35,6 +35,10 @@ function validateCsrfToken(?string $token = null): bool {
     return hash_equals($_SESSION['csrf_token'], $token);
 }
 
+function verifyCsrfToken(?string $token = null): bool {
+    return validateCsrfToken($token);
+}
+
 function verifyCsrfOrDie(): void {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!validateCsrfToken()) {

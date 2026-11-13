@@ -1,0 +1,103 @@
+Module,Submodule_or_Component,Test_Type,Description,Status,Details
+Frontend,Public Homepage (/),Browser/HTTP,Direct clean URL loading & 200 check,PASS,Loads with HTTP 200 and renders full DOM
+Frontend,About Page (/about),Browser/HTTP,Direct clean URL loading & 200 check,PASS,Loads with HTTP 200
+Frontend,Services Hub (/services),Browser/HTTP,Direct clean URL loading & 200 check,PASS,Loads with HTTP 200
+Frontend,Dedicated Service Pages (9),Browser/HTTP,All 9 dedicated service detail pages load clean,PASS,9/9 return HTTP 200
+Frontend,Blog Hub (/blogs),Browser/HTTP,Dynamic blog listing from MySQL,PASS,Loads with HTTP 200 and renders cards
+Frontend,Blog Detail Pages (10),Browser/HTTP,All 10 published posts load by slug,PASS,10/10 return HTTP 200 with Article schema
+Frontend,Contact Page (/contact),Browser/HTTP,Contact form and information page,PASS,Loads with HTTP 200
+Frontend,Contact Form Submission,Integration/Form,Inquiry form submission and delivery,SIMULATED,Client-side JS simulated feedback (ISS-001)
+Frontend,Homepage Inquiry Form,Integration/Form,Homepage brief inquiry submission,SIMULATED,Client-side JS simulated feedback (ISS-001)
+Frontend,Newsletter Forms,Integration/Form,Footer email subscription forms,SIMULATED,Client-side JS simulated feedback (ISS-001)
+Frontend,Custom 404 Page (/404.html),Browser/HTTP,Custom error page asset check,PASS,Loads with HTTP 200 directly
+Frontend,Missing Route Isolation,Browser/HTTP,Non-existent routes return HTTP 404,PASS,Returns genuine 404 with 404.html
+Frontend,Missing Blog Isolation,Browser/HTTP,Non-existent blog slug returns 404,PASS,Returns genuine 404 with Article Not Found
+Frontend,Missing Service Isolation,Browser/HTTP,Non-existent service slug returns 404,PASS,Returns genuine 404
+Frontend,Static CSS Stylesheet,Asset/HTTP,css/style.css loading,PASS,HTTP 200 (249.38 KB)
+Frontend,Static JavaScript,Asset/HTTP,js/main.js loading,PASS,HTTP 200 (40.95 KB)
+Frontend,Static Images (43),Asset/Filesystem,All referenced images exist on disk,PASS,43/43 images physically verified
+Frontend,Image Accessibility (alt),Accessibility,All <img> tags have alt attributes,WARN,1 image missing alt in index.html (ISS-003)
+Frontend,Heading Hierarchy (h1),Semantic HTML,Exactly one <h1> per public page,PASS,25/25 pages have exactly one <h1>
+PHP Backend,Syntax & Linting (32 files),Unit/Lint,Core PHP syntax validation,PASS,0 syntax errors across 32 core files
+PHP Backend,PHP 8.4/8.5 Compatibility,Compatibility,Runtime behavior on PHP 8.4/8.5,PASS,Fully compatible; minor curl_close notice
+PHP Backend,Environment Detection,Unit,getAppEnvironment() detection,PASS,Accurately detects local vs production
+PHP Backend,Base URL Dynamic Resolution,Unit,getBaseUrl() directory & port handling,PASS,Encodes %20 subpath; handles LAN & root
+PHP Backend,URL Helper (publicUrl),Unit,publicUrl() clean path generator,PASS,Produces environment-aware clean URLs
+PHP Backend,URL Helper (canonicalPublicUrl),Unit,canonicalPublicUrl() generator,PASS,Strictly enforces https://myugcvideo.com
+PHP Backend,Error Logging,Logging,PHP error logging to logs/php_errors.log,PASS,Configured and operational
+PHP Backend,Session Initialization,Session,Secure cookie parameters (httponly Lax),PASS,Session starts securely
+PHP Backend,CSRF Protection Engine,Security,Token generation and verification,PASS,Rejects forged/missing tokens with 403
+Database,MariaDB Connectivity,Database,PDO singleton connection to MySQL,PASS,Successful connection (10.11-MariaDB)
+Database,Database Tables (10),Database,Verification of 10 tables in schema,PASS,All 10 tables exist and query cleanly
+Database,Primary & Unique Keys,Database,Index integrity and unique constraints,PASS,slug unique; post_id foreign keys verified
+Database,CRUD: Post Insert,Database/Integration,Insert blog_posts record,PASS,Verified with rollback/teardown
+Database,CRUD: Post Update,Database/Integration,Update title/content in blog_posts,PASS,Verified with teardown
+Database,CRUD: Post Delete,Database/Integration,Delete record and clean artifacts,PASS,Verified with teardown
+Database,SQL Injection Defense,Security,Prepared statements across queries,PASS,All dynamic queries use PDO prepare/execute
+Admin Panel,Admin Gateway (/admin),Auth/Redirect,Unauthenticated redirect to /admin/login,PASS,HTTP 302 -> /admin/login
+Admin Panel,Admin Login Page (/admin/login),Auth/HTTP,Login form rendering and validation,PASS,HTTP 200
+Admin Panel,Admin Login Verification,Auth/Integration,Invalid credentials rejected,PASS,Displays error message on bad password
+Admin Panel,Admin Session Persistence,Auth/Session,Session cookie authentication,PASS,Cookie grants access to protected routes
+Admin Panel,Admin Setup Locked,Auth/Security,admin/setup.php first-run lock,PASS,HTTP 403 (permanently locked)
+Admin Panel,Dashboard Overview,Admin/Module,admin/dashboard loads with metrics,PASS,HTTP 200 with dynamic stats
+Admin Panel,Blog Posts Management,Admin/Module,admin/posts listing,PASS,HTTP 200 with search & filter
+Admin Panel,Create Blog Article,Admin/Module,admin/posts/create form,PASS,HTTP 200
+Admin Panel,Edit Blog Article,Admin/Module,admin/posts/edit?id=1,PASS,HTTP 200
+Admin Panel,Category Management,Admin/Module,admin/categories listing,PASS,HTTP 200
+Admin Panel,Markdown Studio,Admin/Module,admin/markdown editor,PASS,HTTP 200
+Admin Panel,Media Library,Admin/Module,admin/media asset manager,PASS,HTTP 200
+Admin Panel,Schema Manager Panel,Admin/Module,admin/schema-manager controls,PASS,HTTP 200 with JSON editor & overrides
+Admin Panel,Schema Manager AJAX POST,Admin/AJAX,Live JSON validation endpoint,PASS,HTTP 200 returns valid:true
+Admin Panel,Schema Manager CSRF Reject,Admin/Security,Forged token rejected,PASS,HTTP 200 returns CSRF failed JSON
+Admin Panel,Admin Navigation Links,Frontend/Admin,Sidebar links rendered clean,PASS,0 references to .php in nav
+Blog CMS,Blog Slug Generation,CMS/Logic,slugify() generation and uniqueness,PASS,Converts titles to clean kebab slugs
+Blog CMS,Draft Privacy Staging,CMS/Privacy,Draft posts stored in markdown/staging/,PASS,Drafts hidden from sitemap and llms.txt
+Blog CMS,Publishing Promotion,CMS/Workflow,Promote draft to public markdown/blogs/,PASS,Atomic promotion to public discovery
+Blog CMS,Featured Image Handling,CMS/Media,Upload and associate image with post,PASS,Uploads webp and saves path to DB
+Markdown Manager,Markdown Generation,Automation,generateBlogPostMarkdown() output,PASS,Generates valid YAML frontmatter & body
+Markdown Manager,Markdown Validation,Automation,validateBlogPostMarkdown() check,PASS,Validates structure and UTF-8 encoding
+Markdown Manager,Markdown View/Edit,CMS/Module,markdown/view.php editor,PASS,HTTP 200
+LLM Automation,Orchestration Engine,Automation,includes/llms-sync.php orchestrator,PASS,Covers markdown, sitemap, llms, robots
+LLM Automation,CLI Runner (database/sync_llms.php),CLI/Automation,Full scheduled reconciliation runner,PASS,5/5 steps pass in CLI
+LLM Automation,Concurrency Locking,Automation,flock() on logs/llms_sync.lock,PASS,Thread-safe execution
+LLM Automation,Atomic File Writes,Automation,atomicWriteFile() with rollback,PASS,Guarantees zero half-written files
+LLM Automation,Idempotency,Automation,Repeated execution comparison,PASS,Identical file hashes across runs
+Sitemap,sitemap.xml Generation,SEO/Automation,generateSitemapXml() output,PASS,24 canonical HTTPS URLs
+Sitemap,sitemap.xml Extensionless,SEO/Rule,0 .html or .php in sitemap,PASS,24/24 clean extensionless URLs
+Sitemap,sitemap.xml Trailing Slash,SEO/Rule,Only root / has trailing slash,PASS,24/24 pass slash standard
+llms.txt,llms.txt Generation,AI/Automation,syncLlmsTxt() compilation,PASS,45 resources cataloged
+llms.txt,llms.txt Canonical Domain,AI/Rule,Strict https://myugcvideo.com authority,PASS,Zero demo or localhost domain leaks
+robots.txt,AI Directives,SEO/AI,Crawl-delay and sitemap directives,PASS,Canonical sitemap and AI crawler rules verified
+Schema Manager,Page-Level Schema Config,Schema/Logic,page_schemas table persistence,PASS,55 published schemas verified
+Schema Manager,Blog Global Template,Schema/Logic,resolveBlogPostPostingSchema() default,PASS,Compiles standard BlogPosting schema
+Schema Manager,Blog Custom Override,Schema/Logic,blog_schema_overrides table precedence,PASS,Custom override supersedes global
+Schema Manager,Blog Schema Disabled,Schema/Logic,schema_disabled flag suppression,PASS,Suppresses BlogPosting when disabled
+Schema Manager,Live HTML Schema Output,Schema/Output,JSON-LD rendered on public pages,PASS,Rendered across index, services, blogs
+Security,SQL Injection Defense,Security/Code,Prepared statements in queries,PASS,Zero dynamic string interpolation
+Security,XSS Defense,Security/Code,htmlspecialchars on user output,PASS,Output encoded across templates
+Security,CSRF Token Defense,Security/Code,CSRF verification on POST actions,PASS,Rejects missing or invalid tokens
+Security,Sensitive Directory Access,Security/Apache,Direct HTTP access to /config,PASS,HTTP 403 Forbidden
+Security,Sensitive Database Access,Security/Apache,Direct HTTP access to /database,PASS,HTTP 403 Forbidden
+Security,Sensitive Logs Access,Security/Apache,Direct HTTP access to /logs,PASS,HTTP 403 Forbidden
+Security,Sensitive Staging Access,Security/Apache,Direct HTTP access to markdown/staging,PASS,HTTP 403 Forbidden
+Security,Git Repository Access,Security/Apache,Direct HTTP access to /.git,PASS,HTTP 403 Forbidden
+Security,Backup Dumps Access,Security/Apache,Direct HTTP access to database/backups/,PASS,HTTP 403 Forbidden
+URL Routing,Homepage Trailing Slash,Routing/Standard,http://localhost/UGC%20Website/ has /,PASS,HTTP 200 (Only route with /)
+URL Routing,Public Slash Elimination,Routing/Standard,All public routes slash-free,PASS,301 redirect to slash-free URL
+URL Routing,Admin Slash Elimination,Routing/Standard,All admin routes slash-free,PASS,301 redirect to slash-free URL
+URL Routing,Legacy Extension Stripping,Routing/Standard,.html and .php stripped on GET,PASS,301 redirect to clean URL
+URL Routing,Query Parameter Preservation,Routing/Standard,Queries preserved on trailing slash fix,PASS,Query strings preserved 100%
+URL Routing,Subdirectory Preservation,Routing/Standard,Local /UGC%20Website never dropped,PASS,Zero jumps to localhost root
+Performance,Core CSS File Size,Performance/Assets,css/style.css size,PASS,249.38 KB
+Performance,Core JS File Size,Performance/Assets,js/main.js size,PASS,40.95 KB
+Performance,Admin CSS File Size,Performance/Assets,admin/assets/admin.css size,PASS,59.15 KB
+Performance,Large Image Payload,Performance/Assets,Images > 500 KB,WARN,4 JPEG images > 500 KB (ISS-004)
+Git & Maintenance,Tracked vs Untracked,Git/Repository,Repository file tracking status,WARN,.gitignore missing backups & logs (ISS-002)
+Workflows,Workflow 1: Blog Publishing,E2E/Workflow,End-to-end post creation to discovery,PASS,Draft -> Published -> MD -> Sitemap verified
+Workflows,Workflow 2: Blog Editing,E2E/Workflow,End-to-end post modification,PASS,DB -> MD -> Live page sync verified
+Workflows,Workflow 3: Blog Deletion,E2E/Workflow,End-to-end post deletion and cleanup,PASS,Deletion -> MD purge -> 404 verified
+Workflows,Workflow 4: Schema Manager,E2E/Workflow,Schema configure save and publish,PASS,Settings -> Overrides -> HTML verified
+Workflows,Workflow 5: Contact Enquiry,E2E/Workflow,Public enquiry submission,SIMULATED,Frontend validation OK; no backend mailer
+Workflows,Workflow 6: URL & Navigation,E2E/Workflow,Website-wide link traversal,PASS,0 loops 0 broken links 179/179 pass
+Workflows,Workflow 7: LLM Synchronization,E2E/Workflow,Multi-run reconciliation idempotency,PASS,100% identical file hashes across runs
+

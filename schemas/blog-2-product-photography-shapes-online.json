@@ -1,0 +1,30 @@
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "How Product Photography Shapes Online Shopping Today",
+    "description": "Learn how premium brands maintain aesthetic coherence and brand DNA while embracing diverse creator voices across TikTok, Instagram, and paid media.",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://myugcvideo.in/blog/brand-identity-through-content"
+    },
+    "url": "https://myugcvideo.in/blog/brand-identity-through-content",
+    "author": {
+        "@type": "Person",
+        "name": "The MY UGC VIDEO Editorial Team",
+        "jobTitle": "UGC Creative Studio"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://myugcvideo.in/images/logo.png"
+        }
+    },
+    "datePublished": "2026-10-28T12:00:00+01:00",
+    "dateModified": "2026-11-13T11:16:46+01:00",
+    "image": "https://myugcvideo.in/uploads/blogs/blog_20261113_064646_52d3326bf83e.png",
+    "articleSection": "E-commerce",
+    "keywords": "Branding, UGC video, creator marketing"
+}

@@ -26,12 +26,13 @@ $gridPosts = $gridResult['posts'];
 // Metadata
 $pageTitle = 'The Creator Journal — UGC Insights, Trends & Strategy | MY UGC VIDEO';
 $metaDescription = 'Explore in-depth articles on UGC video strategy, creator management, paid social performance, and e-commerce content marketing from MY UGC VIDEO.';
-$canonicalUrl = SITE_URL . '/blogs.php';
+$canonicalBase = function_exists('getLlmCanonicalBaseUrl') ? getLlmCanonicalBaseUrl() : 'https://myugcvideo.in';
+$canonicalUrl = $canonicalBase . '/blogs';
 $ogImage = $featuredPost && !empty($featuredPost['featured_image']) 
-    ? (str_starts_with($featuredPost['featured_image'], 'http') ? $featuredPost['featured_image'] : SITE_URL . '/' . ltrim($featuredPost['featured_image'], '/'))
-    : SITE_URL . '/images/blogs/blog-1.jpg';
+    ? (str_starts_with($featuredPost['featured_image'], 'http') ? $featuredPost['featured_image'] : $canonicalBase . '/' . ltrim($featuredPost['featured_image'], '/'))
+    : $canonicalBase . '/images/blogs/blog-1.jpg';
 
-// Structured Data
+// Structured Data (Managed via Centralized Schema Manager with fallback)
 $structuredData = [
     "@context" => "https://schema.org",
     "@type" => "CollectionPage",
@@ -43,10 +44,34 @@ $structuredData = [
         "name" => "MY UGC VIDEO",
         "logo" => [
             "@type" => "ImageObject",
-            "url" => SITE_URL . "/images/hero/hero-creator.jpg"
+            "url" => $canonicalBase . "/images/hero/hero-creator.jpg"
         ]
     ]
 ];
+if (function_exists('getPublishedPageSchemas')) {
+    $mgSchemas = getPublishedPageSchemas('blog-listing');
+    if (!empty($mgSchemas)) {
+        $graphNodes = [];
+        foreach ($mgSchemas as $sRow) {
+            $parsed = json_decode($sRow['schema_data'], true);
+            if ($parsed) {
+                if (isset($parsed['@graph']) && is_array($parsed['@graph'])) {
+                    foreach ($parsed['@graph'] as $gn) {
+                        $graphNodes[] = $gn;
+                    }
+                } else {
+                    $graphNodes[] = $parsed;
+                }
+            }
+        }
+        if (!empty($graphNodes)) {
+            $structuredData = [
+                "@context" => "https://schema.org",
+                "@graph"   => $graphNodes
+            ];
+        }
+    }
+}
 
 include CMS_ROOT . '/includes/blog-header.php';
 ?>
@@ -61,7 +86,7 @@ include CMS_ROOT . '/includes/blog-header.php';
         
         <!-- Breadcrumb Navigation -->
         <nav class="breadcrumbs" aria-label="Breadcrumb">
-          <a href="<?= SITE_URL ?>/index.html">Home</a>
+          <a href="<?= SITE_URL ?>/">Home</a>
           <span class="separator" aria-hidden="true">/</span>
           <span class="current-page">Blogs</span>
         </nav>
@@ -72,11 +97,11 @@ include CMS_ROOT . '/includes/blog-header.php';
           </div>
 
           <h1 id="blog-hero-title" class="blog-hero-title font-display">
-            IDEAS THAT INSPIRE.<br class="blog-hero-br"> CONTENT THAT CONNECTS.
+            UGC Marketing Tips and Creator Trends
           </h1>
 
           <p class="blog-hero-desc">
-            Discover fresh perspectives on UGC, creator culture and the ideas shaping the future of brand storytelling.
+            Fresh ideas on UGC video, creator culture and the way brands tell their stories today. Our team shares practical UGC marketing tips, video ad trends and creator content strategies you can put to work right away.
           </p>
         </div>
       </div>
@@ -87,7 +112,7 @@ include CMS_ROOT . '/includes/blog-header.php';
          ========================================================================= -->
     <?php if ($featuredPost): 
       $featImg = !empty($featuredPost['featured_image']) ? SITE_URL . '/' . ltrim($featuredPost['featured_image'], '/') : SITE_URL . '/images/blogs/blog-1.jpg';
-      $featUrl = SITE_URL . '/blog.php?slug=' . urlencode($featuredPost['slug']);
+      $featUrl = SITE_URL . '/blog/' . urlencode($featuredPost['slug']);
     ?>
     <section class="featured-blog-section" aria-labelledby="featured-blog-title">
       <div class="container">
@@ -114,7 +139,7 @@ include CMS_ROOT . '/includes/blog-header.php';
               <span class="author-name">By <?= e($featuredPost['author_name']) ?></span>
             </div>
             <div class="featured-actions">
-              <a href="<?= e($featUrl) ?>" class="btn btn-primary">Read Full Guide &rarr;</a>
+              <a href="<?= e($featUrl) ?>" class="btn btn-primary">Read the product photography guide  &rarr;</a>
             </div>
           </div>
         </div>
@@ -133,7 +158,7 @@ include CMS_ROOT . '/includes/blog-header.php';
             <span class="about-eyebrow">EXPLORE PERSPECTIVES</span>
           </div>
           <h2 id="latest-heading" class="latest-section-title font-display">
-            THE LATEST
+            Explore by Topic
           </h2>
         </div>
 
@@ -171,7 +196,7 @@ include CMS_ROOT . '/includes/blog-header.php';
         <div class="blog-editorial-grid" id="blogGrid">
           <?php foreach ($gridPosts as $post): 
             $postImg = !empty($post['featured_image']) ? (str_starts_with($post['featured_image'], 'http') ? $post['featured_image'] : SITE_URL . '/' . ltrim($post['featured_image'], '/')) : SITE_URL . '/images/blogs/blog-1.jpg';
-            $postUrl = SITE_URL . '/blog.php?slug=' . urlencode($post['slug']);
+            $postUrl = SITE_URL . '/blog/' . urlencode($post['slug']);
             $catSlug = $post['category_slug'] ?? 'general';
             $keywords = e($post['keywords'] ?? ($post['title'] . ' ' . $post['category_name']));
           ?>
@@ -230,14 +255,14 @@ include CMS_ROOT . '/includes/blog-header.php';
             <span class="about-eyebrow">PUT STRATEGY INTO ACTION</span>
           </div>
           <h2 id="blog-cta-heading" class="about-cta-title font-display">
-            READY TO CREATE CONTENT THAT CONVERTS?
+            Ready to Make Content That Sells?
           </h2>
           <p class="about-cta-desc">
-            Partner with MY UGC VIDEO to craft authentic, high-performing creator-led video campaigns for your brand.
+            Work with MY UGC VIDEO to build real, creator-led video campaigns that get your brand noticed and bring in customers.
           </p>
           <div class="about-cta-actions">
-            <a href="<?= SITE_URL ?>/contact.html" class="btn btn-primary btn-lg">START A PROJECT</a>
-            <a href="<?= SITE_URL ?>/services.html" class="btn btn-secondary btn-lg">EXPLORE OUR SERVICES</a>
+            <a href="<?= SITE_URL ?>/contact" class="btn btn-primary btn-lg">START A PROJECT</a>
+            <a href="<?= SITE_URL ?>/services" class="btn btn-secondary btn-lg">EXPLORE OUR SERVICES</a>
           </div>
         </div>
       </div>

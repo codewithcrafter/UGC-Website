@@ -1,0 +1,30 @@
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "The Role of Product Photography in Modern E-commerce",
+    "description": "Discover how context-rich, lifestyle product photography bridges the digital touch gap, elevates perceived product value, and decreases e-commerce returns.",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://myugcvideo.in/blog/product-photography-guide"
+    },
+    "url": "https://myugcvideo.in/blog/product-photography-guide",
+    "author": {
+        "@type": "Person",
+        "name": "MY UGC VIDEO Editorial Team",
+        "jobTitle": "UGC Creative Studio"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://myugcvideo.in/images/logo.png"
+        }
+    },
+    "datePublished": "2026-10-25T11:45:00+01:00",
+    "dateModified": "2026-11-13T10:59:55+01:00",
+    "image": "https://myugcvideo.in/images/blogs/blog-7.jpg",
+    "articleSection": "E-commerce",
+    "keywords": "E-commerce, UGC video, creator marketing"
+}

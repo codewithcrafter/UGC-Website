@@ -1,0 +1,30 @@
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "10 Creative UGC Content Ideas Every E-commerce Brand Should Try",
+    "description": "Break through ad creative fatigue with 10 proven UGC concepts: ASMR unboxings, competitor switch breakdowns, myth-busting reviews, and day-in-the-life vlogs.",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://myugcvideo.in/blog/ugc-content-ideas"
+    },
+    "url": "https://myugcvideo.in/blog/ugc-content-ideas",
+    "author": {
+        "@type": "Person",
+        "name": "MY UGC VIDEO Editorial Team",
+        "jobTitle": "UGC Creative Studio"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://myugcvideo.in/images/logo.png"
+        }
+    },
+    "datePublished": "2026-10-23T14:00:00+02:00",
+    "dateModified": "2026-11-13T10:59:55+01:00",
+    "image": "https://myugcvideo.in/images/blogs/blog-5.jpg",
+    "articleSection": "Content Strategy",
+    "keywords": "Content Strategy, UGC video, creator marketing"
+}

@@ -27,7 +27,7 @@ if ($adminCount > 0) {
       <div class="login-card" style="text-align: center;">
         <h2 style="color: var(--accent-mint); margin-bottom: 1rem;">Setup Completed</h2>
         <p style="color: var(--text-muted); margin-bottom: 2rem;">The initial administrator account has already been configured. For security, this setup page has been permanently locked.</p>
-        <a href="<?= ADMIN_URL ?>/login.php" class="btn btn-primary" style="width: 100%;">Proceed to Admin Login &rarr;</a>
+        <a href="<?= ADMIN_URL ?>/login" class="btn btn-primary" style="width: 100%;">Proceed to Admin Login &rarr;</a>
       </div>
     </body>
     </html>
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
 
         setFlash('success', 'Admin account created successfully! Please sign in with your credentials.');
-        header('Location: ' . ADMIN_URL . '/login.php');
+        header('Location: ' . ADMIN_URL . '/login');
         exit;
     }
 }

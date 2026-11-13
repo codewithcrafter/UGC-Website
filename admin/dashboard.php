@@ -6,11 +6,12 @@
 
 define('CMS_ROOT', dirname(__DIR__));
 require_once CMS_ROOT . '/config/config.php';
+requireAuth();
 
 $activeNav = 'dashboard';
 $pageTitle = 'Dashboard Overview';
 $breadcrumbs = [
-    ['name' => 'Dashboard', 'url' => ADMIN_URL . '/dashboard.php']
+    ['name' => 'Dashboard', 'url' => ADMIN_URL . '/dashboard']
 ];
 
 $db = getDb();
@@ -43,7 +44,7 @@ include CMS_ROOT . '/admin/includes/header.php';
     </p>
   </div>
   <div class="page-header-actions">
-    <a href="<?= ADMIN_URL ?>/posts/create.php" class="btn btn-primary">
+    <a href="<?= ADMIN_URL ?>/posts/create" class="btn btn-primary">
       <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
       <span>Write New Article</span>
     </a>
@@ -105,7 +106,7 @@ include CMS_ROOT . '/admin/includes/header.php';
 
 <!-- Quick Workflow Strips -->
 <div class="quick-actions-grid">
-  <a href="<?= ADMIN_URL ?>/posts/create.php" class="quick-action-card">
+  <a href="<?= ADMIN_URL ?>/posts/create" class="quick-action-card">
     <div class="quick-action-icon">
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
     </div>
@@ -115,7 +116,7 @@ include CMS_ROOT . '/admin/includes/header.php';
     </div>
   </a>
 
-  <a href="<?= ADMIN_URL ?>/posts/index.php" class="quick-action-card">
+  <a href="<?= ADMIN_URL ?>/posts" class="quick-action-card">
     <div class="quick-action-icon">
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
     </div>
@@ -125,7 +126,7 @@ include CMS_ROOT . '/admin/includes/header.php';
     </div>
   </a>
 
-  <a href="<?= ADMIN_URL ?>/markdown/index.php" class="quick-action-card">
+  <a href="<?= ADMIN_URL ?>/markdown" class="quick-action-card">
     <div class="quick-action-icon">
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="15" x2="15" y2="15"></line></svg>
     </div>
@@ -135,13 +136,13 @@ include CMS_ROOT . '/admin/includes/header.php';
     </div>
   </a>
 
-  <a href="<?= SITE_URL ?>/blogs.php" target="_blank" class="quick-action-card">
+  <a href="<?= SITE_URL ?>/blogs" target="_blank" class="quick-action-card">
     <div class="quick-action-icon">
       <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline></svg>
     </div>
     <div class="quick-action-info">
       <h4>Live Website</h4>
-      <p>blogs.php</p>
+      <p>/blogs</p>
     </div>
   </a>
 </div>
@@ -154,7 +155,7 @@ include CMS_ROOT . '/admin/includes/header.php';
       <span>Recent Editorial Activity</span>
     </h2>
     <div style="display: flex; gap: 0.6rem; align-items: center;">
-      <a href="<?= ADMIN_URL ?>/posts/index.php" class="btn btn-secondary btn-sm">All Articles &rarr;</a>
+      <a href="<?= ADMIN_URL ?>/posts" class="btn btn-secondary btn-sm">All Articles &rarr;</a>
     </div>
   </div>
 
@@ -174,7 +175,7 @@ include CMS_ROOT . '/admin/includes/header.php';
         <?php if (empty($recentPosts)): ?>
           <tr>
             <td colspan="6" style="text-align: center; padding: 3rem 1.5rem; color: var(--text-muted);">
-              No blog articles created yet. <a href="<?= ADMIN_URL ?>/posts/create.php">Create your first article &rarr;</a>
+              No blog articles created yet. <a href="<?= ADMIN_URL ?>/posts/create">Create your first article &rarr;</a>
             </td>
           </tr>
         <?php else: ?>
@@ -182,7 +183,7 @@ include CMS_ROOT . '/admin/includes/header.php';
             $thumb = !empty($post['featured_image']) 
               ? (str_starts_with($post['featured_image'], 'http') ? $post['featured_image'] : SITE_URL . '/' . ltrim($post['featured_image'], '/')) 
               : SITE_URL . '/images/blogs/blog-1.jpg';
-            $previewUrl = SITE_URL . '/blog.php?slug=' . urlencode($post['slug']);
+            $previewUrl = SITE_URL . '/blog/' . urlencode($post['slug']);
           ?>
             <tr>
               <td>
@@ -192,7 +193,7 @@ include CMS_ROOT . '/admin/includes/header.php';
               </td>
               <td>
                 <div>
-                  <a href="<?= ADMIN_URL ?>/posts/edit.php?id=<?= $post['id'] ?>" style="font-weight: 700; color: var(--text-white); font-size: 0.95rem;">
+                  <a href="<?= ADMIN_URL ?>/posts/edit?id=<?= $post['id'] ?>" style="font-weight: 700; color: var(--text-white); font-size: 0.95rem;">
                     <?= e($post['title']) ?>
                   </a>
                   <?php if ($post['is_featured']): ?>
@@ -216,7 +217,7 @@ include CMS_ROOT . '/admin/includes/header.php';
               </td>
               <td style="text-align: right; white-space: nowrap;">
                 <a href="<?= e($previewUrl) ?>" target="_blank" class="btn btn-secondary btn-sm" title="Preview Public Page">View</a>
-                <a href="<?= ADMIN_URL ?>/posts/edit.php?id=<?= $post['id'] ?>" class="btn btn-primary btn-sm">Edit</a>
+                <a href="<?= ADMIN_URL ?>/posts/edit?id=<?= $post['id'] ?>" class="btn btn-primary btn-sm">Edit</a>
               </td>
             </tr>
           <?php endforeach; ?>

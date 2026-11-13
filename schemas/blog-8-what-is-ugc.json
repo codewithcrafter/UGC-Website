@@ -1,0 +1,30 @@
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "What Is User Generated Content? A Complete Guide for Modern Brands",
+    "description": "Discover what User Generated Content (UGC) is, why it outperforms traditional advertising, and how modern brands leverage creator storytelling to scale trust.",
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://myugcvideo.in/blog/what-is-ugc"
+    },
+    "url": "https://myugcvideo.in/blog/what-is-ugc",
+    "author": {
+        "@type": "Person",
+        "name": "MY UGC VIDEO Editorial Team",
+        "jobTitle": "UGC Creative Studio"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://myugcvideo.in/images/logo.png"
+        }
+    },
+    "datePublished": "2026-10-15T09:00:00+02:00",
+    "dateModified": "2026-11-13T10:59:55+01:00",
+    "image": "https://myugcvideo.in/images/blogs/blog-1.jpg",
+    "articleSection": "UGC Trends",
+    "keywords": "UGC Trends, UGC video, creator marketing"
+}

@@ -12,8 +12,9 @@ if (!defined('CMS_ROOT')) {
 
 $pageTitle = $pageTitle ?? 'Blogs & Editorial Insights | MY UGC VIDEO';
 $metaDescription = $metaDescription ?? 'Discover fresh perspectives on UGC, creator culture and the ideas shaping the future of brand storytelling.';
-$canonicalUrl = $canonicalUrl ?? (SITE_URL . '/blogs.php');
-$ogImage = $ogImage ?? (SITE_URL . '/images/blogs/blog-1.jpg');
+$canonicalBase = function_exists('getLlmCanonicalBaseUrl') ? getLlmCanonicalBaseUrl() : 'https://myugcvideo.in';
+$canonicalUrl = $canonicalUrl ?? ($canonicalBase . '/blogs');
+$ogImage = $ogImage ?? ($canonicalBase . '/images/blogs/blog-1.jpg');
 $ogType = $ogType ?? 'website';
 $structuredData = $structuredData ?? null;
 ?>
@@ -58,40 +59,40 @@ $structuredData = $structuredData ?? null;
   <header class="site-header" role="banner">
     <div class="container">
       <div class="nav-wrapper">
-        <a href="<?= SITE_URL ?>/index.html" class="brand-logo" aria-label="MY UGC VIDEO Home">
+        <a href="<?= SITE_URL ?>/" class="brand-logo" aria-label="MY UGC VIDEO Home">
           <span class="brand-title">MY UGC VIDEO</span>
           <span class="brand-subtitle">UGC Creative Agency</span>
         </a>
 
         <nav class="nav-menu" role="navigation" aria-label="Primary Navigation">
-          <a href="<?= SITE_URL ?>/index.html" class="nav-link">Home</a>
-          <a href="<?= SITE_URL ?>/about.html" class="nav-link">About</a>
+          <a href="<?= SITE_URL ?>/" class="nav-link">Home</a>
+          <a href="<?= SITE_URL ?>/about" class="nav-link">About</a>
 
           <!-- Hover-Triggered Services Dropdown -->
           <div class="nav-item-dropdown">
-            <a href="<?= SITE_URL ?>/services.html" class="nav-link nav-link-dropdown" aria-haspopup="true" aria-expanded="false">
+            <a href="<?= SITE_URL ?>/services" class="nav-link nav-link-dropdown" aria-haspopup="true" aria-expanded="false">
               Services
               <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </a>
             <div class="dropdown-menu" role="menu" aria-label="Services Menu">
-              <a href="<?= SITE_URL ?>/services/ugc-video-creation-company.html" class="dropdown-link" role="menuitem">UGC Video Creation Services</a>
-              <a href="<?= SITE_URL ?>/services/ugc-video-ads-company.html" class="dropdown-link" role="menuitem">UGC Video Ads</a>
-              <a href="<?= SITE_URL ?>/services/ai-ugc-videos-company.html" class="dropdown-link" role="menuitem">AI UGC Video Creation</a>
-              <a href="<?= SITE_URL ?>/services/ugc-product-videos-company.html" class="dropdown-link" role="menuitem">UGC Product Video</a>
-              <a href="<?= SITE_URL ?>/services/ugc-product-reviews-videos-company.html" class="dropdown-link" role="menuitem">UGC Product Reviews Videos</a>
-              <a href="<?= SITE_URL ?>/services/ugc-video-service-in-delhi-company.html" class="dropdown-link" role="menuitem">UGC Video Company in Delhi</a>
-              <a href="<?= SITE_URL ?>/services/ugc-unboxing-videos-company.html" class="dropdown-link" role="menuitem">UGC Unboxing Videos</a>
-              <a href="<?= SITE_URL ?>/services/ugc-testimonial-videos-company.html" class="dropdown-link" role="menuitem">UGC Testimonial Videos</a>
-              <a href="<?= SITE_URL ?>/services/ugc-video-editing-service-company.html" class="dropdown-link" role="menuitem">UGC Video Editing Service</a>
+              <a href="<?= SITE_URL ?>/services/ugc-video-creation-services-company" class="dropdown-link" role="menuitem">UGC Video Creation Services</a>
+              <a href="<?= SITE_URL ?>/services/ugc-video-ads-company" class="dropdown-link" role="menuitem">UGC Video Ads</a>
+              <a href="<?= SITE_URL ?>/services/ai-ugc-video-creation-company" class="dropdown-link" role="menuitem">AI UGC Video Creation</a>
+              <a href="<?= SITE_URL ?>/services/ugc-product-video-company" class="dropdown-link" role="menuitem">UGC Product Video</a>
+              <a href="<?= SITE_URL ?>/services/ugc-product-review-videos-company" class="dropdown-link" role="menuitem">UGC Product Reviews Videos</a>
+              <a href="<?= SITE_URL ?>/services/ugc-video-company-in-delhi-company" class="dropdown-link" role="menuitem">UGC Video Company in Delhi</a>
+              <a href="<?= SITE_URL ?>/services/ugc-unboxing-videos-company" class="dropdown-link" role="menuitem">UGC Unboxing Videos</a>
+              <a href="<?= SITE_URL ?>/services/ugc-testimonial-videos-company" class="dropdown-link" role="menuitem">UGC Testimonial Videos</a>
+              <a href="<?= SITE_URL ?>/services/ugc-video-editing-service-company" class="dropdown-link" role="menuitem">UGC Video Editing Service</a>
             </div>
           </div>
 
-          <a href="<?= SITE_URL ?>/blogs.php" class="nav-link active">Blogs</a>
-          <a href="<?= SITE_URL ?>/contact.html" class="nav-link">Contact</a>
+          <a href="<?= SITE_URL ?>/blogs" class="nav-link active">Blogs</a>
+          <a href="<?= SITE_URL ?>/contact" class="nav-link">Contact</a>
         </nav>
 
         <div class="header-cta">
-          <a href="<?= SITE_URL ?>/contact.html" class="btn btn-primary">Start a Project</a>
+          <a href="<?= SITE_URL ?>/contact" class="btn btn-primary">Start a Project</a>
           <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
             <span></span>
             <span></span>
@@ -106,30 +107,30 @@ $structuredData = $structuredData ?? null;
   <div class="drawer-overlay" aria-hidden="true"></div>
   <aside class="mobile-drawer" aria-label="Mobile Navigation Drawer">
     <nav class="mobile-nav-links">
-      <a href="<?= SITE_URL ?>/index.html" class="mobile-nav-link">Home <span>&rarr;</span></a>
-      <a href="<?= SITE_URL ?>/about.html" class="mobile-nav-link">About <span>&rarr;</span></a>
+      <a href="<?= SITE_URL ?>/" class="mobile-nav-link">Home <span>&rarr;</span></a>
+      <a href="<?= SITE_URL ?>/about" class="mobile-nav-link">About <span>&rarr;</span></a>
 
       <!-- Mobile Services Collapsible -->
       <div class="mobile-dropdown-wrap">
-        <a href="<?= SITE_URL ?>/services.html" class="mobile-nav-link mobile-dropdown-toggle" aria-expanded="false">
+        <a href="<?= SITE_URL ?>/services" class="mobile-nav-link mobile-dropdown-toggle" aria-expanded="false">
           Services
           <svg class="dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </a>
         <div class="mobile-dropdown-content">
-          <a href="<?= SITE_URL ?>/services/ugc-video-creation-company.html" class="mobile-sub-link">&bull; UGC Video Creation Services</a>
-          <a href="<?= SITE_URL ?>/services/ugc-video-ads-company.html" class="mobile-sub-link">&bull; UGC Video Ads</a>
-          <a href="<?= SITE_URL ?>/services/ai-ugc-videos-company.html" class="mobile-sub-link">&bull; AI UGC Video Creation</a>
-          <a href="<?= SITE_URL ?>/services/ugc-product-videos-company.html" class="mobile-sub-link">&bull; UGC Product Video</a>
-          <a href="<?= SITE_URL ?>/services/ugc-product-reviews-videos-company.html" class="mobile-sub-link">&bull; UGC Product Reviews Videos</a>
-          <a href="<?= SITE_URL ?>/services/ugc-video-service-in-delhi-company.html" class="mobile-sub-link">&bull; UGC Video Company in Delhi</a>
-          <a href="<?= SITE_URL ?>/services/ugc-unboxing-videos-company.html" class="mobile-sub-link">&bull; UGC Unboxing Videos</a>
-          <a href="<?= SITE_URL ?>/services/ugc-testimonial-videos-company.html" class="mobile-sub-link">&bull; UGC Testimonial Videos</a>
-          <a href="<?= SITE_URL ?>/services/ugc-video-editing-service-company.html" class="mobile-sub-link">&bull; UGC Video Editing Service</a>
+          <a href="<?= SITE_URL ?>/services/ugc-video-creation-services-company" class="mobile-sub-link">&bull; UGC Video Creation Services</a>
+          <a href="<?= SITE_URL ?>/services/ugc-video-ads-company" class="mobile-sub-link">&bull; UGC Video Ads</a>
+          <a href="<?= SITE_URL ?>/services/ai-ugc-video-creation-company" class="mobile-sub-link">&bull; AI UGC Video Creation</a>
+          <a href="<?= SITE_URL ?>/services/ugc-product-video-company" class="mobile-sub-link">&bull; UGC Product Video</a>
+          <a href="<?= SITE_URL ?>/services/ugc-product-review-videos-company" class="mobile-sub-link">&bull; UGC Product Reviews Videos</a>
+          <a href="<?= SITE_URL ?>/services/ugc-video-company-in-delhi-company" class="mobile-sub-link">&bull; UGC Video Company in Delhi</a>
+          <a href="<?= SITE_URL ?>/services/ugc-unboxing-videos-company" class="mobile-sub-link">&bull; UGC Unboxing Videos</a>
+          <a href="<?= SITE_URL ?>/services/ugc-testimonial-videos-company" class="mobile-sub-link">&bull; UGC Testimonial Videos</a>
+          <a href="<?= SITE_URL ?>/services/ugc-video-editing-service-company" class="mobile-sub-link">&bull; UGC Video Editing Service</a>
         </div>
       </div>
 
-      <a href="<?= SITE_URL ?>/blogs.php" class="mobile-nav-link active">Blogs <span>&rarr;</span></a>
-      <a href="<?= SITE_URL ?>/contact.html" class="mobile-nav-link">Contact <span>&rarr;</span></a>
+      <a href="<?= SITE_URL ?>/blogs" class="mobile-nav-link active">Blogs <span>&rarr;</span></a>
+      <a href="<?= SITE_URL ?>/contact" class="mobile-nav-link">Contact <span>&rarr;</span></a>
     </nav>
     <div class="mobile-drawer-footer">
       <p class="eyebrow">UGC Creative Agency</p>

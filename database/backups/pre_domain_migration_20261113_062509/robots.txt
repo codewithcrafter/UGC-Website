@@ -1,0 +1,13 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /config/
+Disallow: /includes/
+Disallow: /database/
+Disallow: /logs/
+Allow: /
+
+# Canonical XML Sitemap
+Sitemap: https://myugcvideo.com/sitemap.xml
+
+# LLM & AI Crawler Directives
+# LLMs.txt: https://myugcvideo.com/llms.txt
