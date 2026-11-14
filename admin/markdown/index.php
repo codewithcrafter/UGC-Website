@@ -470,17 +470,27 @@ include CMS_ROOT . '/admin/includes/header.php';
 /* Refined styles for original Markdown & LLMs layout */
 .md-manager-grid {
   display: grid;
-  grid-template-columns: 380px 1fr;
+  grid-template-columns: 360px 1fr;
   gap: 1.75rem;
-  align-items: start;
+  align-items: stretch;
   margin-top: 1.25rem;
 }
-@media (max-width: 960px) {
+
+@media (max-width: 1080px) {
+  .md-manager-grid {
+    grid-template-columns: 310px 1fr;
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 820px) {
   .md-manager-grid {
     grid-template-columns: 1fr;
     gap: 1.25rem;
   }
 }
+
+/* Sidebar Explorer Panel */
 .md-explorer-panel {
   background: var(--bg-surface);
   border: 1px solid var(--border-sage);
@@ -489,18 +499,35 @@ include CMS_ROOT . '/admin/includes/header.php';
   display: flex;
   flex-direction: column;
   box-shadow: 0 4px 20px rgba(0, 23, 19, 0.4);
+  min-height: 540px;
+  height: calc(100vh - 275px);
+  max-height: calc(100vh - 275px);
+  overflow: hidden;
+  box-sizing: border-box;
 }
+
+@media (max-width: 820px) {
+  .md-explorer-panel {
+    height: auto;
+    max-height: 480px;
+    min-height: 320px;
+  }
+}
+
 .md-search-wrap {
-  margin-bottom: 1.25rem;
-  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.85rem;
   border-bottom: 1px solid var(--border-sage-subtle);
+  flex-shrink: 0;
 }
+
 .md-search-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.65rem;
 }
+
 .md-search-title {
   font-size: 0.82rem;
   font-weight: 700;
@@ -508,6 +535,7 @@ include CMS_ROOT . '/admin/includes/header.php';
   letter-spacing: 0.08em;
   color: var(--accent-mint);
 }
+
 .md-search-count {
   font-size: 0.72rem;
   font-family: var(--font-mono);
@@ -517,6 +545,7 @@ include CMS_ROOT . '/admin/includes/header.php';
   border-radius: 999px;
   border: 1px solid var(--border-sage-subtle);
 }
+
 .md-search-input {
   width: 100%;
   padding: 0.55rem 0.85rem;
@@ -526,49 +555,74 @@ include CMS_ROOT . '/admin/includes/header.php';
   border-radius: var(--radius-xs);
   color: var(--text-white) !important;
   transition: var(--transition);
+  box-sizing: border-box;
 }
+
 .md-search-input:focus {
   border-color: var(--accent-mint) !important;
   box-shadow: 0 0 0 3px rgba(54, 217, 176, 0.15) !important;
   outline: none;
 }
-.md-file-list {
-  max-height: calc(100vh - 280px);
-  min-height: 420px;
+
+/* Independent Sidebar File List */
+.md-explorer-panel .md-file-list {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
-  padding-right: 4px;
-}
-.md-file-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  padding: 0.65rem 0.85rem;
-  border-radius: var(--radius-xs);
-  border: 1px solid rgba(49, 83, 77, 0.3);
-  background: #001613;
-  color: var(--text-primary);
-  text-decoration: none;
-  transition: var(--transition);
-}
-.md-file-item:hover {
-  background: rgba(54, 217, 176, 0.06);
-  border-color: var(--border-sage);
-}
-.md-file-item.active {
-  background: rgba(54, 217, 176, 0.12);
-  border-color: var(--accent-mint);
-  border-left: 3px solid var(--accent-mint);
-}
-.md-file-item-header {
-  display: flex;
-  align-items: center;
   gap: 0.5rem;
-  overflow: hidden;
+  padding-right: 6px;
+  box-sizing: border-box;
 }
-.md-file-icon {
+
+.md-explorer-panel .md-file-item {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  gap: 0.35rem !important;
+  padding: 0.65rem 0.85rem !important;
+  border-radius: var(--radius-xs) !important;
+  border: 1px solid rgba(49, 83, 77, 0.3) !important;
+  background: #001613 !important;
+  color: var(--text-primary) !important;
+  text-decoration: none !important;
+  transition: var(--transition) !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+  min-height: 56px !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.md-explorer-panel .md-file-item:hover {
+  background: rgba(54, 217, 176, 0.06) !important;
+  border-color: var(--border-sage) !important;
+}
+
+.md-explorer-panel .md-file-item.active {
+  background: rgba(54, 217, 176, 0.12) !important;
+  border-color: var(--accent-mint) !important;
+  border-left: 3px solid var(--accent-mint) !important;
+}
+
+.md-explorer-panel .md-file-item-header {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  overflow: hidden !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 20px !important;
+  flex-shrink: 0 !important;
+}
+
+.md-explorer-panel .md-file-icon {
   color: var(--accent-mint);
   display: inline-flex;
   align-items: center;
@@ -577,23 +631,33 @@ include CMS_ROOT . '/admin/includes/header.php';
   width: 18px;
   height: 18px;
 }
-.md-file-name {
-  font-size: 0.84rem;
-  font-weight: 600;
-  color: var(--text-white);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  flex: 1;
+
+.md-explorer-panel .md-file-name {
+  font-size: 0.84rem !important;
+  font-weight: 600 !important;
+  color: var(--text-white) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  min-width: 0 !important;
+  flex: 1 !important;
+  display: block !important;
+  line-height: 1.3 !important;
 }
-.md-file-meta-row {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  flex-wrap: wrap;
+
+.md-explorer-panel .md-file-meta-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.4rem !important;
+  font-size: 0.7rem !important;
+  color: var(--text-muted) !important;
+  flex-wrap: wrap !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  margin-top: 0.15rem !important;
+  flex-shrink: 0 !important;
 }
+
 .md-badge-cat {
   background: rgba(49, 83, 77, 0.4);
   color: var(--text-secondary);
@@ -601,7 +665,9 @@ include CMS_ROOT . '/admin/includes/header.php';
   border-radius: 3px;
   font-size: 0.68rem;
   font-weight: 500;
+  white-space: nowrap;
 }
+
 .md-badge-status {
   padding: 0.1rem 0.4rem;
   border-radius: 3px;
@@ -609,15 +675,19 @@ include CMS_ROOT . '/admin/includes/header.php';
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  white-space: nowrap;
 }
+
 .md-badge-status.status-pub {
   background: var(--status-pub-bg);
   color: var(--status-pub);
 }
+
 .md-badge-status.status-draft {
   background: var(--status-draft-bg);
   color: var(--status-draft);
 }
+
 .md-badge-blog {
   background: rgba(54, 217, 176, 0.12);
   color: var(--accent-mint);
@@ -625,22 +695,39 @@ include CMS_ROOT . '/admin/includes/header.php';
   padding: 0.1rem 0.4rem;
   border-radius: 3px;
   font-size: 0.68rem;
+  white-space: nowrap;
 }
+
 .md-file-size {
   margin-left: auto;
   font-family: var(--font-mono);
   font-size: 0.68rem;
   color: var(--text-muted);
+  white-space: nowrap;
 }
+
+/* Right Column: Markdown Workspace Panel */
 .md-workspace-panel {
   background: var(--bg-surface);
   border: 1px solid var(--border-sage);
   border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 220px);
+  min-height: 540px;
+  height: calc(100vh - 275px);
+  max-height: calc(100vh - 275px);
   overflow: hidden;
+  box-sizing: border-box;
 }
+
+@media (max-width: 820px) {
+  .md-workspace-panel {
+    height: auto;
+    max-height: none;
+    min-height: auto;
+  }
+}
+
 .md-empty-workspace {
   display: flex;
   flex-direction: column;
@@ -650,6 +737,8 @@ include CMS_ROOT . '/admin/includes/header.php';
   text-align: center;
   margin: auto;
 }
+
+/* Workspace Header */
 .md-workspace-header {
   padding: 1.15rem 1.4rem;
   border-bottom: 1px solid var(--border-sage);
@@ -659,14 +748,89 @@ include CMS_ROOT . '/admin/includes/header.php';
   align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
+  flex-shrink: 0;
 }
+
+.md-workspace-meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.45rem;
+  font-size: 0.75rem;
+}
+
+.md-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #00120f;
+  border: 1px solid var(--border-sage-subtle);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.md-meta-chip svg {
+  color: var(--accent-mint);
+  flex-shrink: 0;
+}
+
+.md-meta-path {
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.md-meta-path-text {
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Action Buttons Alignment */
+.md-workspace-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.md-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  height: 36px;
+  padding: 0 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  line-height: 1;
+  border-radius: var(--radius-xs);
+  box-sizing: border-box;
+  vertical-align: middle;
+  transition: var(--transition);
+}
+
+.md-action-btn svg {
+  flex-shrink: 0;
+}
+
+/* View Switcher Tabs */
 .md-view-tabs {
   display: flex;
   background: #001b17;
   border-bottom: 1px solid var(--border-sage);
   padding: 0 1rem;
   gap: 0.5rem;
+  flex-shrink: 0;
 }
+
 .md-view-tab {
   display: inline-flex;
   align-items: center;
@@ -681,36 +845,162 @@ include CMS_ROOT . '/admin/includes/header.php';
   cursor: pointer;
   transition: var(--transition);
 }
+
 .md-view-tab:hover {
   color: var(--text-white);
 }
+
 .md-view-tab.active {
   color: var(--accent-mint);
   border-bottom-color: var(--accent-mint);
 }
-.md-editor-pane {
-  padding: 1.25rem;
-  background: #000c0a;
+
+/* Editor Form & Panes */
+.md-editor-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
+
+.md-editor-pane {
+  padding: 1.25rem 1.4rem;
+  background: #000c0a;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Raw Textarea with No Top Clipping */
 .md-raw-textarea {
   width: 100%;
   flex: 1;
-  min-height: 520px;
+  min-height: 380px;
+  height: 100%;
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-xs);
   outline: none;
   color: #D9E5DF;
   font-family: var(--font-mono);
   font-size: 0.92rem;
-  line-height: 1.65;
-  resize: vertical;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  tab-size: 2;
+  padding: 0.85rem 1rem;
+  box-sizing: border-box;
+  resize: none;
+  overflow-y: auto;
 }
+
+.md-raw-textarea:focus {
+  border-color: rgba(54, 217, 176, 0.25);
+  box-shadow: 0 0 0 2px rgba(54, 217, 176, 0.08);
+}
+
+/* Formatted Preview Pane */
 .md-preview-pane {
-  padding: 2rem;
+  padding: 1.75rem 2rem;
   background: var(--bg-surface);
   overflow-y: auto;
-  max-height: calc(100vh - 350px);
+  flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
 }
+
+/* Enhanced Preview Prose Typography & Spacing */
+.md-preview-pane .prose {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  line-height: 1.75;
+  max-width: 860px;
+}
+
+.md-preview-pane .prose h1,
+.md-preview-pane .prose h2,
+.md-preview-pane .prose h3,
+.md-preview-pane .prose h4 {
+  color: var(--text-white);
+  font-family: var(--font-heading);
+  margin-top: 1.85rem;
+  margin-bottom: 0.85rem;
+  line-height: 1.35;
+}
+
+.md-preview-pane .prose h1:first-child,
+.md-preview-pane .prose h2:first-child {
+  margin-top: 0;
+}
+
+.md-preview-pane .prose h1 { font-size: 1.85rem; }
+.md-preview-pane .prose h2 { font-size: 1.4rem; border-bottom: 1px solid var(--border-sage-subtle); padding-bottom: 0.45rem; }
+.md-preview-pane .prose h3 { font-size: 1.15rem; }
+.md-preview-pane .prose h4 { font-size: 1rem; }
+
+.md-preview-pane .prose p {
+  margin-top: 0;
+  margin-bottom: 1.15rem;
+  line-height: 1.75;
+}
+
+.md-preview-pane .prose ul,
+.md-preview-pane .prose ol {
+  padding-left: 1.5rem;
+  margin-top: 0;
+  margin-bottom: 1.15rem;
+}
+
+.md-preview-pane .prose li {
+  margin-bottom: 0.45rem;
+  line-height: 1.65;
+}
+
+.md-preview-pane .prose blockquote {
+  border-left: 3px solid var(--accent-mint);
+  padding: 0.75rem 1.25rem;
+  background: rgba(54, 217, 176, 0.05);
+  margin: 1.35rem 0;
+  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+  color: var(--text-secondary);
+}
+
+.md-preview-pane .prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.md-preview-pane .prose code {
+  background: #00120f;
+  border: 1px solid var(--border-sage-subtle);
+  padding: 0.15rem 0.45rem;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: var(--accent-mint);
+}
+
+.md-preview-pane .prose pre {
+  background: #000c0a;
+  border: 1px solid var(--border-sage-subtle);
+  border-radius: var(--radius-xs);
+  padding: 1.25rem;
+  overflow-x: auto;
+  margin: 1.25rem 0;
+}
+
+.md-preview-pane .prose pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: #D9E5DF;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+/* Footer Strip */
 .md-footer-strip {
   padding: 0.9rem 1.4rem;
   background: #001613;
@@ -720,6 +1010,43 @@ include CMS_ROOT . '/admin/includes/header.php';
   align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
+  flex-shrink: 0;
+}
+
+/* Thin Subtle Teal Scrollbar Styling */
+.md-file-list,
+.md-preview-pane,
+.md-raw-textarea {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(54, 217, 176, 0.3) rgba(0, 18, 15, 0.6);
+}
+
+.md-file-list::-webkit-scrollbar,
+.md-preview-pane::-webkit-scrollbar,
+.md-raw-textarea::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.md-file-list::-webkit-scrollbar-track,
+.md-preview-pane::-webkit-scrollbar-track,
+.md-raw-textarea::-webkit-scrollbar-track {
+  background: rgba(0, 18, 15, 0.6);
+  border-radius: 4px;
+}
+
+.md-file-list::-webkit-scrollbar-thumb,
+.md-preview-pane::-webkit-scrollbar-thumb,
+.md-raw-textarea::-webkit-scrollbar-thumb {
+  background: rgba(54, 217, 176, 0.28);
+  border-radius: 4px;
+  border: 1px solid rgba(0, 22, 19, 0.8);
+}
+
+.md-file-list::-webkit-scrollbar-thumb:hover,
+.md-preview-pane::-webkit-scrollbar-thumb:hover,
+.md-raw-textarea::-webkit-scrollbar-thumb:hover {
+  background: rgba(54, 217, 176, 0.55);
 }
 </style>
 
@@ -820,6 +1147,7 @@ include CMS_ROOT . '/admin/includes/header.php';
         ?>
           <a href="<?= ADMIN_URL ?>/markdown?file=<?= urlencode($file['key']) ?>" 
              class="md-file-item <?= $isActive ? 'active' : '' ?>"
+             title="<?= e($file['filename']) ?>"
              data-name="<?= strtolower(e($file['filename'])) ?>"
              data-category="<?= e($file['category']) ?>">
             
@@ -930,21 +1258,32 @@ include CMS_ROOT . '/admin/includes/header.php';
             <?php endif; ?>
           </div>
 
-          <div style="font-size: 0.76rem; color: var(--text-muted); font-family: var(--font-mono); margin-top: 0.35rem;">
-            Size: <?= round($activeFile['size'] / 1024, 2) ?> KB &bull; Modified: <?= date('M j, Y H:i:s', $activeFile['mtime']) ?> &bull; Path: <?= e($activeFile['rel_path']) ?>
+          <div class="md-workspace-meta-row">
+            <span class="md-meta-chip" title="File Size">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+              <span><?= round($activeFile['size'] / 1024, 2) ?> KB</span>
+            </span>
+            <span class="md-meta-chip" title="Last Modified Timestamp">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>Modified: <?= date('M j, Y H:i:s', $activeFile['mtime']) ?></span>
+            </span>
+            <span class="md-meta-chip md-meta-path" title="<?= e($activeFile['rel_path']) ?>">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              <code class="md-meta-path-text"><?= e($activeFile['rel_path']) ?></code>
+            </span>
           </div>
         </div>
 
-        <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+        <div class="md-workspace-actions">
           <!-- Public View Link -->
-          <a href="<?= e($publicViewUrl) ?>" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" title="Open public document view">
+          <a href="<?= e($publicViewUrl) ?>" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm md-action-btn" title="Open public document view">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             <span>Public URL</span>
           </a>
 
           <!-- Edit in Blog CMS (if linked) -->
           <?php if ($activeFile['is_blog'] && $activeFile['blog_id']): ?>
-            <a href="<?= ADMIN_URL ?>/posts/edit.php?id=<?= $activeFile['blog_id'] ?>" class="btn btn-outline-mint btn-sm" title="Edit this article inside the visual Blog Editor">
+            <a href="<?= ADMIN_URL ?>/posts/edit.php?id=<?= $activeFile['blog_id'] ?>" class="btn btn-outline-mint btn-sm md-action-btn" title="Edit this article inside the visual Blog Editor">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
               <span>Edit in Blog CMS</span>
             </a>
@@ -952,14 +1291,10 @@ include CMS_ROOT . '/admin/includes/header.php';
 
           <!-- Delete File (if deletable) -->
           <?php if ($activeFile['is_deletable']): ?>
-            <form method="POST" action="<?= ADMIN_URL ?>/markdown" style="margin: 0;" onsubmit="return confirm('Permanently delete <?= htmlspecialchars($activeFile['filename']) ?>?');">
-              <?= csrfField() ?>
-              <input type="hidden" name="action" value="delete_file">
-              <input type="hidden" name="file_key" value="<?= e($activeFile['key']) ?>">
-              <button type="submit" class="btn btn-danger btn-sm" style="padding: 0.25rem 0.6rem;" title="Delete file">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-              </button>
-            </form>
+            <button type="button" class="btn btn-danger btn-sm md-action-btn" onclick="openDeleteModal('<?= e($activeFile['key']) ?>', '<?= htmlspecialchars($activeFile['filename'], ENT_QUOTES) ?>')" title="Delete file">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              <span>Delete</span>
+            </button>
           <?php endif; ?>
         </div>
       </div>
@@ -977,13 +1312,13 @@ include CMS_ROOT . '/admin/includes/header.php';
       </div>
 
       <!-- Form for Saving File Changes -->
-      <form method="POST" action="<?= ADMIN_URL ?>/markdown" id="editMarkdownForm" style="display: flex; flex-direction: column; flex: 1;">
+      <form method="POST" action="<?= ADMIN_URL ?>/markdown" id="editMarkdownForm" class="md-editor-form">
         <?= csrfField() ?>
         <input type="hidden" name="action" value="save_file">
         <input type="hidden" name="file_key" value="<?= e($activeFile['key']) ?>">
 
         <!-- Pane 1: Raw Editor -->
-        <div id="paneRawEditor" class="md-editor-pane" style="display: flex; flex-direction: column; flex: 1;">
+        <div id="paneRawEditor" class="md-editor-pane">
           <textarea id="rawMarkdownContent" name="content" class="md-raw-textarea" spellcheck="false" placeholder="Write or edit documentation..."><?= e($activeContent) ?></textarea>
         </div>
 
@@ -1113,6 +1448,45 @@ include CMS_ROOT . '/admin/includes/header.php';
   </div>
 </div>
 
+<!-- Modal 3: Delete Confirmation Modal -->
+<div id="deleteModal" class="editor-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+  <div class="editor-modal-card" style="max-width: 480px;">
+    <div class="editor-modal-header">
+      <h3 id="deleteModalTitle" class="editor-modal-title" style="color: #ff6b6b;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        <span>Confirm File Deletion</span>
+      </h3>
+      <button type="button" class="editor-modal-close" onclick="closeModal('deleteModal')" aria-label="Close">&times;</button>
+    </div>
+    <form method="POST" action="<?= ADMIN_URL ?>/markdown" id="deleteFileForm">
+      <?= csrfField() ?>
+      <input type="hidden" name="action" value="delete_file">
+      <input type="hidden" name="file_key" id="deleteModalFileKey" value="">
+
+      <div class="editor-modal-body">
+        <p style="color: var(--text-primary); font-size: 0.92rem; margin-bottom: 0.75rem; line-height: 1.5;">
+          Are you sure you want to permanently delete this Markdown document?
+        </p>
+        <div style="background: #00120f; border: 1px solid rgba(255, 107, 107, 0.3); border-radius: var(--radius-xs); padding: 0.75rem 1rem; margin-bottom: 0.75rem;">
+          <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Target file:</div>
+          <div id="deleteModalFileName" style="font-family: var(--font-mono); font-size: 0.9rem; font-weight: 600; color: #ff8585; word-break: break-all;"></div>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.8rem; margin: 0; line-height: 1.45;">
+          This action cannot be undone. Any linked discovery indexes and LLM directives will be automatically reconciled.
+        </p>
+      </div>
+
+      <div class="editor-modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('deleteModal')">Cancel</button>
+        <button type="submit" class="btn btn-danger btn-sm" id="confirmDeleteBtn" style="display: inline-flex; align-items: center; gap: 0.45rem;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          <span>Confirm Delete</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
 let currentCategoryFilter = 'all';
 
@@ -1206,6 +1580,14 @@ function closeModal(id) {
   if (modal) modal.classList.remove('open');
 }
 
+function openDeleteModal(fileKey, fileName) {
+  const keyInput = document.getElementById('deleteModalFileKey');
+  const nameDisplay = document.getElementById('deleteModalFileName');
+  if (keyInput) keyInput.value = fileKey;
+  if (nameDisplay) nameDisplay.textContent = fileName;
+  openModal('deleteModal');
+}
+
 function escapeHtml(text) {
   const map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'};
   return text.replace(/[&<>"']/g, function(m) { return map[m]; });
@@ -1256,6 +1638,14 @@ function clientMarkdownToHtml(md) {
     return '<p>' + p.replace(/\n/g, '<br>') + '</p>';
   }).join('\n');
 }
+
+// Reset scroll position of editor textarea on load to guarantee first line visibility
+document.addEventListener('DOMContentLoaded', function() {
+  const rawTextarea = document.getElementById('rawMarkdownContent');
+  if (rawTextarea) {
+    rawTextarea.scrollTop = 0;
+  }
+});
 </script>
 
 <?php include CMS_ROOT . '/admin/includes/footer.php'; ?>

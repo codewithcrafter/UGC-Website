@@ -2,6 +2,9 @@
 # MY UGC VIDEO - Apache URL Rewriting & Security Directives
 # =========================================================================
 
+# Serve .md files as plain text/markdown (physical files served directly)
+AddType text/markdown; charset=UTF-8 .md
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
 

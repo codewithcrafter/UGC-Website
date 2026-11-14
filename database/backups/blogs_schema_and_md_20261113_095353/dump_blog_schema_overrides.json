@@ -1,0 +1,10 @@
+[
+    {
+        "post_id": 10,
+        "override_enabled": 0,
+        "schema_disabled": 0,
+        "custom_schema": "{\r\n    \"@context\": \"https://schema.org\",\r\n    \"@type\": \"BlogPosting\",\r\n    \"@id\": \"https://myugcvideo.in/blog/working-with-ugc-creators#article\",\r\n    \"headline\": \"How Brands Can Work Effectively With UGC Creators\",\r\n    \"description\": \"Master creator collaboration: crafting airtight creative briefs, managing shipping logistics, structuring legal usage rights, and providing constructive feedback.\",\r\n    \"image\": \"https://myugcvideo.in/images/blogs/blog-6.jpg\",\r\n    \"datePublished\": \"2026-10-24T09:30:00+02:00\",\r\n    \"dateModified\": \"2026-11-05T13:25:26+01:00\",\r\n    \"mainEntityOfPage\": {\r\n        \"@type\": \"WebPage\",\r\n        \"@id\": \"https://myugcvideo.in/blog/working-with-ugc-creators\"\r\n    },\r\n    \"author\": {\r\n        \"@type\": \"Person\",\r\n        \"name\": \"MY UGC VIDEO Editorial Team\",\r\n        \"jobTitle\": \"UGC Creative Studio\"\r\n    },\r\n    \"publisher\": {\r\n        \"@type\": \"Organization\",\r\n        \"name\": \"MY UGC VIDEO\",\r\n        \"url\": \"https://myugcvideo.in/\",\r\n        \"logo\": {\r\n            \"@type\": \"ImageObject\",\r\n            \"url\": \"https://myugcvideo.in/images/logo.png\"\r\n        }\r\n    }\r\n}",
+        "status": "published",
+        "updated_at": "2026-11-13 14:14:20"
+    }
+]

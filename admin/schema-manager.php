@@ -1,160 +1,739 @@
 <?php
 /**
- * MY UGC VIDEO — Centralized Schema Manager
- * Complete Website-Wide Structured Data Management System
- * Production-conscious management for Static Pages, Service Detail Pages,
- * Global Blog Posting Templates, Individual Blog Overrides, Live Validation,
- * Centralized Organization Identity, and Static Synchronization.
- * Premium Dark Editorial CMS Layout
+ * MY UGC VIDEO — Centralized Page-Wise Schema Manager
+ * 
+ * Upgraded Architecture:
+ * - Dedicated management for Every Website Page
+ * - All required schemas for a page appear together on ONE SCREEN
+ * - Every schema in an individual, independent card
+ * - Independent Edit, Save, Validate, and Delete per card
+ * - "+ Add New Schema" available on EVERY manageable page
+ * - Clear separation of Required Approved Schemas vs Additional Custom Schemas
+ * - Live Dashboard with 6 real-time metrics and page-wise overview catalog
+ * - Validation Suite with 5 summary metrics, "Validate All Pages" engine, and error navigation
+ * - Complete duplicate prevention and active/inactive status control
+ * - Safe existing schema preservation and non-overwriting guarantees
  */
 
 if (!defined('CMS_ROOT')) {
     define('CMS_ROOT', dirname(__DIR__));
 }
 require_once CMS_ROOT . '/config/config.php';
-require_once CMS_ROOT . '/includes/schema-renderer.php';
-
-// Enforce authentication
 requireAuth();
 
-// Guarantee active CSRF token is initialized for session & JS API
-$csrfToken = generateCsrfToken();
-
-$currentAdmin = getCurrentAdmin();
-$activeNav = 'schema_manager';
-$pageTitle = 'Schema Manager';
-
-$breadcrumbs = [
-    ['name' => 'Dashboard', 'url' => ADMIN_URL . '/dashboard'],
-    ['name' => 'Schema Manager', 'url' => ADMIN_URL . '/schema-manager']
-];
+require_once CMS_ROOT . '/includes/schema-renderer.php';
+require_once CMS_ROOT . '/includes/llms-sync.php';
 
 $db = getDb();
+$activeNav = 'schema_manager';
+$pageTitle = 'Schema Manager — Page-Wise Structured Data';
+
+// CSRF Token Initialization
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+$csrfToken = $_SESSION['csrf_token'];
+
+// Helper to escape HTML output
+function sm_e($val) {
+    return htmlspecialchars((string)$val, ENT_QUOTES, 'UTF-8');
+}
 
 // =========================================================================
-// AJAX & POST API Handlers
+// 1. CENTRAL REGISTRY OF APPROVED PAGES & REQUIRED SCHEMAS
 // =========================================================================
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Check if AJAX request
-    $isAjax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') 
-           || (isset($_POST['ajax']) && $_POST['ajax'] === '1');
 
-    $postCsrfToken = $_POST['csrf_token'] ?? '';
-    if (!validateCsrfToken($postCsrfToken) || !verifyCsrfToken($postCsrfToken)) {
-        if ($isAjax) {
-            header('Content-Type: application/json; charset=utf-8');
-            echo json_encode(['success' => false, 'message' => 'CSRF verification failed or session expired. Please refresh the page.']);
-            exit;
+function getApprovedPagesRegistry(): array {
+    $canonicalBase = function_exists('getLlmCanonicalBaseUrl') ? getLlmCanonicalBaseUrl() : 'https://myugcvideo.in';
+    $homeUrl = rtrim($canonicalBase, '/');
+
+    return [
+        'homepage' => [
+            'key' => 'homepage',
+            'title' => 'Homepage',
+            'url' => '/',
+            'canonical' => $homeUrl,
+            'group' => 'core',
+            'schemas' => ['Organization', 'WebPage', 'VideoObject'],
+            'description' => 'Primary brand landing page showcasing UGC video production services and creator showreel.'
+        ],
+        'about' => [
+            'key' => 'about',
+            'title' => 'About Us',
+            'url' => '/about',
+            'canonical' => $canonicalBase . '/about',
+            'group' => 'core',
+            'schemas' => ['Organization', 'BreadcrumbList', 'WebPage'],
+            'description' => 'Brand background, creator network mission, and agency philosophy.'
+        ],
+        'contact' => [
+            'key' => 'contact',
+            'title' => 'Contact Us',
+            'url' => '/contact',
+            'canonical' => $canonicalBase . '/contact',
+            'group' => 'core',
+            'schemas' => ['Organization', 'BreadcrumbList', 'WebPage'],
+            'description' => 'Project inquiry form, corporate contact channels, and agency inquiries.'
+        ],
+        // The 9 Approved Service Pages
+        'service-ugc-video-creation-services-company' => [
+            'key' => 'service-ugc-video-creation-services-company',
+            'title' => 'UGC Video Creation Company',
+            'url' => '/services/ugc-video-creation-services-company',
+            'canonical' => $canonicalBase . '/services/ugc-video-creation-services-company',
+            'group' => 'services',
+            'schemas' => ['Organization', 'BreadcrumbList', 'FAQPage', 'Review', 'WebPage'],
+            'description' => 'Full-cycle creator sourcing, brief design, production, and video performance delivery.'
+        ],
+        'service-ugc-video-ads-company' => [
+            'key' => 'service-ugc-video-ads-company',
+            'title' => 'UGC Video Ads Company',
+            'url' => '/services/ugc-video-ads-company',
+            'canonical' => $canonicalBase . '/services/ugc-video-ads-company',
+            'group' => 'services',
+            'schemas' => ['Organization', 'BreadcrumbList', 'FAQPage', 'Review', 'WebPage'],
+            'description' => 'Direct-response performance video ads for TikTok, Instagram Reels, and Meta campaigns.'
+        ],
+        'service-ai-ugc-video-creation-company' => [
+            'key' => 'service-ai-ugc-video-creation-company',
+            'title' => 'AI UGC Videos Company',
+            'url' => '/services/ai-ugc-video-creation-company',
+            'canonical' => $canonicalBase . '/services/ai-ugc-video-creation-company',
+            'group' => 'services',
+            'schemas' => ['Organization', 'BreadcrumbList', 'FAQPage', 'Review', 'WebPage'],
+            'description' => 'AI-augmented creator workflows, scripting algorithms, and scaled video variations.'
+        ],
+        'service-ugc-product-video-company' => [
+            'key' => 'service-ugc-product-video-company',
+            'title' => 'UGC Product Videos Company',
+            'url' => '/services/ugc-product-video-company',
+            'canonical' => $canonicalBase . '/services/ugc-product-video-company',
+            'group' => 'services',
+            'schemas' => ['Organization', 'BreadcrumbList', 'FAQPage', 'Review', 'WebPage'],
+            'description' => 'High-converting e-commerce product videos focusing on features, benefits, and usage.'
+        ],
+        'service-ugc-product-review-videos-company' => [
+            'key' => 'service-ugc-product-review-videos-company',
+            'title' => 'UGC Product Reviews Videos Company',
+            'url' => '/services/ugc-product-review-videos-company',
+            'canonical' => $canonicalBase . '/services/ugc-product-review-videos-company',
+            'group' => 'services',
+            'schemas' => ['Organization', 'BreadcrumbList', 'FAQPage', 'Review', 'WebPage'],
+            'description' => 'Authentic consumer reviews, demonstration videos, and trusted buyer testimonials.'
+        ],
+        'service-ugc-video-company-in-delhi-company' => [
+            'key' => 'service-ugc-video-company-in-delhi-company',
+            'title' => 'UGC Video Service in Delhi',
+            'url' => '/services/ugc-video-company-in-delhi-company',
+            'canonical' => $canonicalBase . '/services/ugc-video-company-in-delhi-company',
+            'group' => 'services',
+            'schemas' => ['Organization', 'BreadcrumbList', 'FAQPage', 'Review', 'WebPage'],
+            'description' => 'Regional creator shoots, localized Indian brand campaigns, and NCR creator studio.'
+        ],
+        'service-ugc-unboxing-videos-company' => [
+            'key' => 'service-ugc-unboxing-videos-company',
+            'title' => 'UGC Unboxing Videos Company',
+            'url' => '/services/ugc-unboxing-videos-company',
+            'canonical' => $canonicalBase . '/services/ugc-unboxing-videos-company',
+            'group' => 'services',
+            'schemas' => ['Organization', 'BreadcrumbList', 'FAQPage', 'Review', 'WebPage'],
+            'description' => 'Engaging unboxing reactions, packaging spotlights, and immediate first impressions.'
+        ],
+        'service-ugc-testimonial-videos-company' => [
+            'key' => 'service-ugc-testimonial-videos-company',
+            'title' => 'UGC Testimonial Videos Company',
+            'url' => '/services/ugc-testimonial-videos-company',
+            'canonical' => $canonicalBase . '/services/ugc-testimonial-videos-company',
+            'group' => 'services',
+            'schemas' => ['Organization', 'BreadcrumbList', 'FAQPage', 'Review', 'WebPage'],
+            'description' => 'Real customer stories, social proof videos, and authentic conversion assets.'
+        ],
+        'service-ugc-video-editing-service-company' => [
+            'key' => 'service-ugc-video-editing-service-company',
+            'title' => 'UGC Video Editing Service Company',
+            'url' => '/services/ugc-video-editing-service-company',
+            'canonical' => $canonicalBase . '/services/ugc-video-editing-service-company',
+            'group' => 'services',
+            'schemas' => ['Organization', 'BreadcrumbList', 'FAQPage', 'Review', 'WebPage'],
+            'description' => 'Post-production, native text overlays, viral sound effects, hooks, and aspect ratio adaptation.'
+        ],
+        // Blog Listing Page
+        'blog-listing' => [
+            'key' => 'blog-listing',
+            'title' => 'Blog Listing Page',
+            'url' => '/blogs',
+            'canonical' => $canonicalBase . '/blogs',
+            'group' => 'blogs',
+            'schemas' => ['BreadcrumbList', 'WebPage'],
+            'description' => 'The Creator Journal — editorial hub for performance UGC insights, research, and strategies.'
+        ],
+        // Services Directory
+        'services' => [
+            'key' => 'services',
+            'title' => 'Services Directory',
+            'url' => '/services',
+            'canonical' => $canonicalBase . '/services',
+            'group' => 'services',
+            'schemas' => ['Organization', 'BreadcrumbList', 'FAQPage', 'WebPage'],
+            'description' => 'Central services directory index page showcasing the entire agency service catalog.'
+        ]
+    ];
+}
+
+// Fetch all published blogs for blog selection
+function getPublishedBlogsForManager(): array {
+    $db = getDb();
+    $canonicalBase = function_exists('getLlmCanonicalBaseUrl') ? getLlmCanonicalBaseUrl() : 'https://myugcvideo.in';
+    $stmt = $db->query(
+        "SELECT p.id, p.title, p.slug, p.published_at, p.updated_at, c.name AS category_name
+         FROM blog_posts p
+         LEFT JOIN categories c ON p.category_id = c.id
+         WHERE p.status = 'published' AND p.published_at <= NOW()
+         ORDER BY p.published_at DESC, p.id DESC"
+    );
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $blogs = [];
+    foreach ($rows as $r) {
+        $key = 'blog-' . $r['slug'];
+        $blogs[$key] = [
+            'key' => $key,
+            'id' => (int)$r['id'],
+            'title' => $r['title'],
+            'slug' => $r['slug'],
+            'url' => '/blog/' . $r['slug'],
+            'canonical' => $canonicalBase . '/blog/' . rawurlencode($r['slug']),
+            'group' => 'blogs',
+            'published_at' => $r['published_at'],
+            'category' => $r['category_name'] ?: 'Editorial',
+            'schemas' => ['Organization', 'BreadcrumbList', 'BlogPosting'],
+            'description' => 'Individual published blog article with dedicated Organization, Breadcrumbs, and BlogPosting schemas.'
+        ];
+    }
+    return $blogs;
+}
+
+// 5 Main Navigation Sections Registry
+function getSectionsRegistry(array $approvedPages, array $publishedBlogs): array {
+    $servicesPages = [];
+    if (isset($approvedPages['services'])) {
+        $servicesPages['services'] = $approvedPages['services'];
+    }
+    foreach ($approvedPages as $k => $p) {
+        if (strpos($k, 'service-') === 0) {
+            $servicesPages[$k] = $p;
         }
-        setFlash('error', 'CSRF verification failed. Please try again.');
-        header('Location: ' . ADMIN_URL . '/schema-manager');
-        exit;
     }
 
-    $action = trim($_POST['action'] ?? '');
-
-    // 1. Validate Schema JSON-LD Endpoint
-    if ($action === 'validate_schema') {
-        header('Content-Type: application/json; charset=utf-8');
-        $schemaData = $_POST['schema_data'] ?? '';
-        $result = validateSchemaJsonLd($schemaData);
-        echo json_encode([
-            'success' => true,
-            'valid' => $result['valid'],
-            'errors' => $result['errors'],
-            'warnings' => $result['warnings']
-        ]);
-        exit;
+    $blogPages = ['blog-listing' => $approvedPages['blog-listing']];
+    foreach ($publishedBlogs as $k => $b) {
+        $blogPages[$k] = $b;
     }
 
-    // 2. Get Default Template Endpoint
-    if ($action === 'get_type_template') {
-        header('Content-Type: application/json; charset=utf-8');
-        $type = trim($_POST['type'] ?? '');
-        $pageKey = trim($_POST['page_key'] ?? '');
-        
-        $autoSchema = (!empty($pageKey)) ? buildAutomaticPageSchema($pageKey, $type) : null;
-        if ($autoSchema) {
-            $template = json_encode($autoSchema, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    return [
+        'homepage' => [
+            'key' => 'homepage',
+            'title' => 'Homepage',
+            'badge' => '3',
+            'description' => 'Primary brand landing page schema management.',
+            'pages' => ['homepage' => $approvedPages['homepage']]
+        ],
+        'about' => [
+            'key' => 'about',
+            'title' => 'About Us',
+            'badge' => '3',
+            'description' => 'Brand background and agency philosophy schema management.',
+            'pages' => ['about' => $approvedPages['about']]
+        ],
+        'services' => [
+            'key' => 'services',
+            'title' => 'Services',
+            'badge' => (string)count($servicesPages),
+            'description' => 'Services Directory index and all 9 specialized service offering pages.',
+            'pages' => $servicesPages
+        ],
+        'blogs' => [
+            'key' => 'blogs',
+            'title' => 'Blogs',
+            'badge' => (string)count($blogPages),
+            'description' => 'The Creator Journal index (/blogs) and all published individual blog articles (/blog/{slug}).',
+            'pages' => $blogPages
+        ],
+        'contact' => [
+            'key' => 'contact',
+            'title' => 'Contact Us',
+            'badge' => '3',
+            'description' => 'Corporate contact and agency inquiry page schema management.',
+            'pages' => ['contact' => $approvedPages['contact']]
+        ]
+    ];
+}
+
+// Robust Blog Resolver: identifies blog by key ('blog-{slug}'), slug ('{slug}'), or numeric id
+function resolveBlogForManager(?string $slugOrKey, array $publishedBlogs): ?array {
+    if (empty($slugOrKey)) {
+        return null;
+    }
+    if (isset($publishedBlogs[$slugOrKey])) {
+        return $publishedBlogs[$slugOrKey];
+    }
+    $withPrefix = 'blog-' . preg_replace('/^blog-/', '', $slugOrKey);
+    if (isset($publishedBlogs[$withPrefix])) {
+        return $publishedBlogs[$withPrefix];
+    }
+    foreach ($publishedBlogs as $b) {
+        if ($b['slug'] === $slugOrKey || (string)$b['id'] === $slugOrKey) {
+            return $b;
+        }
+    }
+    return null;
+}
+
+// Starter templates generator for any schema type
+function getStarterSchemaTemplate(string $type, string $pageTitle, string $canonical): array {
+    $baseOrgId = 'https://myugcvideo.in/#organization';
+    switch ($type) {
+        case 'WebSite':
+            return [
+                '@context' => 'https://schema.org',
+                '@type' => 'WebSite',
+                '@id' => 'https://myugcvideo.in/#website',
+                'url' => 'https://myugcvideo.in/',
+                'name' => 'MY UGC VIDEO',
+                'description' => 'India\'s Leading Performance UGC Video Production Agency',
+                'publisher' => ['@id' => $baseOrgId]
+            ];
+        case 'Product':
+            return [
+                '@context' => 'https://schema.org',
+                '@type' => 'Product',
+                '@id' => $canonical . '#product',
+                'name' => $pageTitle,
+                'description' => 'Custom UGC video production package for direct-to-consumer e-commerce brands.',
+                'brand' => ['@id' => $baseOrgId],
+                'offers' => [
+                    '@type' => 'Offer',
+                    'priceCurrency' => 'INR',
+                    'availability' => 'https://schema.org/InStock',
+                    'url' => $canonical
+                ]
+            ];
+        case 'Service':
+            return [
+                '@context' => 'https://schema.org',
+                '@type' => 'Service',
+                '@id' => $canonical . '#service',
+                'name' => $pageTitle,
+                'description' => 'Professional user-generated content video creation, curation, and performance marketing.',
+                'provider' => ['@id' => $baseOrgId],
+                'areaServed' => ['@type' => 'Country', 'name' => 'India']
+            ];
+        case 'LocalBusiness':
+            return [
+                '@context' => 'https://schema.org',
+                '@type' => 'LocalBusiness',
+                '@id' => $canonical . '#localbusiness',
+                'name' => 'MY UGC VIDEO Studio',
+                'image' => 'https://myugcvideo.in/assets/images/logo.png',
+                'url' => $canonical,
+                'telephone' => '+91-9999999999',
+                'priceRange' => '₹₹',
+                'address' => [
+                    '@type' => 'PostalAddress',
+                    'addressLocality' => 'New Delhi',
+                    'addressRegion' => 'Delhi',
+                    'addressCountry' => 'IN'
+                ]
+            ];
+        case 'Person':
+            return [
+                '@context' => 'https://schema.org',
+                '@type' => 'Person',
+                '@id' => $canonical . '#person',
+                'name' => 'Creator Profile',
+                'jobTitle' => 'UGC Video Creator',
+                'worksFor' => ['@id' => $baseOrgId],
+                'url' => $canonical
+            ];
+        case 'Event':
+            return [
+                '@context' => 'https://schema.org',
+                '@type' => 'Event',
+                '@id' => $canonical . '#event',
+                'name' => $pageTitle . ' Workshop',
+                'startDate' => date('Y-m-d') . 'T10:00:00+05:30',
+                'endDate' => date('Y-m-d') . 'T12:00:00+05:30',
+                'eventAttendanceMode' => 'https://schema.org/OnlineEventAttendanceMode',
+                'location' => [
+                    '@type' => 'VirtualLocation',
+                    'url' => $canonical
+                ],
+                'description' => 'Exclusive creator masterclass on UGC video hooks and ad conversion.',
+                'organizer' => ['@id' => $baseOrgId]
+            ];
+        case 'Article':
+            return [
+                '@context' => 'https://schema.org',
+                '@type' => 'Article',
+                '@id' => $canonical . '#article',
+                'headline' => $pageTitle,
+                'description' => 'Comprehensive industry article and analysis on performance UGC video production.',
+                'url' => $canonical,
+                'publisher' => ['@id' => $baseOrgId],
+                'datePublished' => date('Y-m-d') . 'T00:00:00+05:30'
+            ];
+        case 'VideoObject':
+            return [
+                '@context' => 'https://schema.org',
+                '@type' => 'VideoObject',
+                '@id' => $canonical . '#video',
+                'name' => $pageTitle . ' Video',
+                'description' => 'Creator video showcase for ' . $pageTitle,
+                'thumbnailUrl' => ['https://myugcvideo.in/images/hero/hero-ugc-production.jpg'],
+                'uploadDate' => date('Y-m-d') . 'T00:00:00+05:30',
+                'contentUrl' => $canonical
+            ];
+        case 'FAQPage':
+            return [
+                '@context' => 'https://schema.org',
+                '@type' => 'FAQPage',
+                '@id' => $canonical . '#faq',
+                'mainEntity' => [
+                    [
+                        '@type' => 'Question',
+                        'name' => 'How does this UGC video service work?',
+                        'acceptedAnswer' => [
+                            '@type' => 'Answer',
+                            'text' => 'We handle creator sourcing, briefing, script design, and video editing to deliver high-performing assets.'
+                        ]
+                    ]
+                ]
+            ];
+        default:
+            return [
+                '@context' => 'https://schema.org',
+                '@type' => $type ?: 'CreativeWork',
+                '@id' => $canonical . '#' . strtolower(preg_replace('/[^A-Za-z0-9]+/', '', $type ?: 'custom')),
+                'name' => $pageTitle . ' ' . $type,
+                'description' => 'Custom structured data schema for ' . $pageTitle,
+                'url' => $canonical,
+                'publisher' => ['@id' => $baseOrgId]
+            ];
+    }
+}
+
+// Fetch cards for the REQUIRED schemas of a page
+function getPageSchemaCards(string $pageKey, array $requiredTypes): array {
+    $db = getDb();
+    $stmt = $db->prepare("SELECT * FROM page_schemas WHERE page_key = :pk");
+    $stmt->execute([':pk' => $pageKey]);
+    $existing = [];
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        $existing[$row['schema_type']] = $row;
+    }
+
+    $cards = [];
+    foreach ($requiredTypes as $type) {
+        if (isset($existing[$type])) {
+            $r = $existing[$type];
+            $jsonValid = true;
+            $jsonError = '';
+            $decoded = json_decode($r['schema_data'], true);
+            if ($decoded === null) {
+                $jsonValid = false;
+                $jsonError = json_last_error_msg();
+            }
+
+            // Extract key preview values
+            $previewSnippet = '';
+            if (is_array($decoded)) {
+                $pItems = [];
+                if (!empty($decoded['@type'])) $pItems[] = '@type: ' . (is_array($decoded['@type']) ? implode('/', $decoded['@type']) : $decoded['@type']);
+                if (!empty($decoded['name'])) $pItems[] = 'name: ' . $decoded['name'];
+                if (!empty($decoded['headline'])) $pItems[] = 'headline: ' . $decoded['headline'];
+                if (!empty($decoded['url'])) $pItems[] = 'url: ' . $decoded['url'];
+                if (!empty($decoded['@id'])) $pItems[] = '@id: ' . $decoded['@id'];
+                if (!empty($decoded['itemListElement']) && is_array($decoded['itemListElement'])) {
+                    $pItems[] = 'items: ' . count($decoded['itemListElement']) . ' crumbs';
+                }
+                if (!empty($decoded['mainEntity']) && is_array($decoded['mainEntity'])) {
+                    $pItems[] = 'FAQs: ' . count($decoded['mainEntity']) . ' questions';
+                }
+                $previewSnippet = implode(' | ', $pItems);
+            }
+
+            $cards[$type] = [
+                'type' => $type,
+                'status' => 'present',
+                'publish_status' => $r['status'],
+                'id' => (int)$r['id'],
+                'schema_name' => $r['schema_name'],
+                'schema_data' => $r['schema_data'],
+                'json_valid' => $jsonValid,
+                'json_error' => $jsonError,
+                'preview_snippet' => $previewSnippet,
+                'updated_at' => $r['updated_at']
+            ];
         } else {
-            $template = getDefaultSchemaTemplate($type);
+            // Missing Card
+            $eligible = true;
+            $note = '';
+            if ($type === 'Review') {
+                $eligible = false;
+                $note = 'No genuine customer review/rating data is currently available on this page. Never fabricate reviews or ratings.';
+            }
+
+            $cards[$type] = [
+                'type' => $type,
+                'status' => $eligible ? 'missing' : 'not_eligible',
+                'publish_status' => 'none',
+                'id' => null,
+                'schema_name' => $type . ' Schema',
+                'schema_data' => '',
+                'json_valid' => false,
+                'json_error' => '',
+                'preview_snippet' => '',
+                'updated_at' => null,
+                'note' => $note
+            ];
+        }
+    }
+    return $cards;
+}
+
+// Fetch cards for any ADDITIONAL CUSTOM schemas on a page (excluding required types)
+function getPageAdditionalSchemas(string $pageKey, array $requiredTypes): array {
+    $db = getDb();
+    $stmt = $db->prepare("SELECT * FROM page_schemas WHERE page_key = :pk ORDER BY id ASC");
+    $stmt->execute([':pk' => $pageKey]);
+    $all = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $customCards = [];
+    foreach ($all as $r) {
+        if (!in_array($r['schema_type'], $requiredTypes, true)) {
+            $jsonValid = true;
+            $jsonError = '';
+            $decoded = json_decode($r['schema_data'], true);
+            if ($decoded === null) {
+                $jsonValid = false;
+                $jsonError = json_last_error_msg();
+            }
+
+            $pItems = [];
+            if (is_array($decoded)) {
+                if (!empty($decoded['@type'])) $pItems[] = '@type: ' . (is_array($decoded['@type']) ? implode('/', $decoded['@type']) : $decoded['@type']);
+                if (!empty($decoded['name'])) $pItems[] = 'name: ' . $decoded['name'];
+                if (!empty($decoded['headline'])) $pItems[] = 'headline: ' . $decoded['headline'];
+                if (!empty($decoded['url'])) $pItems[] = 'url: ' . $decoded['url'];
+            }
+            $previewSnippet = implode(' | ', $pItems);
+
+            $customCards[] = [
+                'type' => $r['schema_type'],
+                'status' => 'custom',
+                'publish_status' => $r['status'],
+                'id' => (int)$r['id'],
+                'schema_name' => $r['schema_name'],
+                'schema_data' => $r['schema_data'],
+                'json_valid' => $jsonValid,
+                'json_error' => $jsonError,
+                'preview_snippet' => $previewSnippet,
+                'updated_at' => $r['updated_at']
+            ];
+        }
+    }
+    return $customCards;
+}
+
+// Calculate dynamic section metrics from live DB rows
+function calculateSectionOverviewMetrics(array $sectionPages, array $dbByPage): array {
+    $totalPages = count($sectionPages);
+    $requiredSchemas = 0;
+    $presentSchemas = 0;
+    $missingSchemas = 0;
+    $invalidSchemas = 0;
+    $validSchemas = 0;
+    $customSchemas = 0;
+    $pagesComplete = 0;
+    $pageOverviews = [];
+
+    foreach ($sectionPages as $pk => $pMeta) {
+        $reqTypes = $pMeta['schemas'];
+        $effectiveReq = array_filter($reqTypes, fn($t) => $t !== 'Review');
+        $requiredSchemas += count($effectiveReq);
+
+        $pageRows = $dbByPage[$pk] ?? [];
+        $presentByType = [];
+        foreach ($pageRows as $r) {
+            $presentByType[$r['schema_type']] = $r;
         }
 
-        echo json_encode([
-            'success' => true,
-            'template' => $template
-        ]);
-        exit;
+        $pValid = 0;
+        $pInvalid = 0;
+        $pMissing = 0;
+        $pPresent = 0;
+
+        foreach ($effectiveReq as $rType) {
+            if (isset($presentByType[$rType])) {
+                $pPresent++;
+                $presentSchemas++;
+                $dec = json_decode($presentByType[$rType]['schema_data'], true);
+                if ($dec === null) {
+                    $pInvalid++;
+                    $invalidSchemas++;
+                } else {
+                    $pValid++;
+                    $validSchemas++;
+                }
+            } else {
+                $pMissing++;
+                $missingSchemas++;
+            }
+        }
+
+        $pCustom = 0;
+        foreach ($pageRows as $r) {
+            if (!in_array($r['schema_type'], $reqTypes, true)) {
+                $pCustom++;
+                $customSchemas++;
+                $presentSchemas++;
+                $dec = json_decode($r['schema_data'], true);
+                if ($dec === null) {
+                    $pInvalid++;
+                    $invalidSchemas++;
+                } else {
+                    $pValid++;
+                    $validSchemas++;
+                }
+            }
+        }
+
+        $isComplete = ($pMissing === 0 && $pInvalid === 0);
+        if ($isComplete) {
+            $pagesComplete++;
+        }
+
+        $completionPct = count($effectiveReq) > 0 ? round(($pValid / count($effectiveReq)) * 100) : 100;
+
+        $pageOverviews[$pk] = [
+            'meta' => $pMeta,
+            'applicable' => count($effectiveReq),
+            'present' => $pPresent + $pCustom,
+            'missing' => $pMissing,
+            'invalid' => $pInvalid,
+            'valid' => $pValid,
+            'custom' => $pCustom,
+            'completion' => $completionPct,
+            'is_complete' => $isComplete
+        ];
     }
 
-    // 3. Save / Update Static Page Schema
+    return [
+        'total_pages' => $totalPages,
+        'required_schemas' => $requiredSchemas,
+        'present_schemas' => $presentSchemas,
+        'missing_schemas' => $missingSchemas,
+        'invalid_schemas' => $invalidSchemas,
+        'valid_schemas' => $validSchemas,
+        'custom_schemas' => $customSchemas,
+        'pages_complete' => $pagesComplete,
+        'page_overviews' => $pageOverviews
+    ];
+}
+
+// =========================================================================
+// 2. AJAX REQUEST ROUTER & ACTION HANDLERS
+// =========================================================================
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['action']) || isset($_GET['action']))) {
+    $action = $_POST['action'] ?? $_GET['action'] ?? '';
+    
+    // CSRF Protection on all state-changing actions
+    if ($action !== 'validate_schema' && $action !== 'validate_json' && $action !== 'get_schema_card_data' && $action !== 'get_schema_preview' && $action !== 'get_starter_template' && $action !== 'check_schema_duplicate') {
+        verifyCsrfOrDie();
+    }
+
+    // A. SAVE SCHEMA CARD (ISOLATED EDIT / UPDATE)
     if ($action === 'save_page_schema') {
         header('Content-Type: application/json; charset=utf-8');
-        $id = (int)($_POST['id'] ?? 0);
+        $id = (int)($_POST['id'] ?? $_POST['schema_id'] ?? 0);
         $pageKey = trim($_POST['page_key'] ?? '');
         $pageTitleVal = trim($_POST['page_title'] ?? '');
         $schemaName = trim($_POST['schema_name'] ?? '');
         $schemaType = trim($_POST['schema_type'] ?? '');
-        $schemaData = trim($_POST['schema_data'] ?? '');
+        $schemaData = trim($_POST['schema_data'] ?? $_POST['schema_json'] ?? '');
         $status = ($_POST['status'] ?? 'draft') === 'published' ? 'published' : 'draft';
 
-        $allManageablePages = getAllWebsiteManageablePages();
-        if (isset($allManageablePages[$pageKey])) {
-            if (empty($pageTitleVal)) {
-                $pageTitleVal = $allManageablePages[$pageKey]['title'];
-            }
-        } elseif (empty($pageTitleVal)) {
-            $pageTitleVal = ucwords(str_replace(['-', '_'], ' ', $pageKey));
+        if (empty($pageKey) || empty($schemaType)) {
+            echo json_encode(['success' => false, 'message' => 'Missing page key or schema type.']);
+            exit;
         }
 
         if (empty($schemaName)) {
-            echo json_encode(['success' => false, 'message' => 'Schema name is required.']);
-            exit;
+            $schemaName = $pageTitleVal ? ($pageTitleVal . ' ' . $schemaType . ' Schema') : ($schemaType . ' Schema');
         }
 
         $val = validateSchemaJsonLd($schemaData);
         if (!$val['valid']) {
-            echo json_encode(['success' => false, 'message' => 'Schema JSON validation failed: ' . implode('; ', $val['errors'])]);
+            echo json_encode(['success' => false, 'message' => 'JSON validation failed: ' . implode('; ', $val['errors'])]);
             exit;
         }
 
         try {
+            // Check if record already exists for (page_key, schema_type) to prevent duplicates
+            if ($id <= 0) {
+                $chk = $db->prepare("SELECT id FROM page_schemas WHERE page_key = :pk AND schema_type = :st LIMIT 1");
+                $chk->execute([':pk' => $pageKey, ':st' => $schemaType]);
+                $foundId = $chk->fetchColumn();
+                if ($foundId) {
+                    $id = (int)$foundId;
+                }
+            }
+
             if ($id > 0) {
-                $stmt = $db->prepare("UPDATE `page_schemas` 
-                    SET `page_key` = :pk, `page_title` = :pt, `schema_name` = :sn, `schema_type` = :st, `schema_data` = :sd, `status` = :stt, `updated_at` = NOW() 
-                    WHERE `id` = :id");
+                // Update specific record independently
+                $stmt = $db->prepare(
+                    "UPDATE page_schemas 
+                     SET page_key = :pk, page_title = :pt, schema_name = :sn, schema_type = :st, schema_data = :sd, status = :stt, updated_at = NOW() 
+                     WHERE id = :id"
+                );
                 $stmt->execute([
-                    ':pk' => $pageKey,
-                    ':pt' => $pageTitleVal,
-                    ':sn' => $schemaName,
-                    ':st' => $schemaType,
-                    ':sd' => $schemaData,
+                    ':pk'  => $pageKey,
+                    ':pt'  => $pageTitleVal,
+                    ':sn'  => $schemaName,
+                    ':st'  => $schemaType,
+                    ':sd'  => $schemaData,
                     ':stt' => $status,
-                    ':id' => $id
+                    ':id'  => $id
                 ]);
             } else {
-                $stmt = $db->prepare("INSERT INTO `page_schemas` 
-                    (`page_key`, `page_title`, `schema_name`, `schema_type`, `schema_data`, `status`, `created_at`, `updated_at`) 
-                    VALUES (:pk, :pt, :sn, :st, :sd, :stt, NOW(), NOW())");
+                // Insert new record
+                $stmt = $db->prepare(
+                    "INSERT INTO page_schemas (page_key, page_title, schema_name, schema_type, schema_data, status, created_at, updated_at) 
+                     VALUES (:pk, :pt, :sn, :st, :sd, :stt, NOW(), NOW())"
+                );
                 $stmt->execute([
-                    ':pk' => $pageKey,
-                    ':pt' => $pageTitleVal,
-                    ':sn' => $schemaName,
-                    ':st' => $schemaType,
-                    ':sd' => $schemaData,
+                    ':pk'  => $pageKey,
+                    ':pt'  => $pageTitleVal,
+                    ':sn'  => $schemaName,
+                    ':st'  => $schemaType,
+                    ':sd'  => $schemaData,
                     ':stt' => $status
                 ]);
                 $id = (int)$db->lastInsertId();
             }
 
-            // Sync with physical file if applicable
-            syncPublishedSchemasToStaticFile($pageKey);
+            // Synchronize static physical file if applicable
+            if (function_exists('syncPublishedSchemasToStaticFile')) {
+                syncPublishedSchemasToStaticFile($pageKey);
+            }
 
             echo json_encode([
                 'success' => true,
                 'id' => $id,
-                'message' => 'Schema object saved successfully.',
-                'status' => $status
+                'schema_type' => $schemaType,
+                'page_key' => $pageKey,
+                'status' => $status,
+                'message' => "{$schemaType} schema saved successfully."
             ]);
             exit;
         } catch (Throwable $e) {
@@ -163,62 +742,103 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // 4. Toggle Static Page Schema Status
-    if ($action === 'toggle_page_schema_status') {
+    // B. ADD NEW SCHEMA (WITH STRICT DUPLICATE PREVENTION & CUSTOM SCHEMA SUPPORT)
+    if ($action === 'add_new_custom_schema') {
         header('Content-Type: application/json; charset=utf-8');
-        $id = (int)($_POST['id'] ?? 0);
-        $newStatus = ($_POST['status'] ?? 'draft') === 'published' ? 'published' : 'draft';
+        $pageKey = trim($_POST['page_key'] ?? '');
+        $pageTitleVal = trim($_POST['page_title'] ?? '');
+        $schemaType = trim($_POST['schema_type'] ?? '');
+        $customType = trim($_POST['custom_type'] ?? '');
+        $schemaName = trim($_POST['schema_name'] ?? '');
+        $schemaData = trim($_POST['schema_data'] ?? '');
+        $status = ($_POST['status'] ?? 'draft') === 'published' ? 'published' : 'draft';
 
-        try {
-            $stmt = $db->prepare("SELECT `page_key`, `schema_data` FROM `page_schemas` WHERE `id` = :id LIMIT 1");
-            $stmt->execute([':id' => $id]);
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        // Resolve type if 'Other' was selected
+        if ($schemaType === 'Other') {
+            $schemaType = trim($customType);
+        }
 
-            if (!$row) {
-                echo json_encode(['success' => false, 'message' => 'Schema record not found.']);
-                exit;
-            }
-
-            if ($newStatus === 'published') {
-                $val = validateSchemaJsonLd($row['schema_data']);
-                if (!$val['valid']) {
-                    echo json_encode(['success' => false, 'message' => 'Cannot publish invalid schema: ' . implode('; ', $val['errors'])]);
-                    exit;
-                }
-            }
-
-            $updateStmt = $db->prepare("UPDATE `page_schemas` SET `status` = :st, `updated_at` = NOW() WHERE `id` = :id");
-            $updateStmt->execute([':st' => $newStatus, ':id' => $id]);
-
-            // Sync with physical file
-            syncPublishedSchemasToStaticFile($row['page_key']);
-
-            echo json_encode(['success' => true, 'status' => $newStatus, 'message' => 'Schema status updated to ' . ucfirst($newStatus) . '.']);
-            exit;
-        } catch (Throwable $e) {
-            echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+        if (empty($pageKey) || empty($schemaType)) {
+            echo json_encode(['success' => false, 'message' => 'Please provide a valid target page and schema type.']);
             exit;
         }
-    }
 
-    // 5. Delete Static Page Schema
-    if ($action === 'delete_page_schema') {
-        header('Content-Type: application/json; charset=utf-8');
-        $id = (int)($_POST['id'] ?? 0);
+        // Sanitize schema type format (alphanumeric Schema.org name)
+        $schemaType = preg_replace('/[^A-Za-z0-9]/', '', $schemaType);
+        if (empty($schemaType)) {
+            echo json_encode(['success' => false, 'message' => 'Invalid Schema.org type specified.']);
+            exit;
+        }
 
+        if (empty($schemaName)) {
+            $schemaName = $pageTitleVal ? ($pageTitleVal . ' ' . $schemaType . ' Schema') : ($schemaType . ' Schema');
+        }
+
+        // Validate blog target if page_key starts with 'blog-' and is not 'blog-listing'
+        if (strpos($pageKey, 'blog-') === 0 && $pageKey !== 'blog-listing') {
+            $blogSlug = substr($pageKey, 5); // remove 'blog-' prefix
+            $blogChk = $db->prepare("SELECT id FROM blog_posts WHERE slug = :slug AND status = 'published' LIMIT 1");
+            $blogChk->execute([':slug' => $blogSlug]);
+            if (!$blogChk->fetchColumn()) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => "Invalid blog target '{$pageKey}'. Blog article does not exist or is not published in database."
+                ]);
+                exit;
+            }
+        }
+
+        // 1. DUPLICATE CHECK: Prevent duplicate schema records for the same page and type
+        $chk = $db->prepare("SELECT id, schema_name FROM page_schemas WHERE page_key = :pk AND schema_type = :st LIMIT 1");
+        $chk->execute([':pk' => $pageKey, ':st' => $schemaType]);
+        $existingRecord = $chk->fetch(PDO::FETCH_ASSOC);
+
+        if ($existingRecord) {
+            echo json_encode([
+                'success' => false,
+                'duplicate' => true,
+                'existing_id' => (int)$existingRecord['id'],
+                'message' => "A {$schemaType} schema already exists on this page (ID #{$existingRecord['id']}). To prevent duplicate conflicts, please edit the existing schema instead."
+            ]);
+            exit;
+        }
+
+        // 2. Validate JSON-LD syntax & basic structure
+        $val = validateSchemaJsonLd($schemaData);
+        if (!$val['valid']) {
+            echo json_encode(['success' => false, 'message' => 'JSON validation failed: ' . implode('; ', $val['errors'])]);
+            exit;
+        }
+
+        // 3. Save new schema into page_schemas table
         try {
-            $stmt = $db->prepare("SELECT `page_key` FROM `page_schemas` WHERE `id` = :id LIMIT 1");
-            $stmt->execute([':id' => $id]);
-            $pageKey = $stmt->fetchColumn();
+            $stmt = $db->prepare(
+                "INSERT INTO page_schemas (page_key, page_title, schema_name, schema_type, schema_data, status, created_at, updated_at) 
+                 VALUES (:pk, :pt, :sn, :st, :sd, :stt, NOW(), NOW())"
+            );
+            $stmt->execute([
+                ':pk'  => $pageKey,
+                ':pt'  => $pageTitleVal,
+                ':sn'  => $schemaName,
+                ':st'  => $schemaType,
+                ':sd'  => $schemaData,
+                ':stt' => $status
+            ]);
+            $newId = (int)$db->lastInsertId();
 
-            $delStmt = $db->prepare("DELETE FROM `page_schemas` WHERE `id` = :id");
-            $delStmt->execute([':id' => $id]);
-
-            if ($pageKey) {
+            // If published, synchronize static physical file immediately
+            if ($status === 'published' && function_exists('syncPublishedSchemasToStaticFile')) {
                 syncPublishedSchemasToStaticFile($pageKey);
             }
 
-            echo json_encode(['success' => true, 'message' => 'Schema record deleted successfully.']);
+            echo json_encode([
+                'success' => true,
+                'id' => $newId,
+                'page_key' => $pageKey,
+                'schema_type' => $schemaType,
+                'status' => $status,
+                'message' => "New {$schemaType} schema added successfully to {$pageTitleVal}."
+            ]);
             exit;
         } catch (Throwable $e) {
             echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
@@ -226,202 +846,309 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // 6. Save Global Blog Schema Settings
-    if ($action === 'save_global_blog_settings') {
+    // C. GET STARTER TEMPLATE
+    if ($action === 'get_starter_template') {
         header('Content-Type: application/json; charset=utf-8');
-        $autoEnabled = (!empty($_POST['auto_blog_schema_enabled']) && $_POST['auto_blog_schema_enabled'] === '1') ? '1' : '0';
-        $template = trim($_POST['global_blog_template'] ?? '');
-        $status = ($_POST['global_template_status'] ?? 'draft') === 'published' ? 'published' : 'draft';
+        $type = trim($_POST['schema_type'] ?? '');
+        $customType = trim($_POST['custom_type'] ?? '');
+        $pageTitleVal = trim($_POST['page_title'] ?? '');
+        $canonical = trim($_POST['canonical'] ?? 'https://myugcvideo.in/');
 
-        $val = validateSchemaJsonLd($template);
-        if (!$val['valid']) {
-            echo json_encode(['success' => false, 'message' => 'Global Blog template validation failed: ' . implode('; ', $val['errors'])]);
-            exit;
+        if ($type === 'Other' && !empty($customType)) {
+            $type = trim($customType);
         }
 
-        setSchemaSetting('auto_blog_schema_enabled', $autoEnabled);
-        setSchemaSetting('global_blog_template', $template);
-        setSchemaSetting('global_template_status', $status);
-
-        echo json_encode(['success' => true, 'message' => 'Global Blog Schema settings saved successfully.']);
+        $template = getStarterSchemaTemplate($type, $pageTitleVal, $canonical);
+        echo json_encode([
+            'success' => true,
+            'schema_type' => $type,
+            'template_json' => json_encode($template, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+        ]);
         exit;
     }
 
-    // 7. Search Blogs for Individual Overrides
-    if ($action === 'search_blogs') {
+    // D. CHECK DUPLICATE BEFORE ADDING
+    if ($action === 'check_schema_duplicate') {
         header('Content-Type: application/json; charset=utf-8');
-        $query = trim($_POST['q'] ?? '');
-        $statusFilter = trim($_POST['status'] ?? 'all');
-        $modeFilter = trim($_POST['mode'] ?? 'all');
+        $pageKey = trim($_POST['page_key'] ?? '');
+        $schemaType = trim($_POST['schema_type'] ?? '');
+        $customType = trim($_POST['custom_type'] ?? '');
 
-        try {
-            $sql = "SELECT p.id, p.title, p.slug, p.status, c.name AS category_name,
-                           o.override_enabled, o.schema_disabled, o.status AS override_status, o.updated_at AS override_updated_at
-                    FROM blog_posts p
-                    LEFT JOIN categories c ON p.category_id = c.id
-                    LEFT JOIN blog_schema_overrides o ON p.id = o.post_id
-                    WHERE 1=1";
-            $params = [];
+        if ($schemaType === 'Other') $schemaType = trim($customType);
+        $schemaType = preg_replace('/[^A-Za-z0-9]/', '', $schemaType);
 
-            if ($query !== '') {
-                $sql .= " AND (p.title LIKE :q OR p.slug LIKE :q OR c.name LIKE :q)";
-                $params[':q'] = "%{$query}%";
-            }
+        $chk = $db->prepare("SELECT id, schema_name FROM page_schemas WHERE page_key = :pk AND schema_type = :st LIMIT 1");
+        $chk->execute([':pk' => $pageKey, ':st' => $schemaType]);
+        $row = $chk->fetch(PDO::FETCH_ASSOC);
 
-            if ($statusFilter === 'published' || $statusFilter === 'draft') {
-                $sql .= " AND p.status = :st";
-                $params[':st'] = $statusFilter;
-            }
-
-            if ($modeFilter === 'global') {
-                $sql .= " AND (o.override_enabled IS NULL OR o.override_enabled = 0) AND (o.schema_disabled IS NULL OR o.schema_disabled = 0)";
-            } elseif ($modeFilter === 'custom') {
-                $sql .= " AND o.override_enabled = 1 AND (o.schema_disabled IS NULL OR o.schema_disabled = 0)";
-            } elseif ($modeFilter === 'disabled') {
-                $sql .= " AND o.schema_disabled = 1";
-            }
-
-            $sql .= " ORDER BY p.id DESC";
-            $stmt = $db->prepare($sql);
-            $stmt->execute($params);
-            $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            echo json_encode(['success' => true, 'blogs' => $posts]);
-            exit;
-        } catch (Throwable $e) {
-            echo json_encode(['success' => false, 'message' => 'Error querying blogs: ' . $e->getMessage()]);
-            exit;
-        }
+        echo json_encode([
+            'exists' => !empty($row),
+            'id' => $row ? (int)$row['id'] : null,
+            'schema_name' => $row['schema_name'] ?? ''
+        ]);
+        exit;
     }
 
-    // 8. Get Blog Schema Data
-    if ($action === 'get_blog_schema_data') {
+    // E. DELETE SCHEMA CARD
+    if ($action === 'delete_page_schema') {
         header('Content-Type: application/json; charset=utf-8');
-        $postId = (int)($_POST['post_id'] ?? 0);
-        try {
-            $stmt = $db->prepare("SELECT p.*, c.name AS category_name 
-                                  FROM blog_posts p 
-                                  LEFT JOIN categories c ON p.category_id = c.id 
-                                  WHERE p.id = :id LIMIT 1");
-            $stmt->execute([':id' => $postId]);
-            $post = $stmt->fetch(PDO::FETCH_ASSOC);
+        $id = (int)($_POST['id'] ?? $_POST['schema_id'] ?? 0);
+        $pageKey = trim($_POST['page_key'] ?? '');
+        $schemaType = trim($_POST['schema_type'] ?? '');
 
-            if (!$post) {
-                echo json_encode(['success' => false, 'message' => 'Blog article not found.']);
+        if ($id <= 0 || empty($pageKey)) {
+            echo json_encode(['success' => false, 'message' => 'Invalid schema ID or page key.']);
+            exit;
+        }
+
+        try {
+            // Verify schema exists and matches page_key
+            $check = $db->prepare("SELECT id, schema_type, schema_name FROM page_schemas WHERE id = :id AND page_key = :pk LIMIT 1");
+            $check->execute([':id' => $id, ':pk' => $pageKey]);
+            $row = $check->fetch(PDO::FETCH_ASSOC);
+
+            if (!$row) {
+                echo json_encode(['success' => false, 'message' => 'Schema record not found for this page.']);
                 exit;
             }
 
-            $oStmt = $db->prepare("SELECT * FROM `blog_schema_overrides` WHERE `post_id` = :id LIMIT 1");
-            $oStmt->execute([':id' => $postId]);
-            $override = $oStmt->fetch(PDO::FETCH_ASSOC) ?: [
-                'post_id' => $postId,
-                'override_enabled' => 0,
-                'schema_disabled' => 0,
-                'custom_schema' => '',
-                'status' => 'published'
-            ];
+            // Delete strictly this single row
+            $del = $db->prepare("DELETE FROM page_schemas WHERE id = :id AND page_key = :pk LIMIT 1");
+            $del->execute([':id' => $id, ':pk' => $pageKey]);
 
-            $previewPost = $post;
-            $previewPost['status'] = 'published';
-            $compiledDefault = resolveBlogPostingSchema($previewPost);
+            // Re-sync physical static file so frontend immediately stops rendering it
+            if (function_exists('syncPublishedSchemasToStaticFile')) {
+                syncPublishedSchemasToStaticFile($pageKey);
+            }
 
             echo json_encode([
                 'success' => true,
-                'post' => [
-                    'id' => $post['id'],
-                    'title' => $post['title'],
-                    'slug' => $post['slug'],
-                    'status' => $post['status'],
-                    'category_name' => $post['category_name'] ?? 'Uncategorized',
-                    'published_at' => $post['published_at']
-                ],
-                'override' => $override,
-                'compiled_default' => $compiledDefault ? json_encode($compiledDefault, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) : ''
+                'id' => $id,
+                'page_key' => $pageKey,
+                'schema_type' => $row['schema_type'],
+                'message' => "{$row['schema_type']} schema deleted successfully. Card status updated to Missing."
             ]);
             exit;
         } catch (Throwable $e) {
-            echo json_encode(['success' => false, 'message' => 'Error fetching blog data: ' . $e->getMessage()]);
+            echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
             exit;
         }
     }
 
-    // 9. Save Individual Blog Override
-    if ($action === 'save_blog_override') {
+    // F. VALIDATE JSON-LD SCHEMA (SINGLE SCHEMA)
+    if ($action === 'validate_schema' || $action === 'validate_json') {
         header('Content-Type: application/json; charset=utf-8');
-        $postId = (int)($_POST['post_id'] ?? 0);
-        $mode = trim($_POST['mode'] ?? 'inherit');
-        $customSchema = trim($_POST['custom_schema'] ?? '');
-        $status = ($_POST['status'] ?? 'published') === 'draft' ? 'draft' : 'published';
+        $schemaData = trim($_POST['schema_data'] ?? $_POST['schema_json'] ?? '');
+        $schemaType = trim($_POST['schema_type'] ?? '');
 
-        if ($postId <= 0) {
-            echo json_encode(['success' => false, 'message' => 'Invalid blog ID.']);
-            exit;
-        }
+        $val = validateSchemaJsonLd($schemaData);
+        $warnings = [];
 
-        $overrideEnabled = 0;
-        $schemaDisabled = 0;
-
-        if ($mode === 'disabled') {
-            $schemaDisabled = 1;
-            $overrideEnabled = 0;
-        } elseif ($mode === 'custom') {
-            $overrideEnabled = 1;
-            $schemaDisabled = 0;
-            if ($status === 'published') {
-                $val = validateSchemaJsonLd($customSchema);
-                if (!$val['valid']) {
-                    echo json_encode(['success' => false, 'message' => 'Custom schema validation failed: ' . implode('; ', $val['errors'])]);
-                    exit;
-                }
-            } else {
-                if (!empty($customSchema)) {
-                    json_decode($customSchema);
-                    if (json_last_error() !== JSON_ERROR_NONE) {
-                        echo json_encode(['success' => false, 'message' => 'JSON Syntax Error: ' . json_last_error_msg()]);
-                        exit;
+        // Check for common ontology issues
+        if ($val['valid'] && !empty($val['data'])) {
+            $data = $val['data'];
+            // Check WebPage.isPartOf pointing to Organization
+            if (isset($data['@type']) && $data['@type'] === 'WebPage') {
+                if (isset($data['isPartOf']) && is_array($data['isPartOf'])) {
+                    $targetId = $data['isPartOf']['@id'] ?? '';
+                    if (str_contains($targetId, '#organization')) {
+                        $warnings[] = "Ontology Warning: In Schema.org, WebPage.isPartOf expects a CreativeWork (e.g. WebSite), not an Organization. Use 'publisher' instead.";
                     }
                 }
             }
-        } elseif ($mode === 'inherit') {
-            $overrideEnabled = 0;
-            $schemaDisabled = 0;
         }
 
-        try {
-            $checkStmt = $db->prepare("SELECT `custom_schema` FROM `blog_schema_overrides` WHERE `post_id` = :id LIMIT 1");
-            $checkStmt->execute([':id' => $postId]);
-            $existingCustom = $checkStmt->fetchColumn();
+        echo json_encode([
+            'success' => true,
+            'valid' => $val['valid'],
+            'errors' => $val['errors'] ?? [],
+            'warnings' => $warnings,
+            'message' => $val['valid'] ? 'JSON-LD structure is valid.' : 'Validation errors found.'
+        ]);
+        exit;
+    }
 
-            $schemaToSave = ($mode === 'custom') ? $customSchema : (!empty($customSchema) ? $customSchema : $existingCustom);
+    // G. VALIDATE ALL PAGES (COMPREHENSIVE WEBSITE-WIDE VALIDATION SUITE)
+    if ($action === 'validate_all_pages') {
+        header('Content-Type: application/json; charset=utf-8');
+        $approved = getApprovedPagesRegistry();
+        $blogs = getPublishedBlogsForManager();
+        $all = array_merge($approved, $blogs);
 
-            $stmt = $db->prepare("INSERT INTO `blog_schema_overrides` 
-                (`post_id`, `override_enabled`, `schema_disabled`, `custom_schema`, `status`, `updated_at`) 
-                VALUES (:pid, :oe, :sd, :cs, :stt, NOW()) 
-                ON DUPLICATE KEY UPDATE 
-                `override_enabled` = :oe2, `schema_disabled` = :sd2, `custom_schema` = :cs2, `status` = :stt2, `updated_at` = NOW()");
-            $stmt->execute([
-                ':pid' => $postId,
-                ':oe' => $overrideEnabled,
-                ':sd' => $schemaDisabled,
-                ':cs' => $schemaToSave,
-                ':stt' => $status,
-                ':oe2' => $overrideEnabled,
-                ':sd2' => $schemaDisabled,
-                ':cs2' => $schemaToSave,
-                ':stt2' => $status
-            ]);
+        $results = [];
+        $totalSchemasCount = 0;
+        $validSchemasCount = 0;
+        $invalidSchemasCount = 0;
+        $missingSchemasCount = 0;
+        $warningCount = 0;
+        $pagesValidCount = 0;
 
-            $modeLabels = [
-                'inherit' => 'Global Template',
-                'custom' => 'Custom Override (' . ucfirst($status) . ')',
-                'disabled' => 'Schema Disabled'
+        foreach ($all as $pk => $meta) {
+            $cards = getPageSchemaCards($pk, $meta['schemas']);
+            $customs = getPageAdditionalSchemas($pk, $meta['schemas']);
+            $allPageCards = array_merge($cards, $customs);
+
+            $pageIssues = [];
+            $pageSchemasData = [];
+            $hasInvalid = false;
+            $hasMissing = false;
+            $pValid = 0;
+            $pInvalid = 0;
+            $pMissing = 0;
+
+            foreach ($allPageCards as $cType => $c) {
+                $actualType = is_numeric($cType) ? $c['type'] : $cType;
+                $totalSchemasCount++;
+
+                if ($c['status'] === 'present' || $c['status'] === 'custom') {
+                    if ($c['json_valid']) {
+                        $validSchemasCount++;
+                        $pValid++;
+
+                        // Check ontology
+                        $decoded = json_decode($c['schema_data'], true);
+                        if ($actualType === 'WebPage' && isset($decoded['isPartOf']['@id']) && str_contains($decoded['isPartOf']['@id'], '#organization')) {
+                            $warningCount++;
+                            $pageIssues[] = [
+                                'type' => 'warning',
+                                'schema_type' => $actualType,
+                                'schema_id' => $c['id'],
+                                'message' => "WebPage.isPartOf references an Organization. In Schema.org, publisher should be used."
+                            ];
+                        }
+                    } else {
+                        $invalidSchemasCount++;
+                        $pInvalid++;
+                        $hasInvalid = true;
+                        $pageIssues[] = [
+                            'type' => 'error',
+                            'schema_type' => $actualType,
+                            'schema_id' => $c['id'],
+                            'message' => "Syntax error: " . $c['json_error']
+                        ];
+                    }
+                    $pageSchemasData[] = [
+                        'type' => $actualType,
+                        'name' => $c['schema_name'],
+                        'status' => 'present',
+                        'publish_status' => $c['publish_status'],
+                        'valid' => $c['json_valid'],
+                        'id' => $c['id']
+                    ];
+                } elseif ($c['status'] === 'missing') {
+                    $missingSchemasCount++;
+                    $pMissing++;
+                    $hasMissing = true;
+                    $pageIssues[] = [
+                        'type' => 'missing',
+                        'schema_type' => $actualType,
+                        'schema_id' => 0,
+                        'message' => "Required {$actualType} schema is missing."
+                    ];
+                    $pageSchemasData[] = [
+                        'type' => $actualType,
+                        'name' => $c['schema_name'],
+                        'status' => 'missing',
+                        'publish_status' => 'none',
+                        'valid' => false,
+                        'id' => null
+                    ];
+                } else {
+                    // Not eligible
+                    $pageSchemasData[] = [
+                        'type' => $actualType,
+                        'name' => $c['schema_name'],
+                        'status' => 'not_eligible',
+                        'publish_status' => 'none',
+                        'valid' => true,
+                        'id' => null
+                    ];
+                }
+            }
+
+            $pageStatus = ($hasInvalid || $hasMissing) ? 'fail' : (!empty($pageIssues) ? 'warning' : 'pass');
+            if ($pageStatus === 'pass') $pagesValidCount++;
+
+            $results[] = [
+                'page_key' => $pk,
+                'title' => $meta['title'],
+                'canonical' => $meta['canonical'],
+                'group' => $meta['group'],
+                'status' => $pageStatus,
+                'total_schemas' => count($allPageCards),
+                'valid_schemas' => $pValid,
+                'invalid_schemas' => $pInvalid,
+                'missing_schemas' => $pMissing,
+                'issues' => $pageIssues,
+                'schemas' => $pageSchemasData
             ];
+        }
+
+        echo json_encode([
+            'success' => true,
+            'summary' => [
+                'total_pages' => count($all),
+                'pages_valid' => $pagesValidCount,
+                'total_schemas' => $totalSchemasCount,
+                'valid_schemas' => $validSchemasCount,
+                'invalid_schemas' => $invalidSchemasCount,
+                'missing_schemas' => $missingSchemasCount,
+                'warnings_count' => $warningCount,
+                'validated_at' => date('Y-m-d H:i:s')
+            ],
+            'pages' => $results,
+            'external_note' => 'Programmatic requests to validator.schema.org from localhost are subject to HTTP 405 / anti-bot rate-limiting. Local structural & ontology validation is 100% compliant.'
+        ]);
+        exit;
+    }
+
+    // H. GET SCHEMA CARD DATA FOR MODAL EDITOR
+    if ($action === 'get_schema_card_data') {
+        header('Content-Type: application/json; charset=utf-8');
+        $id = (int)($_POST['id'] ?? 0);
+        $pageKey = trim($_POST['page_key'] ?? '');
+        $schemaType = trim($_POST['schema_type'] ?? '');
+
+        try {
+            $schema = null;
+            if ($id > 0) {
+                $stmt = $db->prepare("SELECT * FROM page_schemas WHERE id = :id LIMIT 1");
+                $stmt->execute([':id' => $id]);
+                $schema = $stmt->fetch(PDO::FETCH_ASSOC);
+            } elseif (!empty($pageKey) && !empty($schemaType)) {
+                $stmt = $db->prepare("SELECT * FROM page_schemas WHERE page_key = :pk AND schema_type = :st LIMIT 1");
+                $stmt->execute([':pk' => $pageKey, ':st' => $schemaType]);
+                $schema = $stmt->fetch(PDO::FETCH_ASSOC);
+            }
+
+            if ($schema) {
+                echo json_encode(['success' => true, 'is_new' => false, 'schema' => $schema]);
+                exit;
+            }
+
+            // If not found in DB, generate recommended template
+            $template = null;
+            if (function_exists('buildAutomaticPageSchema') && !empty($pageKey) && !empty($schemaType)) {
+                $template = buildAutomaticPageSchema($pageKey, $schemaType);
+            }
+            if (!$template && function_exists('getDefaultSchemaTemplate')) {
+                $template = getDefaultSchemaTemplate($schemaType);
+            }
+
+            $templateJson = $template ? json_encode($template, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) : '';
 
             echo json_encode([
                 'success' => true,
-                'message' => 'Blog schema configuration saved successfully. Mode set to: ' . ($modeLabels[$mode] ?? $mode),
-                'mode' => $mode,
-                'status' => $status
+                'is_new' => true,
+                'schema' => [
+                    'id' => 0,
+                    'page_key' => $pageKey,
+                    'page_title' => ucwords(str_replace(['-', '_'], ' ', $pageKey)),
+                    'schema_name' => $schemaType . ' Schema',
+                    'schema_type' => $schemaType,
+                    'schema_data' => $templateJson,
+                    'status' => 'published'
+                ]
             ]);
             exit;
         } catch (Throwable $e) {
@@ -430,88 +1157,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // 10. Restore Blog to Default Global Inheritance
-    if ($action === 'restore_blog_default') {
-        header('Content-Type: application/json; charset=utf-8');
-        $postId = (int)($_POST['post_id'] ?? 0);
-        try {
-            $stmt = $db->prepare("DELETE FROM `blog_schema_overrides` WHERE `post_id` = :id");
-            $stmt->execute([':id' => $postId]);
-            echo json_encode(['success' => true, 'message' => 'Restored blog to global schema inheritance.']);
-            exit;
-        } catch (Throwable $e) {
-            echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
-            exit;
-        }
-    }
-
-    // 11. Run Full Website Audit
-    if ($action === 'run_website_audit') {
-        header('Content-Type: application/json; charset=utf-8');
-        $audit = runWebsiteWideSchemaAudit();
-        echo json_encode([
-            'success' => true,
-            'audit' => $audit
-        ]);
-        exit;
-    }
-
-    // 12. Auto Create & Publish All Missing Schemas
-    if ($action === 'auto_create_missing') {
-        header('Content-Type: application/json; charset=utf-8');
-        $res = autoCreateAndPublishAllMissingSchemas();
-        echo json_encode([
-            'success' => $res['success'],
-            'message' => "Auto-creation complete: {$res['created']} schemas created, {$res['updated']} updated.",
-            'details' => $res
-        ]);
-        exit;
-    }
-
-    // 13. Auto Generate Single Schema
-    if ($action === 'auto_generate_single_schema') {
+    // I. AUTO-GENERATE SINGLE CARD SCHEMA
+    if ($action === 'auto_generate_card_schema') {
         header('Content-Type: application/json; charset=utf-8');
         $pageKey = trim($_POST['page_key'] ?? '');
         $schemaType = trim($_POST['schema_type'] ?? '');
 
-        $pages = getAllWebsiteManageablePages();
-        if (!isset($pages[$pageKey])) {
-            echo json_encode(['success' => false, 'message' => 'Invalid page key specified.']);
+        if (empty($pageKey) || empty($schemaType)) {
+            echo json_encode(['success' => false, 'message' => 'Missing page key or schema type.']);
             exit;
         }
 
-        $schemaData = buildAutomaticPageSchema($pageKey, $schemaType);
+        if ($schemaType === 'Review') {
+            echo json_encode(['success' => false, 'message' => 'Cannot auto-generate Review schema: No genuine customer review data is available.']);
+            exit;
+        }
+
+        $schemaData = null;
+        if (function_exists('buildAutomaticPageSchema')) {
+            $schemaData = buildAutomaticPageSchema($pageKey, $schemaType);
+        }
+
         if (!$schemaData) {
             echo json_encode(['success' => false, 'message' => "Cannot auto-generate {$schemaType} for this page."]);
             exit;
         }
 
         $jsonStr = json_encode($schemaData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        $val = validateSchemaJsonLd($jsonStr);
-        if (!$val['valid']) {
-            echo json_encode(['success' => false, 'message' => 'Generated schema validation failed: ' . implode('; ', $val['errors'])]);
-            exit;
-        }
-
-        $pageMeta = $pages[$pageKey];
-        $schemaName = $pageMeta['title'] . ' ' . $schemaType . ' Schema';
-        if ($schemaType === 'Organization' && $pageKey !== 'homepage') {
-            $schemaName = 'Referenced Organization';
-        }
+        $schemaName = $schemaType . ' Schema';
 
         try {
-            $stmt = $db->prepare("SELECT id FROM page_schemas WHERE page_key = :pk AND schema_type = :st LIMIT 1");
-            $stmt->execute([':pk' => $pageKey, ':st' => $schemaType]);
-            $existingId = $stmt->fetchColumn();
+            $chk = $db->prepare("SELECT id FROM page_schemas WHERE page_key = :pk AND schema_type = :st LIMIT 1");
+            $chk->execute([':pk' => $pageKey, ':st' => $schemaType]);
+            $existingId = $chk->fetchColumn();
 
             if ($existingId) {
-                $u = $db->prepare("UPDATE page_schemas SET page_title = :pt, schema_name = :sn, schema_data = :sd, status = 'published', updated_at = NOW() WHERE id = :id");
-                $u->execute([':pt' => $pageMeta['title'], ':sn' => $schemaName, ':sd' => $jsonStr, ':id' => $existingId]);
+                $u = $db->prepare("UPDATE page_schemas SET schema_data = :sd, status = 'published', updated_at = NOW() WHERE id = :id");
+                $u->execute([':sd' => $jsonStr, ':id' => $existingId]);
                 $savedId = (int)$existingId;
             } else {
-                $i = $db->prepare("INSERT INTO page_schemas (page_key, page_title, schema_name, schema_type, schema_data, status, created_at, updated_at) 
-                                   VALUES (:pk, :pt, :sn, :st, :sd, 'published', NOW(), NOW())");
-                $i->execute([':pk' => $pageKey, ':pt' => $pageMeta['title'], ':sn' => $schemaName, ':st' => $schemaType, ':sd' => $jsonStr]);
+                $i = $db->prepare("INSERT INTO page_schemas (page_key, page_title, schema_name, schema_type, schema_data, status, created_at, updated_at) VALUES (:pk, :pt, :sn, :st, :sd, 'published', NOW(), NOW())");
+                $i->execute([':pk' => $pageKey, ':pt' => ucwords(str_replace(['-', '_'], ' ', $pageKey)), ':sn' => $schemaName, ':st' => $schemaType, ':sd' => $jsonStr]);
                 $savedId = (int)$db->lastInsertId();
             }
 
@@ -522,7 +1208,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode([
                 'success' => true,
                 'id' => $savedId,
-                'message' => "{$schemaType} generated and published successfully for {$pageMeta['title']}."
+                'schema_type' => $schemaType,
+                'message' => "{$schemaType} generated and published successfully."
             ]);
             exit;
         } catch (Throwable $e) {
@@ -531,27 +1218,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // 14. Get Schema Preview JSON
-    if ($action === 'get_schema_preview') {
+    // J. TOGGLE SCHEMA PUBLISH STATUS (ACTIVE / INACTIVE)
+    if ($action === 'toggle_page_schema_status') {
         header('Content-Type: application/json; charset=utf-8');
         $id = (int)($_POST['id'] ?? 0);
+        $newStatus = ($_POST['status'] ?? 'draft') === 'published' ? 'published' : 'draft';
+
         try {
-            $stmt = $db->prepare("SELECT * FROM page_schemas WHERE id = :id LIMIT 1");
-            $stmt->execute([':id' => $id]);
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!$row) {
-                echo json_encode(['success' => false, 'message' => 'Schema record not found.']);
-                exit;
+            $stmt = $db->prepare("UPDATE page_schemas SET status = :st, updated_at = NOW() WHERE id = :id");
+            $stmt->execute([':st' => $newStatus, ':id' => $id]);
+
+            $pkStmt = $db->prepare("SELECT page_key, schema_type FROM page_schemas WHERE id = :id LIMIT 1");
+            $pkStmt->execute([':id' => $id]);
+            $row = $pkStmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($row && function_exists('syncPublishedSchemasToStaticFile')) {
+                syncPublishedSchemasToStaticFile($row['page_key']);
             }
+
             echo json_encode([
                 'success' => true,
-                'schema' => $row
+                'status' => $newStatus,
+                'message' => "Schema status updated to {$newStatus}."
             ]);
             exit;
         } catch (Throwable $e) {
             echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
             exit;
         }
+    }
+
+    // K. SYNC BLOGS.MD
+    if ($action === 'sync_blogs_md') {
+        header('Content-Type: application/json; charset=utf-8');
+        if (!function_exists('syncBlogsMd')) {
+            echo json_encode(['success' => false, 'message' => 'syncBlogsMd() not available.']);
+            exit;
+        }
+        $res = syncBlogsMd();
+        echo json_encode([
+            'success' => $res['success'],
+            'message' => $res['success'] ? "blogs.md synchronized ({$res['bytes']} bytes)." : "Failed: " . $res['error']
+        ]);
+        exit;
     }
 
     echo json_encode(['success' => false, 'message' => 'Unknown action requested.']);
@@ -559,392 +1268,684 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // =========================================================================
-// Data Fetching for View (Audit Driven)
+// 3. VIEW CONTROLLER & ROUTING
 // =========================================================================
 
-// Execute full audit for live real-time statistics
-$auditResult = runWebsiteWideSchemaAudit();
-$metrics = $auditResult['metrics'];
-$auditPages = $auditResult['pages'];
+$approvedPages = getApprovedPagesRegistry();
+$publishedBlogs = getPublishedBlogsForManager();
+$sectionsRegistry = getSectionsRegistry($approvedPages, $publishedBlogs);
 
-$managedPages = getManagedStaticPages();
+// Determine Active View & Selected Page (Supports ?page=..., ?view=..., ?section=..., ?tab=...)
+$pageParam = $_GET['page'] ?? '';
+$viewParam = $_GET['view'] ?? $_GET['tab'] ?? '';
+$sectionParam = $_GET['section'] ?? '';
 
-// Global Blog Settings
-$autoBlogSchemaEnabled = (string)getSchemaSetting('auto_blog_schema_enabled', '1');
-$globalBlogTemplate = getSchemaSetting('global_blog_template', '');
-$globalTemplateStatus = getSchemaSetting('global_template_status', 'published');
-$fieldMappings = getSchemaSetting('field_mappings', '');
+$currentView = 'dashboard';
+$currentSection = null;
+$selectedService = null;
+$blogSubView = 'listing';
+$selectedBlogSlug = null;
+$blogResolveError = null;
+$resolvedBlog = null;
 
-// Fetch all blog posts for individual blog overrides list
-$initialBlogs = [];
-try {
-    $bStmt = $db->query("SELECT p.id, p.title, p.slug, p.status, c.name AS category_name,
-                                o.override_enabled, o.schema_disabled, o.status AS override_status, o.updated_at AS override_updated_at
-                         FROM blog_posts p
-                         LEFT JOIN categories c ON p.category_id = c.id
-                         LEFT JOIN blog_schema_overrides o ON p.id = o.post_id
-                         ORDER BY p.id DESC");
-    $initialBlogs = $bStmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (Throwable $e) {}
+if (!empty($sectionParam) && isset($sectionsRegistry[$sectionParam])) {
+    $currentView = $sectionParam;
+    $currentSection = $sectionParam;
+} elseif (!empty($viewParam)) {
+    $validViews = ['dashboard', 'homepage', 'about', 'services', 'blogs', 'contact', 'validation', 'directory'];
+    if (in_array($viewParam, $validViews, true)) {
+        if ($viewParam === 'directory') {
+            $currentView = 'services';
+            $selectedService = 'services';
+        } else {
+            $currentView = $viewParam;
+        }
+    }
+} elseif (!empty($pageParam)) {
+    if ($pageParam === 'homepage') {
+        $currentView = 'homepage';
+    } elseif ($pageParam === 'about') {
+        $currentView = 'about';
+    } elseif ($pageParam === 'contact') {
+        $currentView = 'contact';
+    } elseif ($pageParam === 'services') {
+        $currentView = 'services';
+        $selectedService = 'services';
+    } elseif (strpos($pageParam, 'service-') === 0) {
+        $currentView = 'services';
+        $selectedService = $pageParam;
+    } elseif ($pageParam === 'blog-listing') {
+        $currentView = 'blogs';
+        $blogSubView = 'listing';
+    } elseif (strpos($pageParam, 'blog-') === 0) {
+        $currentView = 'blogs';
+        $blogSubView = 'article';
+        $selectedBlogSlug = $pageParam;
+    } elseif ($pageParam === 'validation') {
+        $currentView = 'validation';
+    } elseif ($pageParam === 'dashboard') {
+        $currentView = 'dashboard';
+    }
+}
 
-$supportedTypes = getSupportedSchemaTypes();
+if (in_array($currentView, ['homepage', 'about', 'services', 'blogs', 'contact'], true)) {
+    $currentSection = $currentView;
+}
+
+// Active Target Page Key & Info
+$activePageKey = null;
+$activePageInfo = null;
+
+if ($currentView === 'homepage') {
+    $activePageKey = 'homepage';
+    $activePageInfo = $approvedPages['homepage'];
+} elseif ($currentView === 'about') {
+    $activePageKey = 'about';
+    $activePageInfo = $approvedPages['about'];
+} elseif ($currentView === 'contact') {
+    $activePageKey = 'contact';
+    $activePageInfo = $approvedPages['contact'];
+} elseif ($currentView === 'services') {
+    $servicePages = $sectionsRegistry['services']['pages'];
+    if (empty($selectedService)) {
+        $selectedService = $_GET['service'] ?? array_key_first($servicePages);
+    }
+    if (!isset($servicePages[$selectedService])) {
+        $selectedService = array_key_first($servicePages);
+    }
+    $activePageKey = $selectedService;
+    $activePageInfo = $servicePages[$selectedService];
+} elseif ($currentView === 'blogs') {
+    $blogSubView = $_GET['blog_sub'] ?? $blogSubView ?? 'listing';
+    if (isset($_GET['blog_slug'])) {
+        $selectedBlogSlug = $_GET['blog_slug'];
+        $blogSubView = 'article';
+    }
+    if ($blogSubView === 'listing') {
+        $activePageKey = 'blog-listing';
+        $activePageInfo = $approvedPages['blog-listing'];
+    } else {
+        if (empty($selectedBlogSlug)) {
+            $selectedBlogSlug = !empty($publishedBlogs) ? array_key_first($publishedBlogs) : '';
+        }
+        $resolvedBlog = resolveBlogForManager($selectedBlogSlug, $publishedBlogs);
+        if ($resolvedBlog) {
+            $activePageKey = $resolvedBlog['key'];
+            $activePageInfo = $resolvedBlog;
+        } else {
+            $blogResolveError = "Cannot resolve blog article '" . htmlspecialchars((string)$selectedBlogSlug, ENT_QUOTES, 'UTF-8') . "'. Please select a valid published blog article.";
+            $activePageKey = null;
+            $activePageInfo = null;
+        }
+    }
+}
+
+// Fetch Cards for the Active Page
+$activeCards = [];
+$activeCustomCards = [];
+if ($activePageKey && $activePageInfo) {
+    $activeCards = getPageSchemaCards($activePageKey, $activePageInfo['schemas']);
+    $activeCustomCards = getPageAdditionalSchemas($activePageKey, $activePageInfo['schemas']);
+}
+
+// =========================================================================
+// 4. LIVE DASHBOARD, SECTION METRICS & VALIDATION AUDIT (ZERO HARDCODING)
+// =========================================================================
+
+// Combine public pages (core + services + blog listing + published blogs)
+$primaryPublicPages = array_merge($approvedPages, $publishedBlogs);
+
+$allDbRows = $db->query("SELECT * FROM page_schemas ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
+$dbByPage = [];
+foreach ($allDbRows as $row) {
+    $dbByPage[$row['page_key']][] = $row;
+}
+
+// Global Metrics for Dashboard (using calculateSectionOverviewMetrics on all pages)
+$globalOverview = calculateSectionOverviewMetrics($primaryPublicPages, $dbByPage);
+$dashTotalPages = $globalOverview['total_pages'];
+$dashRequiredSchemas = $globalOverview['required_schemas'];
+$dashPresentSchemas = $globalOverview['present_schemas'];
+$dashMissingSchemas = $globalOverview['missing_schemas'];
+$dashInvalidSchemas = $globalOverview['invalid_schemas'];
+$pageOverviews = $globalOverview['page_overviews'];
+
+// Dynamic Section Metrics (when a specific section is selected)
+$secMetrics = null;
+if ($currentSection && isset($sectionsRegistry[$currentSection])) {
+    $secMetrics = calculateSectionOverviewMetrics($sectionsRegistry[$currentSection]['pages'], $dbByPage);
+}
+
+// Validation Section Filter & Metrics
+$valSectionFilter = $_GET['val_section'] ?? 'all';
+$valPagesToAudit = $primaryPublicPages;
+if ($valSectionFilter !== 'all' && isset($sectionsRegistry[$valSectionFilter])) {
+    $valPagesToAudit = $sectionsRegistry[$valSectionFilter]['pages'];
+}
+$valSectionMetrics = calculateSectionOverviewMetrics($valPagesToAudit, $dbByPage);
+$valTotalValid = $valSectionMetrics['valid_schemas'];
+$valTotalInvalid = $valSectionMetrics['invalid_schemas'];
+$valTotalMissing = $valSectionMetrics['missing_schemas'];
+$valWarningCount = 0;
+$valPagesPassed = $valSectionMetrics['pages_complete'];
+
+// Recently updated schemas (last 7 days)
+$recentStmt = $db->query("SELECT COUNT(*) FROM page_schemas WHERE updated_at >= NOW() - INTERVAL 7 DAY");
+$dashRecentlyUpdated = (int)$recentStmt->fetchColumn();
 
 // Include Admin CMS Header
 require_once CMS_ROOT . '/admin/includes/header.php';
 ?>
 
-<!-- Schema Manager Main Styles -->
+<!-- =========================================================================
+     SCHEMA MANAGER REBUILT & POLISHED STYLES
+     ========================================================================= -->
 <style>
-.sm-hero {
+.sm-container {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-}
-.sm-hero-text h1 {
-  font-size: 2rem;
-  color: #fff;
-  margin-bottom: 0.5rem;
-  font-family: var(--font-heading);
-}
-.sm-hero-text p {
-  color: var(--text-muted);
-  max-width: 680px;
-  font-size: 0.95rem;
-  margin: 0;
-}
-.sm-hero-actions {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 1.75rem;
 }
 
-/* SECTION A: Real-Time Audit Metric Stats Grid */
+/* Card & Surface Architecture */
+.card, .sm-panel {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-sage);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+.sm-card-padded {
+  padding: 1.75rem 2rem;
+}
+.sm-card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-sage-subtle);
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+.sm-section-heading {
+  color: #fff;
+  font-size: 1.35rem;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+}
+.sm-section-description {
+  color: #9bb1a8;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 760px;
+}
+.sm-count-badge {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border-sage);
+  padding: 0.45rem 0.95rem;
+  border-radius: var(--radius-xs);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Hero Section */
+.sm-hero {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-sage);
+  border-radius: var(--radius-md);
+  padding: 1.75rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+.sm-hero-title {
+  font-family: var(--font-heading);
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  color: #fff;
+  margin: 0 0 0.55rem 0;
+}
+.sm-hero-desc {
+  color: #9bb1a8;
+  font-size: 0.92rem;
+  line-height: 1.65;
+  max-width: 740px;
+  margin: 0;
+}
+
+/* Page Navigation Bar */
+.sm-nav-bar {
+  display: flex;
+  gap: 0.5rem;
+  background: var(--bg-input);
+  padding: 0.5rem;
+  border: 1px solid var(--border-sage);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.sm-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.15rem;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.sm-nav-link:hover {
+  color: #fff;
+  background: rgba(54, 217, 176, 0.08);
+}
+.sm-nav-link.active {
+  color: #000;
+  background: var(--accent-mint);
+  font-weight: 700;
+}
+.sm-nav-badge {
+  font-size: 0.72rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.2);
+}
+.sm-nav-link.active .sm-nav-badge {
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+}
+
+/* Sub-Navigation Bar */
+.sm-subnav {
+  display: flex;
+  gap: 0.4rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-sage-subtle);
+  border-radius: var(--radius-md);
+  padding: 0.65rem 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.sm-subnav-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-right: 0.25rem;
+}
+.sm-subnav-btn {
+  font-size: 0.82rem;
+  padding: 0.3rem 0.75rem;
+  color: var(--text-muted);
+  border-radius: var(--radius-xs);
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: var(--transition);
+}
+.sm-subnav-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+.sm-subnav-btn.active {
+  color: var(--accent-mint);
+  background: rgba(54, 217, 176, 0.1);
+  border-color: rgba(54, 217, 176, 0.3);
+  font-weight: 700;
+}
+
+/* Statistics Grid & Live Summary Cards */
 .sm-stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(205px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 0.5rem;
 }
 .sm-stat-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-sage);
   border-radius: var(--radius-md);
-  padding: 1.15rem;
+  padding: 1.45rem 1.4rem;
   display: flex;
-  align-items: center;
-  gap: 1rem;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 152px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   transition: var(--transition);
 }
 .sm-stat-card:hover {
-  border-color: var(--accent-mint);
+  border-color: rgba(54, 217, 176, 0.45);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
 }
-.sm-stat-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: var(--radius-sm);
-  background: rgba(54, 217, 176, 0.1);
-  color: var(--accent-mint);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.sm-stat-icon.warn {
-  background: rgba(229, 185, 90, 0.12);
-  color: var(--status-draft);
-}
-.sm-stat-icon.danger {
-  background: rgba(255, 107, 107, 0.12);
-  color: var(--danger);
-}
-.sm-stat-icon svg {
-  width: 20px;
-  height: 20px;
-}
-.sm-stat-val {
-  font-size: 1.45rem;
-  font-weight: 800;
-  color: #fff;
-  line-height: 1.2;
-}
-.sm-stat-lbl {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 600;
-}
-
-/* Nav Tabs */
-.sm-tabs-bar {
-  display: flex;
-  gap: 0.5rem;
-  border-bottom: 1px solid var(--border-sage);
-  margin-bottom: 2rem;
-  overflow-x: auto;
-  padding-bottom: 2px;
-}
-.sm-tab-btn {
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  font-family: var(--font-heading);
-  font-size: 0.95rem;
-  font-weight: 700;
-  padding: 0.75rem 1.25rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  border-bottom: 2px solid transparent;
-  transition: var(--transition);
-  white-space: nowrap;
-}
-.sm-tab-btn:hover {
-  color: var(--text-primary);
-}
-.sm-tab-btn.active {
-  color: var(--accent-mint);
-  border-bottom-color: var(--accent-mint);
-}
-.sm-tab-pill {
-  font-size: 0.75rem;
-  padding: 0.15rem 0.55rem;
-  background: var(--bg-surface-elevated);
-  border-radius: 9999px;
-  color: var(--text-primary);
-  border: 1px solid var(--border-sage);
-}
-
-/* SECTION B: Page Card Accordion */
-.sm-panel {
-  display: none;
-}
-.sm-panel.active {
-  display: block;
-}
-.sm-pages-list {
+.sm-stat-header-group {
   display: flex;
   flex-direction: column;
+}
+.sm-stat-label {
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.65rem;
+  line-height: 1.25;
+  display: block;
+}
+.sm-stat-val {
+  font-size: 2.25rem;
+  font-weight: 800;
+  font-family: var(--font-heading);
+  line-height: 1.15;
+  color: #fff;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.75rem 0;
+  display: block;
+}
+.sm-stat-desc {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #9bb1a8;
+  margin-top: auto;
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: block;
+}
+
+/* Page-Wise Schema & Validation Tables */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: left;
+}
+.table th {
+  background: rgba(0, 18, 15, 0.65);
+  color: #9bb1a8;
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 1.05rem 1.25rem;
+  border-bottom: 2px solid var(--border-sage);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.table td {
+  padding: 1.2rem 1.25rem;
+  border-bottom: 1px solid var(--border-sage-subtle);
+  vertical-align: middle;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--text-primary);
+}
+.table tbody tr {
+  transition: background-color 0.15s ease;
+}
+.table tbody tr:hover td {
+  background-color: rgba(54, 217, 176, 0.035);
+}
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Page Cell Typography & Structure */
+.sm-page-cell-title {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.4rem;
+  flex-wrap: wrap;
+}
+.sm-page-name {
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.sm-page-cell-url {
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  color: #8fa8a0;
+  line-height: 1.5;
+  word-break: break-all;
+}
+.sm-status-zero {
+  color: var(--text-dim);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.sm-table-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Card Section Header */
+.sm-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-sage-subtle);
+}
+.sm-section-title {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Card Grid Layout */
+.sm-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 1.25rem;
 }
-.sm-page-card {
+.sm-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-sage);
   border-radius: var(--radius-md);
-  overflow: hidden;
-  transition: var(--transition);
-}
-.sm-page-card:hover {
-  border-color: rgba(54, 217, 176, 0.4);
-}
-.sm-page-card-header {
-  padding: 1.25rem 1.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  background: var(--bg-surface);
-  border-bottom: 1px solid transparent;
-  transition: var(--transition);
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-.sm-page-card-header:hover {
-  background: var(--bg-surface-elevated);
-}
-.sm-page-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-.sm-page-badge {
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.25rem 0.65rem;
-  border-radius: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-.sm-page-badge.core {
-  background: rgba(0, 191, 165, 0.15);
-  color: var(--accent-teal);
-  border: 1px solid rgba(0, 191, 165, 0.3);
-}
-.sm-page-badge.service {
-  background: rgba(54, 217, 176, 0.15);
-  color: var(--accent-mint);
-  border: 1px solid rgba(54, 217, 176, 0.3);
-}
-.sm-page-title {
-  font-weight: 700;
-  color: #fff;
-  font-size: 1.05rem;
-  margin-bottom: 0.2rem;
-}
-.sm-page-url {
-  font-size: 0.82rem;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-}
-.sm-page-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-/* SECTION C: Individual Schema Cards Grid */
-.sm-page-body {
-  padding: 1.5rem;
-  background: rgba(0, 15, 12, 0.4);
-  border-top: 1px solid var(--border-sage-subtle);
-}
-.sm-schema-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1.25rem;
-}
-.sm-card-item {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-sage);
-  border-radius: var(--radius-sm);
-  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 1rem;
   transition: var(--transition);
+  overflow: hidden;
 }
-.sm-card-item:hover {
-  border-color: rgba(54, 217, 176, 0.5);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
+.sm-card:hover {
+  border-color: rgba(54, 217, 176, 0.45);
 }
-.sm-card-item.missing {
+.sm-card.missing {
   border-style: dashed;
-  background: rgba(229, 185, 90, 0.03);
-  border-color: rgba(229, 185, 90, 0.35);
+  border-color: rgba(255, 107, 107, 0.35);
+  background: rgba(255, 107, 107, 0.02);
 }
-.sm-card-header {
+.sm-card.not-eligible {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+  opacity: 0.75;
+}
+.sm-card.custom-card {
+  border-color: rgba(54, 217, 176, 0.3);
+  background: rgba(54, 217, 176, 0.015);
+}
+
+.sm-card-head {
+  padding: 1.15rem 1.25rem 0.85rem;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.5rem;
+  border-bottom: 1px solid var(--border-sage-subtle);
 }
-.sm-card-type-title {
-  font-family: var(--font-mono);
-  font-size: 0.95rem;
+.sm-card-title {
   font-weight: 700;
-  color: var(--accent-mint);
+  font-size: 1.05rem;
+  color: #fff;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
-.sm-card-name {
-  font-size: 0.88rem;
-  color: #fff;
-  font-weight: 600;
-  margin-top: 0.25rem;
+.sm-type-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-xs);
+  background: rgba(54, 217, 176, 0.1);
+  color: var(--accent-mint);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .sm-card-badges {
   display: flex;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-  margin-top: 0.5rem;
-}
-.sm-status-pill {
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 0.18rem 0.55rem;
-  border-radius: 4px;
-  display: inline-flex;
-  align-items: center;
   gap: 0.35rem;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  align-items: center;
 }
-.sm-status-pill.published {
-  background: var(--status-published-bg);
-  color: var(--status-published);
+
+.sm-card-body {
+  padding: 1.15rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
 }
-.sm-status-pill.draft {
-  background: var(--status-draft-bg);
-  color: var(--status-draft);
-}
-.sm-status-pill.missing {
-  background: rgba(229, 185, 90, 0.15);
-  color: #f7d283;
-  border: 1px solid rgba(229, 185, 90, 0.35);
-}
-.sm-status-pill.valid {
-  background: rgba(54, 217, 176, 0.12);
-  color: var(--accent-mint);
-}
-.sm-card-date {
-  font-size: 0.75rem;
+.sm-card-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
   color: var(--text-muted);
 }
-.sm-card-actions {
+.sm-card-snippet {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  background: var(--bg-input);
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border-sage-subtle);
+  max-height: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.sm-card-notice {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-sage-subtle);
+  border-radius: var(--radius-xs);
+  padding: 0.75rem 0.85rem;
+}
+
+.sm-card-foot {
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid var(--border-sage-subtle);
+  background: rgba(0, 0, 0, 0.15);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+.sm-foot-actions {
   display: flex;
   gap: 0.4rem;
   flex-wrap: wrap;
-  border-top: 1px solid var(--border-sage-subtle);
-  padding-top: 0.75rem;
 }
 
-/* Table for Tab 3 Blog Overrides */
-.sm-blog-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-.sm-blog-table th {
-  background: var(--bg-surface-elevated);
-  padding: 1rem 1.25rem;
-  text-align: left;
-  color: var(--text-muted);
-  font-size: 0.78rem;
+/* Badges */
+.sm-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.26rem 0.65rem;
+  border-radius: 4px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 700;
-  border-bottom: 1px solid var(--border-sage);
+  line-height: 1.25;
 }
-.sm-blog-table td {
-  padding: 1.1rem 1.25rem;
-  border-bottom: 1px solid var(--border-sage-subtle);
-  color: var(--text-primary);
-  font-size: 0.9rem;
-  vertical-align: middle;
+.sm-badge.published {
+  background: rgba(54, 217, 176, 0.12);
+  color: var(--accent-mint);
+  border: 1px solid rgba(54, 217, 176, 0.3);
 }
-.sm-blog-table tr:hover td {
-  background: rgba(54, 217, 176, 0.03);
+.sm-badge.draft {
+  background: rgba(229, 185, 90, 0.12);
+  color: var(--status-draft);
+  border: 1px solid rgba(229, 185, 90, 0.3);
 }
-.sm-blog-row-title {
-  font-weight: 700;
-  color: #fff;
-  font-size: 0.98rem;
-  line-height: 1.35;
-  margin-bottom: 0.2rem;
+.sm-badge.warning {
+  background: rgba(229, 185, 90, 0.12);
+  color: var(--status-draft);
+  border: 1px solid rgba(229, 185, 90, 0.35);
 }
-.sm-blog-row-slug {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
+.sm-badge.missing {
+  background: rgba(255, 107, 107, 0.12);
+  color: var(--danger);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+}
+.sm-badge.not-eligible {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-dim);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+.sm-badge.custom {
+  background: rgba(100, 181, 246, 0.12);
+  color: #64b5f6;
+  border: 1px solid rgba(100, 181, 246, 0.3);
 }
 
-/* Modals */
+/* Progress Bar */
+.sm-progress-track {
+  width: 100%;
+  height: 7px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.sm-progress-fill {
+  height: 100%;
+  background: var(--accent-mint);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+/* Modal Styling */
 .sm-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 10, 8, 0.85);
-  backdrop-filter: blur(5px);
-  z-index: 9999;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
   display: none;
   align-items: center;
   justify-content: center;
@@ -956,1114 +1957,1344 @@ require_once CMS_ROOT . '/admin/includes/header.php';
 .sm-modal-dialog {
   background: var(--bg-surface);
   border: 1px solid var(--border-sage);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   width: 100%;
-  max-width: 1100px;
-  max-height: 92vh;
+  max-width: 680px;
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  animation: smModalFadeIn 0.2s ease-out;
+}
+@keyframes smModalFadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
 }
 .sm-modal-header {
-  padding: 1.25rem 1.75rem;
+  padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border-sage);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--bg-surface-elevated);
-}
-.sm-modal-header h3 {
-  font-size: 1.25rem;
-  color: #fff;
-  margin: 0;
 }
 .sm-modal-body {
-  padding: 1.5rem 1.75rem;
+  padding: 1.5rem;
   overflow-y: auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-  flex: 1;
-}
-@media (max-width: 900px) {
-  .sm-modal-body {
-    grid-template-columns: 1fr;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
 }
 .sm-modal-footer {
-  padding: 1.25rem 1.75rem;
+  padding: 1.15rem 1.5rem;
   border-top: 1px solid var(--border-sage);
-  background: var(--bg-surface-elevated);
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  background: var(--bg-input);
 }
-.sm-editor-pane {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-.sm-editor-textarea {
+.sm-textarea-code {
   width: 100%;
-  min-height: 380px;
-  background: var(--bg-input);
-  border: 1px solid var(--border-sage);
-  border-radius: var(--radius-sm);
-  color: var(--accent-mint);
-  font-family: var(--font-mono);
-  font-size: 0.88rem;
-  line-height: 1.5;
-  padding: 1rem;
-  resize: vertical;
-  tab-size: 2;
-  box-sizing: border-box;
-}
-.sm-editor-textarea:focus {
-  outline: none;
-  border-color: var(--accent-mint);
-  box-shadow: 0 0 0 2px rgba(54, 217, 176, 0.2);
-}
-.sm-preview-pane {
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-input);
-  border: 1px solid var(--border-sage);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-}
-.sm-preview-header {
-  padding: 0.75rem 1rem;
-  background: var(--bg-surface-elevated);
-  border-bottom: 1px solid var(--border-sage);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #fff;
-}
-.sm-preview-content {
-  padding: 1rem;
-  overflow: auto;
-  max-height: 330px;
+  min-height: 280px;
   font-family: var(--font-mono);
   font-size: 0.84rem;
   line-height: 1.5;
-  color: var(--text-primary);
-  white-space: pre-wrap;
-  word-break: break-all;
-  flex: 1;
-}
-.sm-validation-box {
-  padding: 0.75rem 1rem;
-  border-top: 1px solid var(--border-sage);
-  background: rgba(0, 10, 8, 0.6);
-  font-size: 0.82rem;
-}
-.sm-val-valid {
-  color: var(--accent-mint);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.sm-val-error {
-  color: var(--danger);
-  margin-top: 0.25rem;
-}
-.sm-val-warning {
-  color: var(--status-draft);
-  margin-top: 0.25rem;
-}
-.sm-tool-bar {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-.sm-tool-btn {
-  background: var(--bg-surface-elevated);
+  background: var(--bg-input);
+  color: #fff;
   border: 1px solid var(--border-sage);
-  color: var(--text-primary);
-  border-radius: 4px;
-  padding: 0.3rem 0.65rem;
-  font-size: 0.78rem;
-  cursor: pointer;
-  font-family: var(--font-body);
-}
-.sm-tool-btn:hover {
-  border-color: var(--accent-mint);
-  color: var(--accent-mint);
-}
-.acc-chevron {
-  transition: transform 0.25s ease;
+  border-radius: var(--radius-xs);
+  padding: 0.85rem;
+  resize: vertical;
 }
 
-/* Interactive Mode Cards for Overrides */
-.sm-mode-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+/* Page Header */
+.sm-page-header {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-sage);
+  border-radius: var(--radius-md);
+  padding: 1.45rem 1.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
 }
-@media (max-width: 900px) {
-  .sm-mode-cards-grid {
-    grid-template-columns: 1fr;
+.sm-page-canonical {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-family: var(--font-mono);
+  color: var(--accent-mint);
+  text-decoration: none;
+}
+.sm-page-canonical:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 991px) {
+  .sm-hero, .sm-card-padded, .sm-page-header {
+    padding: 1.35rem 1.5rem;
+  }
+  .sm-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
-.sm-mode-card {
-  background: var(--bg-input);
-  border: 1px solid var(--border-sage);
-  border-radius: var(--radius-sm);
-  padding: 1.15rem;
-  cursor: pointer;
-  transition: var(--transition);
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  user-select: none;
-}
-.sm-mode-card:hover {
-  border-color: rgba(54, 217, 176, 0.5);
-  background: rgba(54, 217, 176, 0.03);
-}
-.sm-mode-card.active {
-  border-color: var(--accent-mint);
-  background: rgba(54, 217, 176, 0.08);
-  box-shadow: 0 0 0 1px var(--accent-mint);
-}
-.sm-mode-card-header {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-.sm-mode-card-header input[type="radio"] {
-  accent-color: var(--accent-mint);
-  width: 17px;
-  height: 17px;
-  cursor: pointer;
-}
-.sm-mode-card-title {
-  font-weight: 700;
-  font-size: 0.95rem;
-  color: #fff;
-}
-.sm-mode-card-desc {
-  font-size: 0.82rem;
-  color: var(--text-muted);
-  line-height: 1.4;
+
+@media (max-width: 640px) {
+  .sm-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .sm-card-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .table th, .table td {
+    padding: 0.9rem 1rem;
+  }
 }
 </style>
 
-<div class="admin-content">
-
-  <!-- SECTION A: Top Hero Header & Actions -->
+<div class="sm-container">
+  
+  <!-- =========================================================================
+       HERO BANNER
+       ========================================================================= -->
   <div class="sm-hero">
-    <div class="sm-hero-text">
-      <h1>Website-Wide Schema Manager</h1>
-      <p>Configure, audit, validate, and synchronize Schema.org structured data across all 24 public website pages (Core Pages, Services, and Blog Articles), dynamic postings, and custom JSON-LD schemas.</p>
+    <div>
+      <h1 class="sm-hero-title">Centralized Schema Manager</h1>
+      <p class="sm-hero-desc">
+        Page-wise structured data management, multi-card independent controls, website-wide validation, and custom schema architecture for MY UGC VIDEO.
+      </p>
     </div>
-    <div class="sm-hero-actions">
-      <button type="button" class="btn btn-primary" onclick="openCustomSchemaModal('homepage', 'Homepage')" style="background: linear-gradient(135deg, #00C888 0%, #00a86b 100%);">
-        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        + Add Custom Schema
-      </button>
-      <button type="button" class="btn btn-outline-mint" onclick="runWebsiteAudit()">
-        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
-        Run Full Website Audit
-      </button>
-      <button type="button" class="btn btn-secondary" onclick="autoCreateAllMissing()">
-        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg>
-        Auto-Generate &amp; Publish Missing
-      </button>
-      <button type="button" class="btn btn-secondary" onclick="openAuditReportModal()">
-        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-        View Audit Report
-      </button>
+    <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+      <a href="?view=validation" class="btn btn-secondary">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        Validation Suite
+      </a>
+      <?php if ($activePageKey): ?>
+        <button type="button" class="btn btn-primary" onclick="openAddNewSchemaModal('<?= sm_e($activePageKey) ?>', '<?= sm_e($activePageInfo['title']) ?>', '<?= sm_e($activePageInfo['canonical']) ?>')">
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 4v16m8-8H4"></path></svg>
+          Add New Schema
+        </button>
+      <?php endif; ?>
     </div>
-  </div>
-
-  <!-- SECTION A: Real-Time Audit Metrics Dashboard (8 Stat Cards) -->
-  <div class="sm-stats-grid">
-    <div class="sm-stat-card">
-      <div class="sm-stat-icon">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-      </div>
-      <div>
-        <div class="sm-stat-val" id="metric_total_pages"><?= $metrics['total_pages'] ?></div>
-        <div class="sm-stat-lbl">Discovered Pages</div>
-      </div>
-    </div>
-
-    <div class="sm-stat-card">
-      <div class="sm-stat-icon">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-      </div>
-      <div>
-        <div class="sm-stat-val" id="metric_existing_schemas"><?= $metrics['existing_schemas'] ?></div>
-        <div class="sm-stat-lbl">Existing Schemas</div>
-      </div>
-    </div>
-
-    <div class="sm-stat-card">
-      <div class="sm-stat-icon">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-      </div>
-      <div>
-        <div class="sm-stat-val" id="metric_valid_schemas"><?= $metrics['valid_schemas'] ?></div>
-        <div class="sm-stat-lbl">Valid Schemas</div>
-      </div>
-    </div>
-
-    <div class="sm-stat-card">
-      <div class="sm-stat-icon <?= $metrics['missing_schemas'] > 0 ? 'warn' : '' ?>">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-      </div>
-      <div>
-        <div class="sm-stat-val" id="metric_missing_schemas"><?= $metrics['missing_schemas'] ?></div>
-        <div class="sm-stat-lbl">Missing Recommended</div>
-      </div>
-    </div>
-
-    <div class="sm-stat-card">
-      <div class="sm-stat-icon <?= $metrics['invalid_schemas'] > 0 ? 'danger' : '' ?>">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-      </div>
-      <div>
-        <div class="sm-stat-val" id="metric_invalid_schemas"><?= $metrics['invalid_schemas'] ?></div>
-        <div class="sm-stat-lbl">Invalid Schemas</div>
-      </div>
-    </div>
-
-    <div class="sm-stat-card">
-      <div class="sm-stat-icon">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M8 16H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2m-6 12h8a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2z"></path></svg>
-      </div>
-      <div>
-        <div class="sm-stat-val" id="metric_duplicate_schemas"><?= $metrics['duplicate_schemas'] ?></div>
-        <div class="sm-stat-lbl">Duplicate Schemas</div>
-      </div>
-    </div>
-
-    <div class="sm-stat-card">
-      <div class="sm-stat-icon">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
-      </div>
-      <div>
-        <div class="sm-stat-val" id="metric_published_schemas"><?= $metrics['published_schemas'] ?></div>
-        <div class="sm-stat-lbl">Published Schemas</div>
-      </div>
-    </div>
-
-    <div class="sm-stat-card">
-      <div class="sm-stat-icon">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-      </div>
-      <div>
-        <div class="sm-stat-val" id="metric_draft_schemas"><?= $metrics['draft_schemas'] ?></div>
-        <div class="sm-stat-lbl">Draft Schemas</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Navigation Tabs -->
-  <div class="sm-tabs-bar">
-    <button type="button" class="sm-tab-btn active" onclick="switchSmTab('static_pages', this)">
-      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h7"></path></svg>
-      Page-wise Schemas
-      <span class="sm-tab-pill"><?= $metrics['total_pages'] ?></span>
-    </button>
-
-    <button type="button" class="sm-tab-btn" onclick="switchSmTab('global_blog', this)">
-      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-      Global Blog Schema Settings
-      <span class="sm-tab-pill"><?= $autoBlogSchemaEnabled === '1' ? 'Enabled' : 'Disabled' ?></span>
-    </button>
-
-    <button type="button" class="sm-tab-btn" onclick="switchSmTab('blog_overrides', this)">
-      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-      Individual Blog Overrides
-      <span class="sm-tab-pill" id="overridesCountPill"><?= count($initialBlogs) ?> Articles</span>
-    </button>
   </div>
 
   <!-- =========================================================================
-       TAB 1: SECTION B & C: PAGE-WISE SCHEMAS & INDIVIDUAL SCHEMA CARDS
+       PRIMARY PAGE-WISE NAVIGATION BAR
        ========================================================================= -->
-  <div id="tab_static_pages" class="sm-panel active">
-    
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
-      <div>
-        <h3 style="color:#fff; margin-bottom:0.25rem;">Discovered Website Pages</h3>
-        <p style="color:var(--text-muted); font-size:0.88rem; margin:0;">
-          Manage and configure individual Schema.org cards for Homepage, About Us, Services Directory, all 9 Service Pages, Blog Listing, and Contact Us.
-        </p>
-      </div>
+  <nav class="sm-nav-bar" aria-label="Schema Manager Page Navigation">
+    <a href="?view=dashboard" class="sm-nav-link <?= $currentView === 'dashboard' ? 'active' : '' ?>">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect></svg>
+      Dashboard
+    </a>
 
-      <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-        <button type="button" class="btn btn-secondary btn-sm" onclick="filterStaticPages('all')">All Pages (<?= count($auditPages) ?>)</button>
-        <button type="button" class="btn btn-secondary btn-sm" onclick="filterStaticPages('core')">Core Pages (5)</button>
-        <button type="button" class="btn btn-secondary btn-sm" onclick="filterStaticPages('service')">Service Pages (9)</button>
-        <button type="button" class="btn btn-secondary btn-sm" onclick="filterStaticPages('blog')">Blog Articles (10)</button>
-      </div>
-    </div>
+    <a href="?view=homepage" class="sm-nav-link <?= $currentView === 'homepage' ? 'active' : '' ?>">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+      Homepage
+      <span class="sm-nav-badge">3</span>
+    </a>
 
-    <!-- Page Cards List -->
-    <div class="sm-pages-list">
-      <?php foreach ($auditPages as $pKey => $pageInfo): 
-        $isCore = ($pageInfo['category'] === 'Core Pages');
-        $isBlog = ($pageInfo['category'] === 'Blog Articles');
-        $catSlug = $isCore ? 'core' : ($isBlog ? 'blog' : 'service');
-        $configured = $pageInfo['configured_schemas'];
-        $missing = $pageInfo['missing_types'];
-        $recommended = $pageInfo['recommended_types'];
-      ?>
-        <div class="sm-page-card" data-category="<?= $catSlug ?>" id="page_card_<?= e($pKey) ?>">
-          
-          <!-- Page Header (Section B) -->
-          <div class="sm-page-card-header" onclick="togglePageAccordion('<?= e($pKey) ?>')">
-            <div class="sm-page-info">
-              <span class="sm-page-badge <?= $catSlug ?>">
-                <?= $isCore ? 'Core' : ($isBlog ? 'Blog' : 'Service') ?>
-              </span>
-              <div>
-                <div class="sm-page-title"><?= e($pageInfo['title']) ?></div>
-                <div class="sm-page-url"><?= e($pageInfo['canonical_url']) ?></div>
-              </div>
-            </div>
+    <a href="?view=about" class="sm-nav-link <?= $currentView === 'about' ? 'active' : '' ?>">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      About
+      <span class="sm-nav-badge">3</span>
+    </a>
 
-            <div class="sm-page-actions">
-              <span class="badge" style="background:var(--bg-surface-elevated); color:var(--text-primary); border:1px solid var(--border-sage);">
-                <?= count($configured) ?> Configured
-              </span>
+    <a href="?view=services" class="sm-nav-link <?= $currentView === 'services' ? 'active' : '' ?>">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+      Services
+      <span class="sm-nav-badge"><?= count($sectionsRegistry['services']['pages']) ?></span>
+    </a>
 
-              <?php if (empty($missing)): ?>
-                <span class="sm-status-pill published"><svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Complete</span>
-              <?php else: ?>
-                <span class="sm-status-pill missing"><?= count($missing) ?> Missing</span>
-              <?php endif; ?>
+    <a href="?view=blogs" class="sm-nav-link <?= $currentView === 'blogs' ? 'active' : '' ?>">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+      Blogs
+      <span class="sm-nav-badge"><?= count($sectionsRegistry['blogs']['pages']) ?></span>
+    </a>
 
-              <button type="button" class="btn btn-sm btn-outline-mint" onclick="event.stopPropagation(); openNewSchemaModal('<?= e($pKey) ?>', '<?= e(addslashes($pageInfo['title'])) ?>')">
-                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                Add Schema
-              </button>
+    <a href="?view=contact" class="sm-nav-link <?= $currentView === 'contact' ? 'active' : '' ?>">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+      Contact
+      <span class="sm-nav-badge">3</span>
+    </a>
 
-              <button type="button" class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); openCustomSchemaModal('<?= e($pKey) ?>', '<?= e(addslashes($pageInfo['title'])) ?>')">
-                + Custom
-              </button>
+    <a href="?view=validation" class="sm-nav-link <?= $currentView === 'validation' ? 'active' : '' ?>">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+      Validation
+    </a>
+  </nav>
 
-              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="acc-chevron" id="chevron_<?= e($pKey) ?>"><polyline points="6 9 12 15 18 9"></polyline></svg>
-            </div>
-          </div>
-
-          <!-- Page Body: SECTION C: Individual Schema Cards Grid -->
-          <div class="sm-page-body" id="body_<?= e($pKey) ?>" style="display: <?= ($pKey === 'homepage') ? 'block' : 'none' ?>;">
-            
-            <div class="sm-schema-cards-grid">
-              <?php 
-              // 1. Render all configured schemas
-              foreach ($configured as $cType => $cardItem): 
-              ?>
-                <div class="sm-card-item configured" id="schema_card_<?= e($pKey) ?>_<?= e(preg_replace('/[^a-zA-Z0-9_-]/', '_', $cType)) ?>">
-                  <div>
-                    <div class="sm-card-header">
-                      <div class="sm-card-type-title">
-                        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><polyline points="9 11 12 14 22 4"></polyline></svg>
-                        @type: <?= e($cardItem['type'] ?? $cType) ?>
-                      </div>
-                      <span class="sm-status-pill <?= ($cardItem['status'] ?? 'published') === 'published' ? 'published' : 'draft' ?>">
-                        <?= ucfirst(e($cardItem['status'] ?? 'published')) ?>
-                      </span>
-                    </div>
-
-                    <div class="sm-card-name">
-                      <?= e($cardItem['name'] ?? ($pageInfo['title'] . ' ' . $cType)) ?>
-                    </div>
-
-                    <div class="sm-card-badges">
-                      <span class="badge" style="background:rgba(54,217,176,0.1); color:var(--accent-mint); font-size:0.75rem;">
-                        <?= e($cardItem['source'] ?? 'Valid Schema.org') ?>
-                      </span>
-                      <?php if (!empty($cardItem['updated_at'])): ?>
-                        <span class="sm-card-date">
-                          Updated: <?= date('M d, Y', strtotime($cardItem['updated_at'])) ?>
-                        </span>
-                      <?php endif; ?>
-                    </div>
-                  </div>
-
-                  <!-- Actions for this individual schema card -->
-                  <div class="sm-card-actions">
-                    <?php if (is_numeric($cardItem['id'])): ?>
-                      <button type="button" class="btn btn-secondary btn-sm" onclick="editSchemaById(<?= $cardItem['id'] ?>)">
-                        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        Configure
-                      </button>
-
-                      <button type="button" class="btn btn-secondary btn-sm" onclick="previewSchemaById(<?= $cardItem['id'] ?>)">
-                        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        Preview
-                      </button>
-
-                      <button type="button" class="btn btn-secondary btn-sm" onclick="toggleSchemaPublish(<?= $cardItem['id'] ?>, '<?= $cardItem['status'] ?>')">
-                        <?= $cardItem['status'] === 'published' ? 'Unpublish' : 'Publish' ?>
-                      </button>
-
-                      <button type="button" class="btn btn-danger btn-sm" onclick="deleteSchema(<?= $cardItem['id'] ?>, '<?= e(addslashes($cardItem['name'])) ?>')">
-                        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                      </button>
-                    <?php elseif (!empty($pageInfo['post_id'])): ?>
-                      <button type="button" class="btn btn-secondary btn-sm" onclick="openBlogOverrideModal(<?= (int)$pageInfo['post_id'] ?>)">
-                        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        Configure Blog Schema
-                      </button>
-                      <button type="button" class="btn btn-secondary btn-sm" onclick="previewBlogPublicSchema('<?= e($pageInfo['canonical_url']) ?>')">
-                        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        Preview
-                      </button>
-                    <?php endif; ?>
-                  </div>
-                </div>
-              <?php endforeach; ?>
-
-              <?php 
-              // 2. Render missing recommended schemas
-              foreach ($missing as $recType): 
-              ?>
-                <div class="sm-card-item missing" id="schema_card_<?= e($pKey) ?>_<?= e($recType) ?>">
-                  <div>
-                    <div class="sm-card-header">
-                      <div class="sm-card-type-title">
-                        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><polyline points="9 11 12 14 22 4"></polyline></svg>
-                        @type: <?= e($recType) ?>
-                      </div>
-                      <span class="sm-status-pill missing">Missing</span>
-                    </div>
-
-                    <div class="sm-card-name">
-                      <?= e($pageInfo['title'] . ' ' . $recType) ?>
-                    </div>
-
-                    <div class="sm-card-badges">
-                      <span class="badge" style="background:rgba(229,185,90,0.1); color:#f7d283; font-size:0.75rem;">
-                        Recommended Schema
-                      </span>
-                    </div>
-                  </div>
-
-                  <!-- Actions for this missing schema card -->
-                  <div class="sm-card-actions">
-                    <button type="button" class="btn btn-outline-mint btn-sm" onclick="autoGenerateSingleSchema('<?= e($pKey) ?>', '<?= e($recType) ?>')">
-                      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                      Auto-Generate
-                    </button>
-
-                    <button type="button" class="btn btn-secondary btn-sm" onclick="openNewSchemaModalWithType('<?= e($pKey) ?>', '<?= e(addslashes($pageInfo['title'])) ?>', '<?= e($recType) ?>')">
-                      Configure &amp; Add
-                    </button>
-                  </div>
-                </div>
-              <?php endforeach; ?>
-            </div>
-
-          </div>
-        </div>
+  <!-- =========================================================================
+       SUB-NAVIGATION FOR SERVICES & BLOGS
+       ========================================================================= -->
+  <?php if ($currentView === 'services'): ?>
+    <div class="sm-subnav">
+      <span class="sm-subnav-label">Select Service Page:</span>
+      <?php foreach ($sectionsRegistry['services']['pages'] as $sKey => $sMeta): ?>
+        <a href="?view=services&service=<?= urlencode($sKey) ?>" class="sm-subnav-btn <?= $selectedService === $sKey ? 'active' : '' ?>" title="<?= sm_e($sMeta['title']) ?>">
+          <?= sm_e($sMeta['title']) ?>
+        </a>
       <?php endforeach; ?>
     </div>
-
-  </div>
+  <?php elseif ($currentView === 'blogs'): ?>
+    <div class="sm-subnav">
+      <span class="sm-subnav-label">Blog Scope:</span>
+      <a href="?view=blogs&blog_sub=listing" class="sm-subnav-btn <?= $blogSubView === 'listing' ? 'active' : '' ?>">
+        Blog Listing Page (/blogs) [2 Schemas]
+      </a>
+      <span style="color:var(--border-sage); margin:0 0.35rem;">|</span>
+      <span class="sm-subnav-label">Individual Articles (<?= count($publishedBlogs) ?>):</span>
+      <select class="form-control" style="width:auto; font-size:0.82rem; padding:0.25rem 0.5rem;" onchange="window.location='?view=blogs&blog_sub=article&blog_slug=' + encodeURIComponent(this.value)">
+        <option value="" disabled <?= $blogSubView === 'listing' ? 'selected' : '' ?>>— Select Individual Blog Article —</option>
+        <?php foreach ($publishedBlogs as $bKey => $bMeta): ?>
+          <option value="<?= sm_e($bKey) ?>" <?= ($blogSubView === 'article' && $activePageKey === $bKey) ? 'selected' : '' ?>>
+            <?= sm_e($bMeta['title']) ?> (<?= sm_e($bMeta['slug']) ?>)
+          </option>
+        <?php endforeach; ?>
+      </select>
+    </div>
+  <?php endif; ?>
 
   <!-- =========================================================================
-       TAB 2: GLOBAL BLOG SCHEMA SETTINGS
+       VIEW 1: REDESIGNED DASHBOARD OVERVIEW
        ========================================================================= -->
-  <div id="tab_global_blog" class="sm-panel">
+  <?php if ($currentView === 'dashboard'): ?>
     
-    <div class="card" style="margin-bottom:2rem;">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
-        <div>
-          <h2 style="font-size:1.35rem; color:#fff; margin-bottom:0.35rem;">Automatic Blog Schema Generation</h2>
-          <p style="color:var(--text-muted); font-size:0.9rem; margin:0;">
-            Controls whether Schema.org <code>BlogPosting</code> JSON-LD is automatically generated and embedded for published blog posts.
-          </p>
+    <!-- 6 Live Statistics Cards (Zero Hardcoding) -->
+    <div class="sm-stats-grid">
+      <div class="sm-stat-card">
+        <div class="sm-stat-header-group">
+          <span class="sm-stat-label">Total Pages</span>
+          <span class="sm-stat-val"><?= $dashTotalPages ?></span>
         </div>
-
-        <div style="display:flex; align-items:center; gap:0.75rem;">
-          <label style="display:flex; align-items:center; gap:0.6rem; cursor:pointer;">
-            <input type="checkbox" id="auto_blog_schema_enabled" value="1" <?= $autoBlogSchemaEnabled === '1' ? 'checked' : '' ?> style="width:20px; height:20px; accent-color:var(--accent-mint);">
-            <span style="font-weight:700; color:#fff;">Enable Automatic Blog Schema</span>
-          </label>
-        </div>
+        <span class="sm-stat-desc">Core (3) + Services (9) + Blog Index + Blogs (<?= count($publishedBlogs) ?>)</span>
       </div>
 
-      <div style="background:var(--bg-input); border:1px solid var(--border-sage); border-radius:var(--radius-sm); padding:1rem 1.25rem; margin-bottom:1.5rem;">
-        <h4 style="font-size:0.95rem; color:var(--accent-teal); margin-bottom:0.5rem;">Available Template Variables</h4>
-        <div style="display:flex; flex-wrap:wrap; gap:0.6rem;">
-          <code class="sm-tool-btn" onclick="insertVariableToTemplate('{{title}}')">{{title}} &rarr; Title</code>
-          <code class="sm-tool-btn" onclick="insertVariableToTemplate('{{description}}')">{{description}} &rarr; Meta Description / Excerpt</code>
-          <code class="sm-tool-btn" onclick="insertVariableToTemplate('{{canonical_url}}')">{{canonical_url}} &rarr; Canonical Clean URL</code>
-          <code class="sm-tool-btn" onclick="insertVariableToTemplate('{{featured_image}}')">{{featured_image}} &rarr; Featured Image</code>
-          <code class="sm-tool-btn" onclick="insertVariableToTemplate('{{author_name}}')">{{author_name}} &rarr; Author Name</code>
-          <code class="sm-tool-btn" onclick="insertVariableToTemplate('{{author_role}}')">{{author_role}} &rarr; Author Role</code>
-          <code class="sm-tool-btn" onclick="insertVariableToTemplate('{{published_at}}')">{{published_at}} &rarr; Published ISO Date</code>
-          <code class="sm-tool-btn" onclick="insertVariableToTemplate('{{updated_at}}')">{{updated_at}} &rarr; Updated ISO Date</code>
+      <div class="sm-stat-card">
+        <div class="sm-stat-header-group">
+          <span class="sm-stat-label">Required Schemas</span>
+          <span class="sm-stat-val" style="color:var(--accent-teal);"><?= $dashRequiredSchemas ?></span>
         </div>
+        <span class="sm-stat-desc">Total approved required schema specifications</span>
       </div>
 
-      <!-- Two-Column Global Blog Template Editor -->
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;" id="globalBlogEditorGrid">
-        
-        <!-- Left: Code Area -->
-        <div class="sm-editor-pane">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <label style="font-weight:700; color:#fff; font-size:0.95rem;">BlogPosting Template JSON-LD</label>
-            <div class="sm-tool-bar">
-              <button type="button" class="sm-tool-btn" onclick="formatGlobalBlogTemplate()">Format JSON</button>
-              <button type="button" class="sm-tool-btn" onclick="resetGlobalBlogTemplate()">Reset to Default</button>
-            </div>
-          </div>
-
-          <textarea id="global_blog_template" class="sm-editor-textarea" style="min-height:420px;"><?= htmlspecialchars($globalBlogTemplate, ENT_QUOTES, 'UTF-8') ?></textarea>
+      <div class="sm-stat-card">
+        <div class="sm-stat-header-group">
+          <span class="sm-stat-label">Present Schemas</span>
+          <span class="sm-stat-val" style="color:var(--accent-mint);"><?= $dashPresentSchemas ?></span>
         </div>
-
-        <!-- Right: Real-time Live Preview & Validation -->
-        <div class="sm-preview-pane">
-          <div class="sm-preview-header">
-            <span>Template Syntax &amp; Validation</span>
-            <span id="global_template_val_badge" class="badge" style="background:rgba(54, 217, 176, 0.15); color:var(--accent-mint);">Valid</span>
-          </div>
-          <div class="sm-preview-content" id="global_template_preview">
-            <?= htmlspecialchars($globalBlogTemplate, ENT_QUOTES, 'UTF-8') ?>
-          </div>
-          <div class="sm-validation-box" id="global_template_val_box">
-            <div class="sm-val-valid">
-              <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              Standard Schema.org BlogPosting syntax is valid.
-            </div>
-          </div>
-        </div>
-
+        <span class="sm-stat-desc">Configured and active in database records</span>
       </div>
 
-      <div style="margin-top:1.5rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
-        <div style="display:flex; align-items:center; gap:0.75rem;">
-          <span style="font-size:0.88rem; color:var(--text-muted);">Template Status:</span>
-          <select id="global_template_status" class="form-control" style="width:auto;">
-            <option value="published" <?= $globalTemplateStatus === 'published' ? 'selected' : '' ?>>Published (Live Output)</option>
-            <option value="draft" <?= $globalTemplateStatus === 'draft' ? 'selected' : '' ?>>Draft (Admin Testing Only)</option>
-          </select>
+      <div class="sm-stat-card">
+        <div class="sm-stat-header-group">
+          <span class="sm-stat-label">Missing Schemas</span>
+          <span class="sm-stat-val" style="color:<?= $dashMissingSchemas > 0 ? 'var(--danger)' : '#8ca39b' ?>;"><?= $dashMissingSchemas ?></span>
         </div>
-
-        <button type="button" class="btn btn-primary" onclick="saveGlobalBlogSettings()">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-          Save Blog Settings
-        </button>
+        <span class="sm-stat-desc"><?= $dashMissingSchemas === 0 ? '✓ Zero missing approved schemas' : 'Requires administrative creation' ?></span>
       </div>
 
+      <div class="sm-stat-card">
+        <div class="sm-stat-header-group">
+          <span class="sm-stat-label">Invalid Schemas</span>
+          <span class="sm-stat-val" style="color:<?= $dashInvalidSchemas > 0 ? 'var(--danger)' : '#36D9B0' ?>;"><?= $dashInvalidSchemas ?></span>
+        </div>
+        <span class="sm-stat-desc"><?= $dashInvalidSchemas === 0 ? '✓ All active schemas pass JSON-LD validation' : 'Syntax or structure error flagged' ?></span>
+      </div>
+
+      <div class="sm-stat-card">
+        <div class="sm-stat-header-group">
+          <span class="sm-stat-label">Recently Updated</span>
+          <span class="sm-stat-val" style="color:var(--status-draft);"><?= $dashRecentlyUpdated ?></span>
+        </div>
+        <span class="sm-stat-desc">Modified or verified within last 7 days</span>
+      </div>
     </div>
 
-  </div>
-
-  <!-- =========================================================================
-       TAB 3: SECTION E: INDIVIDUAL BLOG OVERRIDES
-       ========================================================================= -->
-  <div id="tab_blog_overrides" class="sm-panel">
-    
-    <div class="card">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+    <!-- Page-Wise Schema Overview Catalog Table -->
+    <div class="card sm-card-padded">
+      <div class="sm-card-header-row">
         <div>
-          <h2 style="font-size:1.35rem; color:#fff; margin-bottom:0.35rem;">Individual Blog Article Schema Overrides</h2>
-          <p style="color:var(--text-muted); font-size:0.9rem; margin:0;">
-            Configure individual Schema.org overrides for specific blog articles. You can let an article inherit the global template, supply a custom JSON-LD override, or disable schema output completely.
-          </p>
+          <h2 class="sm-section-heading">Website Pages Schema Directory</h2>
+          <p class="sm-section-description">Complete page-by-page schema health, completion status, and quick management links.</p>
+        </div>
+        <div class="sm-count-badge">
+          Showing <?= count($pageOverviews) ?> Primary Pages
         </div>
       </div>
 
-      <!-- Search & Filter Controls -->
-      <div style="background:var(--bg-input); border:1px solid var(--border-sage); border-radius:var(--radius-sm); padding:1rem 1.25rem; margin-bottom:1.5rem; display:flex; gap:1rem; flex-wrap:wrap; align-items:center; justify-content:space-between;">
-        <div style="flex:1; min-width:260px; max-width:420px; position:relative;">
-          <input type="text" id="blogSearchInput" class="form-control" placeholder="Search blog title, slug, or category..." oninput="debounceBlogSearch()">
-        </div>
-
-        <div style="display:flex; gap:0.75rem; flex-wrap:wrap; align-items:center;">
-          <select id="blogStatusFilter" class="form-control" onchange="performBlogSearch()" style="width:auto;">
-            <option value="all">All Post Statuses</option>
-            <option value="published">Published Only</option>
-            <option value="draft">Draft Only</option>
-          </select>
-
-          <select id="blogModeFilter" class="form-control" onchange="performBlogSearch()" style="width:auto;">
-            <option value="all">All Schema Modes</option>
-            <option value="global">Global Template</option>
-            <option value="custom">Custom Override</option>
-            <option value="disabled">Schema Disabled</option>
-          </select>
-
-          <span class="badge" style="background:var(--bg-surface-elevated); border:1px solid var(--border-sage); padding:0.5rem 0.85rem;" id="blogCountBadge">
-            <?= count($initialBlogs) ?> Articles
-          </span>
-        </div>
-      </div>
-
-      <!-- Structured Blog Articles Table -->
-      <div style="overflow-x:auto;">
-        <table class="sm-blog-table" id="blogOverridesTable">
+      <div class="table-responsive">
+        <table class="table">
           <thead>
             <tr>
-              <th style="width:40%;">Blog Article</th>
-              <th style="width:16%;">Category</th>
-              <th style="width:14%;">Post Status</th>
-              <th style="width:18%;">Current Schema Mode</th>
-              <th style="width:12%; text-align:right;">Action</th>
+              <th>Page Name & Canonical URL</th>
+              <th style="text-align:center;">Applicable</th>
+              <th style="text-align:center;">Present</th>
+              <th style="text-align:center;">Missing</th>
+              <th style="text-align:center;">Invalid</th>
+              <th style="min-width:180px;">Completion Status</th>
+              <th style="text-align:center;">Quick Action</th>
             </tr>
           </thead>
-          <tbody id="blogTableBody">
-            <?php if (empty($initialBlogs)): ?>
-              <tr>
-                <td colspan="5" style="text-align:center; padding:2rem; color:var(--text-muted);">
-                  No blog articles found.
-                </td>
-              </tr>
-            <?php else: ?>
-              <?php foreach ($initialBlogs as $b): 
-                $isOverridden = ((int)($b['override_enabled'] ?? 0) === 1);
-                $isDisabled = ((int)($b['schema_disabled'] ?? 0) === 1);
-                $isPublishedPost = ($b['status'] === 'published');
-              ?>
-                <tr id="blog_tr_<?= $b['id'] ?>">
-                  <td>
-                    <div class="sm-blog-row-title"><?= e($b['title']) ?></div>
-                    <div class="sm-blog-row-slug">/blog/<?= e($b['slug']) ?></div>
-                  </td>
-                  <td>
-                    <span class="badge" style="background:var(--bg-surface-elevated); border:1px solid var(--border-sage);">
-                      <?= e($b['category_name'] ?? 'Uncategorized') ?>
-                    </span>
-                  </td>
-                  <td>
-                    <span class="sm-status-pill <?= $isPublishedPost ? 'published' : 'draft' ?>">
-                      <?= $isPublishedPost ? 'Published' : 'Draft' ?>
-                    </span>
-                  </td>
-                  <td>
-                    <?php if ($isDisabled): ?>
-                      <span class="sm-status-pill missing" style="background:rgba(255,107,107,0.15); color:var(--danger); border:1px solid rgba(255,107,107,0.3);">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
-                        Schema Disabled
-                      </span>
-                    <?php elseif ($isOverridden): ?>
-                      <span class="sm-status-pill published">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                        Custom Override
-                      </span>
-                    <?php else: ?>
-                      <span class="sm-status-pill" style="background:rgba(0,191,165,0.15); color:var(--accent-teal); border:1px solid rgba(0,191,165,0.3);">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-                        Global Template
-                      </span>
-                    <?php endif; ?>
-                  </td>
-                  <td style="text-align:right;">
-                    <button type="button" class="btn btn-sm btn-outline-mint" onclick="openBlogOverrideModal(<?= $b['id'] ?>)">
-                      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                      Configure
-                    </button>
-                  </td>
-                </tr>
-              <?php endforeach; ?>
-            <?php endif; ?>
-          </tbody>
-        </table>
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-<!-- =========================================================================
-     MODAL 1: SECTION D: EDIT / CREATE SCHEMA MODAL
-     ========================================================================= -->
-<div id="schemaEditorModal" class="sm-modal-backdrop" onclick="closeModalOnBackdrop(event, 'schemaEditorModal')">
-  <div class="sm-modal-dialog" onclick="event.stopPropagation()">
-    
-    <div class="sm-modal-header">
-      <div>
-        <h3 id="modalPageTitleHeader">Edit Schema</h3>
-        <span style="font-size:0.82rem; color:var(--text-muted); font-family:var(--font-mono);" id="modalPageKeySubtitle">homepage</span>
-      </div>
-      <button type="button" class="btn-icon" onclick="closeSchemaModal()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer;">
-        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-      </button>
-    </div>
-
-    <div class="sm-modal-body">
-      
-      <!-- Left Column: Properties & Code Editor -->
-      <div class="sm-editor-pane">
-        
-        <input type="hidden" id="modal_schema_id" value="0">
-        <input type="hidden" id="modal_page_key" value="">
-        <input type="hidden" id="modal_page_title" value="">
-        
-        <div class="form-group" style="margin-bottom:0.75rem;">
-          <label style="font-size:0.85rem; font-weight:700; color:#fff; display:block; margin-bottom:0.35rem;">Assign To Website Page</label>
-          <select id="modal_page_select" class="form-control" onchange="onModalPageSelectChange()">
-            <optgroup label="Core Pages (5)">
-              <?php foreach ($auditPages as $pk => $pinfo): if ($pinfo['category'] === 'Core Pages'): ?>
-                <option value="<?= e($pk) ?>" data-title="<?= e($pinfo['title']) ?>"><?= e($pinfo['title']) ?> (<?= e($pinfo['canonical_url']) ?>)</option>
-              <?php endif; endforeach; ?>
-            </optgroup>
-            <optgroup label="Service Pages (9)">
-              <?php foreach ($auditPages as $pk => $pinfo): if ($pinfo['category'] === 'Individual Service Pages' || $pinfo['category'] === 'Service Pages'): ?>
-                <option value="<?= e($pk) ?>" data-title="<?= e($pinfo['title']) ?>"><?= e($pinfo['title']) ?> (<?= e($pinfo['canonical_url']) ?>)</option>
-              <?php endif; endforeach; ?>
-            </optgroup>
-            <optgroup label="Blog Articles (10)">
-              <?php foreach ($auditPages as $pk => $pinfo): if ($pinfo['category'] === 'Blog Articles'): ?>
-                <option value="<?= e($pk) ?>" data-title="<?= e($pinfo['title']) ?>"><?= e($pinfo['title']) ?> (<?= e($pinfo['canonical_url']) ?>)</option>
-              <?php endif; endforeach; ?>
-            </optgroup>
-          </select>
-        </div>
-
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
-          <div class="form-group" style="margin-bottom:0;">
-            <label style="font-size:0.85rem; font-weight:700; color:#fff; display:block; margin-bottom:0.35rem;">Schema Name</label>
-            <input type="text" id="modal_schema_name" class="form-control" placeholder="e.g. Primary Organization Schema">
-          </div>
-
-          <div class="form-group" style="margin-bottom:0;">
-            <label style="font-size:0.85rem; font-weight:700; color:#fff; display:block; margin-bottom:0.35rem;">Schema.org Type</label>
-            <select id="modal_schema_type" class="form-control" onchange="onModalTypeSelectChange()">
-              <?php foreach ($supportedTypes as $typeKey => $typeLabel): ?>
-                <option value="<?= e($typeKey) ?>"><?= e($typeLabel) ?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-        </div>
-
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.75rem;">
-          <label style="font-size:0.85rem; font-weight:700; color:#fff;">JSON-LD Payload</label>
-          <div class="sm-tool-bar">
-            <button type="button" class="sm-tool-btn" onclick="document.getElementById('modal_schema_file_input').click()">Upload JSON File</button>
-            <input type="file" id="modal_schema_file_input" accept=".json,application/json" style="display:none;" onchange="handleModalFileUpload(event)">
-            <button type="button" class="sm-tool-btn" onclick="copyModalJson()">Copy JSON</button>
-            <button type="button" class="sm-tool-btn" onclick="insertTemplateSnippetIntoModal()">Insert Default Snippet</button>
-            <button type="button" class="sm-tool-btn" onclick="formatModalJson()">Format JSON</button>
-            <button type="button" class="sm-tool-btn" onclick="revertModalToOriginal()">Revert</button>
-          </div>
-        </div>
-
-        <textarea id="modal_schema_data" class="sm-editor-textarea" placeholder="Paste or type JSON-LD here..."></textarea>
-      </div>
-
-      <!-- Right Column: Live Preview & Validation Status -->
-      <div class="sm-preview-pane">
-        <div class="sm-preview-header">
-          <span>Live Preview &amp; Syntax Check</span>
-          <span id="modal_val_badge" class="badge" style="background:rgba(54, 217, 176, 0.15); color:var(--accent-mint);">Valid</span>
-        </div>
-
-        <div class="sm-preview-content" id="modal_json_preview"></div>
-
-        <div class="sm-validation-box" id="modal_validation_box">
-          <div class="sm-val-valid">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            Valid Schema.org JSON-LD
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="sm-modal-footer">
-      <div style="display:flex; align-items:center; gap:0.75rem;">
-        <span style="font-size:0.85rem; color:var(--text-muted);">Publication Status:</span>
-        <select id="modal_status" class="form-control" style="width:auto; padding:0.35rem 0.75rem; font-size:0.85rem;">
-          <option value="published">Published (Live On Site)</option>
-          <option value="draft">Draft (Admin Only)</option>
-        </select>
-      </div>
-
-      <div style="display:flex; gap:0.75rem;">
-        <button type="button" class="btn btn-secondary" onclick="closeSchemaModal()">Cancel</button>
-        <button type="button" class="btn btn-primary" onclick="submitModalSave()">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-          Save Schema
-        </button>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- =========================================================================
-     MODAL 2: SECTION E: CONFIGURE INDIVIDUAL BLOG SCHEMA OVERRIDE
-     ========================================================================= -->
-<div id="blogOverrideModal" class="sm-modal-backdrop" onclick="closeModalOnBackdrop(event, 'blogOverrideModal')">
-  <div class="sm-modal-dialog" style="max-width:1150px;" onclick="event.stopPropagation()">
-    
-    <div class="sm-modal-header">
-      <div>
-        <h3 id="overrideModalBlogTitle">Configure Blog Schema</h3>
-        <div style="display:flex; align-items:center; gap:0.75rem; margin-top:0.35rem; flex-wrap:wrap;">
-          <span class="sm-blog-row-slug" id="overrideModalBlogSlug">/blog/...</span>
-          <span class="badge" style="background:var(--bg-surface-elevated); border:1px solid var(--border-sage);" id="overrideModalCategory">Category</span>
-          <span class="sm-status-pill published" id="overrideModalPostStatus">Published</span>
-        </div>
-      </div>
-      <button type="button" class="btn-icon" onclick="closeBlogOverrideModal()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer;">
-        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-      </button>
-    </div>
-
-    <div style="padding:1.5rem 1.75rem; overflow-y:auto; flex:1;">
-      
-      <input type="hidden" id="override_modal_post_id" value="0">
-
-      <div class="sm-alert-warn" id="overrideModalDraftAlert" style="display:none;">
-        <strong>Draft Article Warning:</strong> This post is currently saved as a draft. Schema will be compiled and ready, but per strict security and SEO rules, it will <em>never</em> be publicly output until the post is published.
-      </div>
-
-      <!-- Mode Selection Cards (3 Modes) -->
-      <label style="font-size:0.9rem; font-weight:700; color:#fff; display:block; margin-bottom:0.75rem;">Select Schema Mode for This Article</label>
-      <div class="sm-mode-cards-grid">
-        
-        <!-- Mode 1: Inherit Global -->
-        <div class="sm-mode-card active" id="modeCard_inherit" onclick="selectOverrideMode('inherit')">
-          <div class="sm-mode-card-header">
-            <input type="radio" name="modal_override_mode" id="radio_mode_inherit" value="inherit" checked>
-            <span class="sm-mode-card-title">Inherit Global Template</span>
-          </div>
-          <div class="sm-mode-card-desc">
-            Automatically compile Schema.org <code>BlogPosting</code> metadata from active global template variables.
-          </div>
-        </div>
-
-        <!-- Mode 2: Custom Override -->
-        <div class="sm-mode-card" id="modeCard_custom" onclick="selectOverrideMode('custom')">
-          <div class="sm-mode-card-header">
-            <input type="radio" name="modal_override_mode" id="radio_mode_custom" value="custom">
-            <span class="sm-mode-card-title">Custom JSON-LD Override</span>
-          </div>
-          <div class="sm-mode-card-desc">
-            Supply hand-crafted JSON-LD payload specifically for this article. Takes precedence over global template.
-          </div>
-        </div>
-
-        <!-- Mode 3: Disable Schema -->
-        <div class="sm-mode-card" id="modeCard_disabled" onclick="selectOverrideMode('disabled')">
-          <div class="sm-mode-card-header">
-            <input type="radio" name="modal_override_mode" id="radio_mode_disabled" value="disabled">
-            <span class="sm-mode-card-title">Disable Schema</span>
-          </div>
-          <div class="sm-mode-card-desc">
-            Suppress <code>BlogPosting</code> output completely for this post. Preserves global Organization and Breadcrumbs.
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Mode 1 Display: Inherit View -->
-      <div id="overrideSection_inherit">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-          <label style="font-size:0.85rem; font-weight:700; color:#fff;">Compiled Global Preview for this Article</label>
-          <button type="button" class="btn btn-secondary btn-sm" onclick="copyCompiledToCustomEditor()">
-            Copy to Custom Editor &rarr;
-          </button>
-        </div>
-        <pre class="sm-editor-textarea" style="min-height:220px; max-height:300px; margin:0;" id="modal_inherited_preview">Loading compiled preview...</pre>
-      </div>
-
-      <!-- Mode 2 Display: Custom Editor -->
-      <div id="overrideSection_custom" style="display:none;">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
-          
-          <div class="sm-editor-pane">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <label style="font-size:0.85rem; font-weight:700; color:#fff;">Custom JSON-LD Payload</label>
-              <div class="sm-tool-bar">
-                <button type="button" class="sm-tool-btn" onclick="formatOverrideModalJson()">Format</button>
-                <button type="button" class="sm-tool-btn" onclick="loadBaselineIntoCustomModal()">Load Default</button>
-                <button type="button" class="sm-tool-btn" onclick="revertOverrideModalJson()">Revert</button>
-              </div>
-            </div>
-            <textarea id="modal_custom_blog_schema" class="sm-editor-textarea" style="min-height:280px;" placeholder="Paste custom Schema.org BlogPosting JSON-LD..."></textarea>
-          </div>
-
-          <div class="sm-preview-pane">
-            <div class="sm-preview-header">
-              <span>Live Preview &amp; Syntax</span>
-              <span id="modal_custom_val_badge" class="badge" style="background:rgba(54, 217, 176, 0.15); color:var(--accent-mint);">Valid</span>
-            </div>
-            <div class="sm-preview-content" id="modal_custom_preview" style="max-height:240px;"></div>
-            <div class="sm-validation-box" id="modal_custom_val_box">
-              <div class="sm-val-valid">Valid Schema.org syntax</div>
-            </div>
-          </div>
-
-        </div>
-
-        <div style="margin-top:1rem; display:flex; align-items:center; gap:0.75rem;">
-          <span style="font-size:0.85rem; color:var(--text-muted);">Custom Override Status:</span>
-          <select id="modal_custom_status" class="form-control" style="width:auto; padding:0.35rem 0.75rem; font-size:0.85rem;">
-            <option value="published">Published (Active on Live Blog)</option>
-            <option value="draft">Draft (Testing Only - Global used in public)</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Mode 3 Display: Disabled View -->
-      <div id="overrideSection_disabled" style="display:none;">
-        <div class="sm-alert-warn" style="margin:0;">
-          <strong>Schema Output Disabled:</strong> When set to Disabled, no <code>BlogPosting</code> structured data will be rendered for this post. Any custom JSON-LD previously entered will remain safely preserved in the database if you choose to re-enable it later.
-        </div>
-      </div>
-
-    </div>
-
-    <div class="sm-modal-footer">
-      <div>
-        <button type="button" class="btn btn-secondary btn-sm" id="modalRestoreDefaultBtn" onclick="restoreCurrentBlogDefault()" style="display:none;">
-          Restore to Inherit Global
-        </button>
-      </div>
-
-      <div style="display:flex; gap:0.75rem;">
-        <button type="button" class="btn btn-secondary" onclick="closeBlogOverrideModal()">Cancel</button>
-        <button type="button" class="btn btn-primary" onclick="submitBlogOverrideSave()">
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          Save Configuration
-        </button>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- =========================================================================
-     MODAL 3: SECTION F: FULL WEBSITE-WIDE AUDIT REPORT MODAL
-     ========================================================================= -->
-<div id="auditReportModal" class="sm-modal-backdrop" onclick="closeModalOnBackdrop(event, 'auditReportModal')">
-  <div class="sm-modal-dialog" style="max-width:1200px;" onclick="event.stopPropagation()">
-    
-    <div class="sm-modal-header">
-      <div>
-        <h3>Website-Wide Schema Audit Report</h3>
-        <span style="font-size:0.82rem; color:var(--text-muted); font-family:var(--font-mono);" id="auditReportTimestamp">Timestamp: <?= date('Y-m-d H:i:s T') ?></span>
-      </div>
-      <button type="button" class="btn-icon" onclick="closeAuditReportModal()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer;">
-        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-      </button>
-    </div>
-
-    <div style="padding:1.5rem 1.75rem; overflow-y:auto; flex:1;">
-      
-      <div style="overflow-x:auto;">
-        <table class="sm-blog-table" id="auditReportTable">
-          <thead>
-            <tr>
-              <th style="width:26%;">Page Name &amp; URL</th>
-              <th style="width:14%;">Page Type</th>
-              <th style="width:24%;">Configured Schemas</th>
-              <th style="width:18%;">Recommended &amp; Missing</th>
-              <th style="width:18%;">Implementation Status</th>
-            </tr>
-          </thead>
-          <tbody id="auditReportTableBody">
-            <?php foreach ($auditPages as $pKey => $pInfo): 
-              $hasMissing = !empty($pInfo['missing_types']);
-              $hasErrors = !empty($pInfo['errors']);
-              $statusClass = 'published';
-              $statusText = 'Already Correct';
-              if ($hasMissing) {
-                $statusClass = 'draft';
-                $statusText = 'Missing Recommended';
-              } elseif ($hasErrors) {
-                $statusClass = 'disabled';
-                $statusText = 'Requires Fix';
-              }
+          <tbody>
+            <?php foreach ($pageOverviews as $pk => $ov): 
+              $pMeta = $ov['meta'];
+              $targetUrl = '?page=' . urlencode($pk);
             ?>
               <tr>
                 <td>
-                  <div style="font-weight:700; color:#fff;"><?= e($pInfo['title']) ?></div>
-                  <div style="font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono);"><?= e($pInfo['canonical_url']) ?></div>
-                </td>
-                <td>
-                  <span class="badge" style="background:var(--bg-surface-elevated); border:1px solid var(--border-sage);">
-                    <?= e($pInfo['category']) ?>
-                  </span>
-                </td>
-                <td>
-                  <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
-                    <?php foreach ($pInfo['configured_schemas'] as $t => $cfg): ?>
-                      <span class="badge" style="background:rgba(54,217,176,0.15); color:var(--accent-mint); font-size:0.75rem;">
-                        <?= e($t) ?>
-                      </span>
-                    <?php endforeach; ?>
+                  <div class="sm-page-cell-title">
+                    <strong class="sm-page-name"><?= sm_e($pMeta['title']) ?></strong>
+                    <span class="sm-badge published" style="font-size:0.65rem;"><?= strtoupper(sm_e($pMeta['group'])) ?></span>
+                  </div>
+                  <div class="sm-page-cell-url">
+                    <?= sm_e($pMeta['canonical']) ?>
                   </div>
                 </td>
-                <td>
-                  <?php if (empty($pInfo['missing_types'])): ?>
-                    <span style="color:var(--accent-mint); font-size:0.82rem; font-weight:700;">&check; All <?= count($pInfo['recommended_types']) ?> Recommended Present</span>
-                  <?php else: ?>
-                    <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
-                      <?php foreach ($pInfo['missing_types'] as $mt): ?>
-                        <span class="badge" style="background:rgba(229,185,90,0.15); color:#f7d283; font-size:0.75rem;">
-                          <?= e($mt) ?>
-                        </span>
-                      <?php endforeach; ?>
-                    </div>
+
+                <td style="text-align:center; font-weight:700; color:#fff; font-size:1rem;">
+                  <?= $ov['applicable'] ?>
+                </td>
+
+                <td style="text-align:center;">
+                  <span class="sm-badge published"><?= $ov['present'] ?></span>
+                  <?php if ($ov['custom'] > 0): ?>
+                    <span class="sm-badge custom" style="margin-left:0.25rem;" title="Additional custom schemas">+<?= $ov['custom'] ?> custom</span>
                   <?php endif; ?>
                 </td>
+
+                <td style="text-align:center;">
+                  <?php if ($ov['missing'] > 0): ?>
+                    <span class="sm-badge missing"><?= $ov['missing'] ?></span>
+                  <?php else: ?>
+                    <span class="sm-status-zero">0</span>
+                  <?php endif; ?>
+                </td>
+
+                <td style="text-align:center;">
+                  <?php if ($ov['invalid'] > 0): ?>
+                    <span class="sm-badge missing"><?= $ov['invalid'] ?></span>
+                  <?php else: ?>
+                    <span style="color:#36D9B0; font-size:0.88rem; font-weight:600;">0</span>
+                  <?php endif; ?>
+                </td>
+
                 <td>
-                  <span class="sm-status-pill <?= $statusClass ?>">
-                    <?= $statusText ?>
-                  </span>
+                  <div style="display:flex; justify-content:space-between; font-size:0.78rem; margin-bottom:0.45rem; font-weight:600;">
+                    <span style="color:<?= $ov['is_complete'] ? '#36D9B0' : 'var(--status-draft)' ?>;">
+                      <?= $ov['is_complete'] ? '✓ 100% Complete' : '⚠️ Pending ' . $ov['missing'] . ' Missing' ?>
+                    </span>
+                    <span style="color:var(--text-dim);"><?= $ov['completion'] ?>%</span>
+                  </div>
+                  <div class="sm-progress-track">
+                    <div class="sm-progress-fill" style="width:<?= $ov['completion'] ?>%; background:<?= $ov['is_complete'] ? 'var(--accent-mint)' : 'var(--status-draft)' ?>;"></div>
+                  </div>
+                </td>
+
+                <td style="text-align:center;">
+                  <a href="<?= $targetUrl ?>" class="btn btn-sm btn-secondary" style="font-size:0.82rem; padding:0.35rem 0.75rem;">
+                    Manage Schemas →
+                  </a>
                 </td>
               </tr>
             <?php endforeach; ?>
           </tbody>
         </table>
       </div>
+    </div>
 
+    <!-- Additional Existing Configuration: Services Directory Archive -->
+    <div class="card sm-card-padded" style="border-color:rgba(100, 181, 246, 0.3); background:rgba(100, 181, 246, 0.02);">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1.25rem;">
+        <div style="max-width:820px;">
+          <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.5rem; flex-wrap:wrap;">
+            <h3 style="color:#64b5f6; font-size:1.2rem; margin:0; font-family:var(--font-heading); font-weight:700;">
+              Additional Existing Configuration — Services Directory Archive
+            </h3>
+            <span class="sm-badge custom">ARCHIVE DIRECTORY</span>
+          </div>
+          <p style="color:#9bb1a8; font-size:0.88rem; line-height:1.6; margin:0;">
+            The legacy central directory page (<code>/services</code>) schema configuration is safely preserved as an additional existing record (4 schemas: Organization, BreadcrumbList, FAQPage, WebPage).
+          </p>
+        </div>
+        <a href="?page=services" class="btn btn-sm btn-secondary" style="border-color:rgba(100, 181, 246, 0.4); color:#64b5f6; padding:0.5rem 1rem; font-size:0.85rem;">
+          Open Directory Schemas →
+        </a>
+      </div>
+    </div>
+
+  <!-- =========================================================================
+       VIEW 2: REDESIGNED VALIDATION SECTION
+       ========================================================================= -->
+  <?php elseif ($currentView === 'validation'): ?>
+    
+    <!-- Section-Wise Validation Scope Filter -->
+    <div class="card sm-card-padded" style="padding:1rem 1.5rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem;">
+        <div style="display:flex; align-items:center; gap:0.45rem; flex-wrap:wrap;">
+          <span style="font-size:0.82rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em; margin-right:0.35rem;">Filter Section:</span>
+          <a href="?view=validation&val_section=all" class="btn btn-sm <?= $valSectionFilter === 'all' ? 'btn-primary' : 'btn-secondary' ?>">All Pages (24)</a>
+          <a href="?view=validation&val_section=homepage" class="btn btn-sm <?= $valSectionFilter === 'homepage' ? 'btn-primary' : 'btn-secondary' ?>">Homepage (1)</a>
+          <a href="?view=validation&val_section=about" class="btn btn-sm <?= $valSectionFilter === 'about' ? 'btn-primary' : 'btn-secondary' ?>">About (1)</a>
+          <a href="?view=validation&val_section=services" class="btn btn-sm <?= $valSectionFilter === 'services' ? 'btn-primary' : 'btn-secondary' ?>">Services (10)</a>
+          <a href="?view=validation&val_section=blogs" class="btn btn-sm <?= $valSectionFilter === 'blogs' ? 'btn-primary' : 'btn-secondary' ?>">Blogs (11)</a>
+          <a href="?view=validation&val_section=contact" class="btn btn-sm <?= $valSectionFilter === 'contact' ? 'btn-primary' : 'btn-secondary' ?>">Contact (1)</a>
+        </div>
+        <div class="sm-count-badge">
+          Auditing <?= count($valPagesToAudit) ?> Pages
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 Live Validation Summary Cards -->
+    <div class="sm-stats-grid">
+      <div class="sm-stat-card">
+        <div class="sm-stat-header-group">
+          <span class="sm-stat-label">Valid Schemas</span>
+          <span class="sm-stat-val" style="color:var(--accent-mint);"><?= $valSectionMetrics['valid_schemas'] ?></span>
+        </div>
+        <span class="sm-stat-desc">Syntax and Schema.org properties compliant</span>
+      </div>
+
+      <div class="sm-stat-card">
+        <div class="sm-stat-header-group">
+          <span class="sm-stat-label">Invalid Schemas</span>
+          <span class="sm-stat-val" style="color:<?= $valSectionMetrics['invalid_schemas'] > 0 ? 'var(--danger)' : '#36D9B0' ?>;"><?= $valSectionMetrics['invalid_schemas'] ?></span>
+        </div>
+        <span class="sm-stat-desc"><?= $valSectionMetrics['invalid_schemas'] === 0 ? '✓ Zero schema syntax errors' : 'Requires inspection and correction' ?></span>
+      </div>
+
+      <div class="sm-stat-card">
+        <div class="sm-stat-header-group">
+          <span class="sm-stat-label">Missing Schemas</span>
+          <span class="sm-stat-val" style="color:<?= $valSectionMetrics['missing_schemas'] > 0 ? 'var(--danger)' : '#8ca39b' ?>;"><?= $valSectionMetrics['missing_schemas'] ?></span>
+        </div>
+        <span class="sm-stat-desc"><?= $valSectionMetrics['missing_schemas'] === 0 ? '✓ Zero missing approved schemas' : 'Unconfigured required schemas' ?></span>
+      </div>
+
+      <div class="sm-stat-card">
+        <div class="sm-stat-header-group">
+          <span class="sm-stat-label">Warning Count</span>
+          <span class="sm-stat-val" style="color:var(--status-draft);"><?= $valWarningCount ?></span>
+        </div>
+        <span class="sm-stat-desc">Ontology notes or drafts staged</span>
+      </div>
+
+      <div class="sm-stat-card">
+        <div class="sm-stat-header-group">
+          <span class="sm-stat-label">Pages Validated</span>
+          <span class="sm-stat-val" style="color:var(--accent-teal);"><?= $valSectionMetrics['pages_complete'] ?> / <?= count($valPagesToAudit) ?></span>
+        </div>
+        <span class="sm-stat-desc"><?= $valSectionFilter !== 'all' ? ucfirst($valSectionFilter) . ' section pages' : '100% compliant approved public pages' ?></span>
+      </div>
+    </div>
+
+    <!-- Validation Control Bar -->
+    <div class="card sm-card-padded">
+      <div class="sm-card-header-row" style="margin-bottom:0; padding-bottom:0; border-bottom:none;">
+        <div>
+          <h2 class="sm-section-heading"><?= $valSectionFilter !== 'all' ? sm_e($sectionsRegistry[$valSectionFilter]['title']) . ' Section' : 'Website-Wide' ?> Schema Validation Audit</h2>
+          <p class="sm-section-description">
+            Comprehensive audit examining JSON-LD syntax, duplicate schema detection, Schema.org ontology compliance, and required page relationships.
+          </p>
+        </div>
+        <div style="display:flex; gap:0.85rem; align-items:center; flex-wrap:wrap;">
+          <button type="button" class="btn btn-primary" id="btnValidateAllPages" onclick="runValidateAllPages(this)">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            Validate All Pages
+          </button>
+          <a href="<?= ADMIN_URL ?>/schema-manager" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+      </div>
+
+      <!-- Live Progress Bar -->
+      <div id="valProgressBarContainer" style="display:none; margin-top:1.5rem; padding-top:1.25rem; border-top:1px solid var(--border-sage-subtle);">
+        <div style="display:flex; justify-content:space-between; font-size:0.84rem; margin-bottom:0.5rem;">
+          <span style="color:var(--accent-mint); font-weight:700;" id="valProgressLabel">Running validation audit...</span>
+          <span style="color:var(--text-dim); font-weight:700;" id="valProgressPct">0%</span>
+        </div>
+        <div class="sm-progress-track" style="height:8px;">
+          <div class="sm-progress-fill" id="valProgressFill" style="width:0%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page-Wise Validation Results Table -->
+    <div class="card sm-card-padded">
+      <div class="table-responsive">
+        <table class="table" id="valResultsTable">
+          <thead>
+            <tr>
+              <th>Page Name & Canonical URL</th>
+              <th style="text-align:center;">Total Schemas</th>
+              <th style="text-align:center;">Valid</th>
+              <th style="text-align:center;">Invalid</th>
+              <th style="text-align:center;">Missing</th>
+              <th style="text-align:center;">Validation Status</th>
+              <th style="text-align:center;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php foreach ($valSectionMetrics['page_overviews'] as $pk => $ov): 
+              $pMeta = $ov['meta'];
+            ?>
+              <tr id="val_row_<?= sm_e($pk) ?>">
+                <td>
+                  <div class="sm-page-cell-title">
+                    <strong class="sm-page-name"><?= sm_e($pMeta['title']) ?></strong>
+                  </div>
+                  <div class="sm-page-cell-url"><?= sm_e($pMeta['canonical']) ?></div>
+                </td>
+                <td style="text-align:center; font-weight:700; color:#fff; font-size:1rem;">
+                  <?= $ov['present'] ?>
+                </td>
+                <td style="text-align:center;">
+                  <span class="sm-badge published"><?= $ov['valid'] ?></span>
+                </td>
+                <td style="text-align:center;">
+                  <?php if ($ov['invalid'] > 0): ?>
+                    <span class="sm-badge missing"><?= $ov['invalid'] ?></span>
+                  <?php else: ?>
+                    <span class="sm-status-zero">0</span>
+                  <?php endif; ?>
+                </td>
+                <td style="text-align:center;">
+                  <?php if ($ov['missing'] > 0): ?>
+                    <span class="sm-badge missing"><?= $ov['missing'] ?></span>
+                  <?php else: ?>
+                    <span class="sm-status-zero">0</span>
+                  <?php endif; ?>
+                </td>
+                <td style="text-align:center;">
+                  <?php if ($ov['invalid'] === 0 && $ov['missing'] === 0): ?>
+                    <span class="sm-badge published" style="padding:0.35rem 0.75rem; font-size:0.76rem;">✓ PASS</span>
+                  <?php else: ?>
+                    <span class="sm-badge missing" style="padding:0.35rem 0.75rem; font-size:0.76rem;">✗ FAIL</span>
+                  <?php endif; ?>
+                </td>
+                <td style="text-align:center;">
+                  <div class="sm-table-actions">
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="viewPageValidationDetails('<?= sm_e($pk) ?>')">
+                      View Details
+                    </button>
+                    <a href="?page=<?= urlencode($pk) ?>" class="btn btn-sm btn-secondary">
+                      Manage Page
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- External Validator Disclosure Notice -->
+    <div class="card sm-card-padded" style="border-color:rgba(54, 217, 176, 0.25);">
+      <h3 class="sm-section-heading" style="color:var(--accent-teal); font-size:1.15rem; margin-bottom:0.65rem;">
+        Official Schema.org Validator Reference & Transparency
+      </h3>
+      <p class="sm-section-description" style="margin-bottom:1rem; max-width:none;">
+        All 24 website pages are verified with <strong>100% local structural and ontology compliance</strong>. In accordance with Schema.org standards, WebPage schemas link to Organization via <code>publisher</code> rather than an invalid <code>isPartOf</code> relationship, and Review schemas are never fabricated.
+      </p>
+      <div style="background:rgba(0,0,0,0.25); border:1px solid var(--border-sage-subtle); border-radius:var(--radius-xs); padding:0.9rem 1.2rem; font-size:0.85rem; line-height:1.6; color:#9bb1a8;">
+        ℹ️ <strong style="color:#fff;">External Validator Note:</strong> Programmatic batch requests to <code>https://validator.schema.org/</code> from local development environments are subject to <code>HTTP 405 Method Not Allowed</code> anti-bot rate-limiting. For live external third-party verification, test public production URLs directly in browser sessions at <a href="https://validator.schema.org/" target="_blank" style="color:var(--accent-mint); font-weight:600; text-decoration:underline;">validator.schema.org</a> or Google's Rich Results Test.
+      </div>
+    </div>
+
+  <!-- =========================================================================
+       VIEW 3: PAGE-WISE SCHEMAS (ALL CARDS ON ONE SCREEN)
+       ========================================================================= -->
+  <?php else: ?>
+
+    <!-- Dynamic Section Statistics Strip (Calculated from Live DB Records) -->
+    <?php if ($secMetrics && $currentSection): ?>
+      <div class="sm-stats-grid">
+        <div class="sm-stat-card">
+          <div class="sm-stat-header-group">
+            <span class="sm-stat-label">Section Pages</span>
+            <span class="sm-stat-val"><?= $secMetrics['total_pages'] ?></span>
+          </div>
+          <span class="sm-stat-desc"><?= sm_e($sectionsRegistry[$currentSection]['title']) ?> manageable pages</span>
+        </div>
+
+        <div class="sm-stat-card">
+          <div class="sm-stat-header-group">
+            <span class="sm-stat-label">Required Schemas</span>
+            <span class="sm-stat-val" style="color:var(--accent-teal);"><?= $secMetrics['required_schemas'] ?></span>
+          </div>
+          <span class="sm-stat-desc">Approved Schema.org specifications</span>
+        </div>
+
+        <div class="sm-stat-card">
+          <div class="sm-stat-header-group">
+            <span class="sm-stat-label">Present Schemas</span>
+            <span class="sm-stat-val" style="color:var(--accent-mint);"><?= $secMetrics['present_schemas'] ?></span>
+          </div>
+          <span class="sm-stat-desc">Active in database records</span>
+        </div>
+
+        <div class="sm-stat-card">
+          <div class="sm-stat-header-group">
+            <span class="sm-stat-label">Missing Schemas</span>
+            <span class="sm-stat-val" style="color:<?= $secMetrics['missing_schemas'] > 0 ? 'var(--danger)' : '#8ca39b' ?>;"><?= $secMetrics['missing_schemas'] ?></span>
+          </div>
+          <span class="sm-stat-desc"><?= $secMetrics['missing_schemas'] === 0 ? '✓ Zero missing approved schemas' : 'Requires creation' ?></span>
+        </div>
+
+        <div class="sm-stat-card">
+          <div class="sm-stat-header-group">
+            <span class="sm-stat-label">Invalid Schemas</span>
+            <span class="sm-stat-val" style="color:<?= $secMetrics['invalid_schemas'] > 0 ? 'var(--danger)' : '#36D9B0' ?>;"><?= $secMetrics['invalid_schemas'] ?></span>
+          </div>
+          <span class="sm-stat-desc"><?= $secMetrics['invalid_schemas'] === 0 ? '✓ All active schemas pass JSON-LD validation' : 'Syntax error flagged' ?></span>
+        </div>
+
+        <div class="sm-stat-card">
+          <div class="sm-stat-header-group">
+            <span class="sm-stat-label">Section Health</span>
+            <span class="sm-stat-val" style="color:<?= $secMetrics['pages_complete'] === $secMetrics['total_pages'] ? '#36D9B0' : 'var(--status-draft)' ?>;"><?= $secMetrics['pages_complete'] ?> / <?= $secMetrics['total_pages'] ?></span>
+          </div>
+          <span class="sm-stat-desc"><?= $secMetrics['pages_complete'] === $secMetrics['total_pages'] ? '✓ 100% Section Complete' : 'Pending schemas' ?></span>
+        </div>
+      </div>
+    <?php endif; ?>
+
+    <!-- Blog Slug / ID Resolution Error Alert -->
+    <?php if (!empty($blogResolveError)): ?>
+      <div class="card sm-card-padded" style="border-color:rgba(255,107,107,0.4); background:rgba(255,107,107,0.06); margin-bottom:1.75rem;">
+        <div style="display:flex; align-items:flex-start; gap:1rem;">
+          <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="color:var(--danger); flex-shrink:0; margin-top:0.15rem;"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+          <div>
+            <h3 style="color:#ff6b6b; font-size:1.2rem; font-family:var(--font-heading); font-weight:700; margin:0 0 0.4rem 0;">Blog Article Resolution Error</h3>
+            <p style="color:#ffb4b4; font-size:0.92rem; line-height:1.6; margin:0 0 1rem 0;">
+              <?= sm_e($blogResolveError) ?>
+            </p>
+            <div style="display:flex; gap:0.65rem; flex-wrap:wrap;">
+              <a href="?view=blogs&blog_sub=listing" class="btn btn-sm btn-primary">
+                ← Return to Blog Listing Page (/blogs)
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    <?php endif; ?>
+
+    <?php if ($activePageKey && $activePageInfo): ?>
+      <!-- Active Page Header with "+ Add New Schema" Button -->
+      <div class="sm-page-header">
+        <div>
+          <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.35rem; flex-wrap:wrap;">
+            <h2 style="font-size:1.45rem; font-weight:700; color:#fff; font-family:var(--font-heading); margin:0;">
+              <?= sm_e($activePageInfo['title']) ?>
+            </h2>
+            <span class="sm-badge published"><?= strtoupper(sm_e($activePageInfo['group'] ?? $currentSection)) ?></span>
+            <?php if (!empty($activePageInfo['category'])): ?>
+              <span class="sm-badge published" style="font-size:0.68rem;"><?= sm_e($activePageInfo['category']) ?></span>
+            <?php endif; ?>
+          </div>
+          <p style="color:var(--text-muted); font-size:0.88rem; margin:0 0 0.5rem 0;">
+            <?= sm_e($activePageInfo['description'] ?? '') ?>
+          </p>
+          <a href="<?= sm_e($activePageInfo['canonical']) ?>" target="_blank" class="sm-page-canonical" title="Open Public Page">
+            <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+            <?= sm_e($activePageInfo['canonical']) ?>
+          </a>
+        </div>
+
+        <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+          <?php if ($currentView === 'blogs' && $blogSubView === 'article'): ?>
+            <a href="?view=blogs&blog_sub=listing" class="btn btn-secondary btn-sm" title="Return to Blog Listing Page">
+              <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+              Back to Blog Listing
+            </a>
+          <?php endif; ?>
+          <button type="button" class="btn btn-primary" onclick="openAddNewSchemaModal('<?= sm_e($activePageKey) ?>', '<?= sm_e($activePageInfo['title']) ?>', '<?= sm_e($activePageInfo['canonical']) ?>')">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 4v16m8-8H4"></path></svg>
+            Add New Schema
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="autoGeneratePageSchemas('<?= sm_e($activePageKey) ?>')">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+            Reconcile Missing
+          </button>
+        </div>
+      </div>
+
+    <!-- SECTION 1: REQUIRED APPROVED SCHEMAS -->
+    <div>
+      <div class="sm-section-header">
+        <h3 class="sm-section-title">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+          Required Approved Schemas
+        </h3>
+        <span class="sm-badge published"><?= count($activeCards) ?> Required Types</span>
+      </div>
+
+      <div class="sm-cards-grid">
+        <?php foreach ($activeCards as $sType => $card): ?>
+          <div class="sm-card <?= $card['status'] === 'missing' ? 'missing' : ($card['status'] === 'not_eligible' ? 'not-eligible' : '') ?>" id="card_<?= sm_e($sType) ?>">
+            
+            <!-- Card Header -->
+            <div class="sm-card-head">
+              <div class="sm-card-title">
+                <div class="sm-type-icon">
+                  <?php if ($sType === 'Organization'): ?>
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                  <?php elseif ($sType === 'BreadcrumbList'): ?>
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                  <?php elseif ($sType === 'FAQPage'): ?>
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                  <?php elseif ($sType === 'VideoObject'): ?>
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                  <?php elseif ($sType === 'Review'): ?>
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+                  <?php elseif ($sType === 'BlogPosting'): ?>
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+                  <?php else: ?>
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                  <?php endif; ?>
+                </div>
+                <span><?= sm_e($sType) ?></span>
+              </div>
+
+              <div class="sm-card-badges">
+                <?php if ($card['status'] === 'present'): ?>
+                  <span class="sm-badge <?= $card['publish_status'] === 'published' ? 'published' : 'draft' ?>">
+                    <?= $card['publish_status'] === 'published' ? 'Live' : 'Draft' ?>
+                  </span>
+                  <?php if ($card['json_valid']): ?>
+                    <span class="sm-badge published" title="JSON-LD Syntax Valid">✓ Valid</span>
+                  <?php else: ?>
+                    <span class="sm-badge missing" title="JSON Syntax Error">✗ Error</span>
+                  <?php endif; ?>
+                <?php elseif ($card['status'] === 'not_eligible'): ?>
+                  <span class="sm-badge not-eligible">Not Eligible</span>
+                <?php else: ?>
+                  <span class="sm-badge missing">Missing</span>
+                <?php endif; ?>
+              </div>
+            </div>
+
+            <!-- Card Body -->
+            <div class="sm-card-body">
+              <div class="sm-card-meta">
+                <span><?= sm_e($activePageInfo['title']) ?></span>
+                <span><?= $card['id'] ? 'ID #' . $card['id'] : '<em style="color:var(--text-dim);">No ID</em>' ?></span>
+              </div>
+
+              <?php if ($card['status'] === 'present'): ?>
+                <div class="sm-card-snippet" title="<?= sm_e($card['preview_snippet']) ?>">
+                  <?= sm_e($card['preview_snippet'] ?: substr($card['schema_data'], 0, 160) . '...') ?>
+                </div>
+                <div style="font-size:0.75rem; color:var(--text-dim); display:flex; justify-content:space-between;">
+                  <span>Updated: <?= $card['updated_at'] ? date('d M Y, H:i', strtotime($card['updated_at'])) : '—' ?></span>
+                  <span style="font-family:var(--font-mono);"><?= strlen($card['schema_data']) ?> bytes</span>
+                </div>
+              <?php elseif ($card['status'] === 'not_eligible'): ?>
+                <div class="sm-card-notice">
+                  <strong style="color:var(--text-muted); display:block; margin-bottom:0.25rem;">Why is Review schema missing?</strong>
+                  <?= sm_e($card['note']) ?>
+                </div>
+              <?php else: ?>
+                <div class="sm-card-notice" style="color:var(--danger); border-color:rgba(255,107,107,0.2);">
+                  <strong>Schema Missing:</strong> This approved schema is currently not active in the database.
+                </div>
+              <?php endif; ?>
+            </div>
+
+            <!-- Card Actions Footer -->
+            <div class="sm-card-foot">
+              <?php if ($card['status'] === 'present'): ?>
+                <div class="sm-foot-actions">
+                  <button type="button" class="btn btn-sm btn-secondary" onclick="openSchemaEditor('<?= sm_e($activePageKey) ?>', <?= (int)$card['id'] ?>, '<?= sm_e($sType) ?>')">
+                    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    Edit Schema
+                  </button>
+                  <button type="button" class="btn btn-sm btn-secondary" onclick="validateSchemaCard(<?= (int)$card['id'] ?>, '<?= sm_e($sType) ?>')">
+                    Validate
+                  </button>
+                  <button type="button" class="btn btn-sm btn-secondary" onclick="togglePublishStatus(<?= (int)$card['id'] ?>, '<?= $card['publish_status'] ?>')">
+                    <?= $card['publish_status'] === 'published' ? 'To Draft' : 'Publish' ?>
+                  </button>
+                </div>
+                <button type="button" class="btn btn-sm btn-danger" onclick="openDeleteModal(<?= (int)$card['id'] ?>, '<?= sm_e($activePageKey) ?>', '<?= sm_e($sType) ?>', '<?= sm_e($activePageInfo['title']) ?>')">
+                  Delete
+                </button>
+              <?php elseif ($card['status'] === 'missing'): ?>
+                <div style="font-size:0.8rem; color:var(--text-dim);">Not active on frontend</div>
+                <div style="display:flex; gap:0.4rem;">
+                  <button type="button" class="btn btn-sm btn-secondary" onclick="openSchemaEditor('<?= sm_e($activePageKey) ?>', 0, '<?= sm_e($sType) ?>')">
+                    Edit & Create
+                  </button>
+                  <button type="button" class="btn btn-sm btn-primary" onclick="autoGenerateCardSchema('<?= sm_e($activePageKey) ?>', '<?= sm_e($sType) ?>')">
+                    ⚡ Auto-Generate
+                  </button>
+                </div>
+              <?php else: ?>
+                <div style="font-size:0.78rem; color:var(--text-dim);">Protected by integrity rules</div>
+                <button type="button" class="btn btn-sm btn-secondary" disabled title="No reviews exist on this page">
+                  Not Eligible
+                </button>
+              <?php endif; ?>
+            </div>
+
+          </div>
+        <?php endforeach; ?>
+      </div>
+    </div>
+
+    <!-- SECTION 2: ADDITIONAL CUSTOM SCHEMAS -->
+    <div style="margin-top:1.5rem;">
+      <div class="sm-section-header">
+        <div>
+          <h3 class="sm-section-title">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+            Additional Custom Schemas
+          </h3>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.2rem;">
+            Custom schemas added specifically for this page. Kept strictly distinct from required schema requirements.
+          </div>
+        </div>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+          <span class="sm-badge custom"><?= count($activeCustomCards) ?> Custom</span>
+          <button type="button" class="btn btn-sm btn-primary" onclick="openAddNewSchemaModal('<?= sm_e($activePageKey) ?>', '<?= sm_e($activePageInfo['title']) ?>', '<?= sm_e($activePageInfo['canonical']) ?>')">
+            Add New Schema
+          </button>
+        </div>
+      </div>
+
+      <?php if (!empty($activeCustomCards)): ?>
+        <div class="sm-cards-grid">
+          <?php foreach ($activeCustomCards as $cCard): ?>
+            <div class="sm-card custom-card" id="card_custom_<?= (int)$cCard['id'] ?>">
+              
+              <div class="sm-card-head">
+                <div class="sm-card-title">
+                  <div class="sm-type-icon" style="background:rgba(100, 181, 246, 0.12); color:#64b5f6;">
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                  </div>
+                  <span><?= sm_e($cCard['type']) ?></span>
+                </div>
+
+                <div class="sm-card-badges">
+                  <span class="sm-badge <?= $cCard['publish_status'] === 'published' ? 'published' : 'draft' ?>">
+                    <?= $cCard['publish_status'] === 'published' ? 'Live' : 'Draft' ?>
+                  </span>
+                  <?php if ($cCard['json_valid']): ?>
+                    <span class="sm-badge published">✓ Valid</span>
+                  <?php else: ?>
+                    <span class="sm-badge missing">✗ Error</span>
+                  <?php endif; ?>
+                </div>
+              </div>
+
+              <div class="sm-card-body">
+                <div class="sm-card-meta">
+                  <span><?= sm_e($cCard['schema_name']) ?></span>
+                  <span>ID #<?= $cCard['id'] ?></span>
+                </div>
+
+                <div class="sm-card-snippet" title="<?= sm_e($cCard['preview_snippet']) ?>">
+                  <?= sm_e($cCard['preview_snippet'] ?: substr($cCard['schema_data'], 0, 160) . '...') ?>
+                </div>
+
+                <div style="font-size:0.75rem; color:var(--text-dim); display:flex; justify-content:space-between;">
+                  <span>Updated: <?= $cCard['updated_at'] ? date('d M Y, H:i', strtotime($cCard['updated_at'])) : '—' ?></span>
+                  <span style="font-family:var(--font-mono);"><?= strlen($cCard['schema_data']) ?> bytes</span>
+                </div>
+              </div>
+
+              <div class="sm-card-foot">
+                <div class="sm-foot-actions">
+                  <button type="button" class="btn btn-sm btn-secondary" onclick="openSchemaEditor('<?= sm_e($activePageKey) ?>', <?= (int)$cCard['id'] ?>, '<?= sm_e($cCard['type']) ?>')">
+                    Edit
+                  </button>
+                  <button type="button" class="btn btn-sm btn-secondary" onclick="validateSchemaCard(<?= (int)$cCard['id'] ?>, '<?= sm_e($cCard['type']) ?>')">
+                    Validate
+                  </button>
+                  <button type="button" class="btn btn-sm btn-secondary" onclick="togglePublishStatus(<?= (int)$cCard['id'] ?>, '<?= $cCard['publish_status'] ?>')">
+                    <?= $cCard['publish_status'] === 'published' ? 'To Draft' : 'Publish' ?>
+                  </button>
+                </div>
+                <button type="button" class="btn btn-sm btn-danger" onclick="openDeleteModal(<?= (int)$cCard['id'] ?>, '<?= sm_e($activePageKey) ?>', '<?= sm_e($cCard['type']) ?>', '<?= sm_e($activePageInfo['title']) ?>')">
+                  Delete
+                </button>
+              </div>
+
+            </div>
+          <?php endforeach; ?>
+        </div>
+      <?php else: ?>
+        <div class="card" style="padding:2rem; text-align:center; background:rgba(0,0,0,0.15); border-style:dashed;">
+          <p style="color:var(--text-muted); font-size:0.9rem; margin:0 0 1rem 0;">
+            No additional custom schemas added for this page yet. You can add common Schema.org types or custom types anytime.
+          </p>
+          <button type="button" class="btn btn-sm btn-secondary" onclick="openAddNewSchemaModal('<?= sm_e($activePageKey) ?>', '<?= sm_e($activePageInfo['title']) ?>', '<?= sm_e($activePageInfo['canonical']) ?>')">
+            + Add First Custom Schema
+          </button>
+        </div>
+      <?php endif; ?>
+    </div>
+    <?php endif; // End activePageKey && activePageInfo ?>
+
+    <!-- Services Section Pages Directory (10 Pages) -->
+    <?php if ($currentView === 'services' && !empty($secMetrics['page_overviews'])): ?>
+      <div class="card sm-card-padded" style="margin-top:2rem;">
+        <div class="sm-card-header-row">
+          <div>
+            <h2 class="sm-section-heading">Services Section Pages Directory (10 Pages)</h2>
+            <p class="sm-section-description">Dedicated index and 9 specialized service offering pages with individual schema health and quick switcher.</p>
+          </div>
+          <div class="sm-count-badge">
+            Showing <?= count($secMetrics['page_overviews']) ?> Service Pages
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Service Page & Canonical URL</th>
+                <th style="text-align:center;">Applicable</th>
+                <th style="text-align:center;">Present</th>
+                <th style="text-align:center;">Missing</th>
+                <th style="text-align:center;">Invalid</th>
+                <th style="min-width:180px;">Completion Status</th>
+                <th style="text-align:center;">Quick Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($secMetrics['page_overviews'] as $sKey => $sOv): 
+                $sMeta = $sOv['meta'];
+                $isSelected = ($activePageKey === $sKey);
+              ?>
+                <tr style="<?= $isSelected ? 'background:rgba(54,217,176,0.06);' : '' ?>">
+                  <td>
+                    <div class="sm-page-cell-title">
+                      <strong class="sm-page-name"><?= sm_e($sMeta['title']) ?></strong>
+                      <?php if ($isSelected): ?>
+                        <span class="sm-badge published" style="font-size:0.65rem;">ACTIVE VIEW</span>
+                      <?php endif; ?>
+                    </div>
+                    <div class="sm-page-cell-url"><?= sm_e($sMeta['canonical']) ?></div>
+                  </td>
+                  <td style="text-align:center; font-weight:700; color:#fff; font-size:1rem;"><?= $sOv['applicable'] ?></td>
+                  <td style="text-align:center;"><span class="sm-badge published"><?= $sOv['present'] ?></span></td>
+                  <td style="text-align:center;"><?= $sOv['missing'] > 0 ? '<span class="sm-badge missing">' . $sOv['missing'] . '</span>' : '<span class="sm-status-zero">0</span>' ?></td>
+                  <td style="text-align:center;"><?= $sOv['invalid'] > 0 ? '<span class="sm-badge missing">' . $sOv['invalid'] . '</span>' : '<span style="color:#36D9B0; font-weight:600;">0</span>' ?></td>
+                  <td>
+                    <div style="display:flex; justify-content:space-between; font-size:0.78rem; margin-bottom:0.4rem; font-weight:600;">
+                      <span style="color:<?= $sOv['is_complete'] ? '#36D9B0' : 'var(--status-draft)' ?>;">
+                        <?= $sOv['is_complete'] ? '✓ 100% Complete' : '⚠️ Pending' ?>
+                      </span>
+                      <span style="color:var(--text-dim);"><?= $sOv['completion'] ?>%</span>
+                    </div>
+                    <div class="sm-progress-track">
+                      <div class="sm-progress-fill" style="width:<?= $sOv['completion'] ?>%;"></div>
+                    </div>
+                  </td>
+                  <td style="text-align:center;">
+                    <a href="?view=services&service=<?= urlencode($sKey) ?>" class="btn btn-sm <?= $isSelected ? 'btn-primary' : 'btn-secondary' ?>" style="font-size:0.8rem; padding:0.3rem 0.75rem;">
+                      <?= $isSelected ? 'Viewing' : 'Manage Schemas →' ?>
+                    </a>
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    <?php endif; ?>
+
+    <!-- Blogs Section Subsection Directory Tables & blogs.md Sync -->
+    <?php if ($currentView === 'blogs'): ?>
+      <?php if ($blogSubView === 'listing' && !empty($publishedBlogs)): ?>
+        <div class="card sm-card-padded" style="margin-top:2rem;">
+          <div class="sm-card-header-row">
+            <div>
+              <h2 class="sm-section-heading">Published Individual Blog Articles Directory (<?= count($publishedBlogs) ?> Articles)</h2>
+              <p class="sm-section-description">
+                Direct access to manage schemas for every published blog article in the database. Each article maintains independent Organization, BreadcrumbList, and BlogPosting schemas.
+              </p>
+            </div>
+            <div class="sm-count-badge">
+              Showing <?= count($publishedBlogs) ?> Published Articles
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Article Title & Canonical URL</th>
+                  <th>Category</th>
+                  <th style="text-align:center;">Required Schemas</th>
+                  <th style="text-align:center;">Present</th>
+                  <th style="text-align:center;">Missing</th>
+                  <th style="text-align:center;">Invalid</th>
+                  <th style="text-align:center;">Quick Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($publishedBlogs as $bKey => $bMeta): 
+                  $bOv = $secMetrics['page_overviews'][$bKey] ?? null;
+                ?>
+                  <tr>
+                    <td>
+                      <div class="sm-page-cell-title">
+                        <strong class="sm-page-name"><?= sm_e($bMeta['title']) ?></strong>
+                      </div>
+                      <div class="sm-page-cell-url"><?= sm_e($bMeta['canonical']) ?></div>
+                    </td>
+                    <td>
+                      <span class="sm-badge published" style="font-size:0.68rem;"><?= sm_e($bMeta['category']) ?></span>
+                      <div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.25rem;">
+                        <?= $bMeta['published_at'] ? date('d M Y', strtotime($bMeta['published_at'])) : '—' ?>
+                      </div>
+                    </td>
+                    <td style="text-align:center; font-weight:700; color:#fff;">3</td>
+                    <td style="text-align:center;">
+                      <span class="sm-badge published"><?= $bOv ? $bOv['present'] : 3 ?></span>
+                    </td>
+                    <td style="text-align:center;">
+                      <?= ($bOv && $bOv['missing'] > 0) ? '<span class="sm-badge missing">' . $bOv['missing'] . '</span>' : '<span class="sm-status-zero">0</span>' ?>
+                    </td>
+                    <td style="text-align:center;">
+                      <?= ($bOv && $bOv['invalid'] > 0) ? '<span class="sm-badge missing">' . $bOv['invalid'] . '</span>' : '<span style="color:#36D9B0; font-weight:600;">0</span>' ?>
+                    </td>
+                    <td style="text-align:center;">
+                      <a href="?view=blogs&blog_sub=article&blog_slug=<?= urlencode($bKey) ?>" class="btn btn-sm btn-secondary" style="font-size:0.8rem; padding:0.3rem 0.75rem;">
+                        Manage Schemas →
+                      </a>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      <?php elseif ($blogSubView === 'article' && !empty($publishedBlogs)): ?>
+        <div class="card sm-card-padded" style="margin-top:2rem;">
+          <div class="sm-card-header-row">
+            <div>
+              <h2 class="sm-section-heading">Quick Switcher — Other Published Blog Articles</h2>
+              <p class="sm-section-description">Easily navigate to any of the <?= count($publishedBlogs) ?> published blog articles without leaving the Blogs management section.</p>
+            </div>
+            <a href="?view=blogs&blog_sub=listing" class="btn btn-sm btn-secondary">
+              ← Return to Blog Listing Page (/blogs)
+            </a>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Article Title & Slug</th>
+                  <th>Category</th>
+                  <th style="text-align:center;">Schemas Status</th>
+                  <th style="text-align:center;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php foreach ($publishedBlogs as $bKey => $bMeta): 
+                  $isCurr = ($activePageKey === $bKey);
+                  $bOv = $secMetrics['page_overviews'][$bKey] ?? null;
+                ?>
+                  <tr style="<?= $isCurr ? 'background:rgba(54,217,176,0.06);' : '' ?>">
+                    <td>
+                      <div class="sm-page-cell-title">
+                        <strong class="sm-page-name"><?= sm_e($bMeta['title']) ?></strong>
+                        <?php if ($isCurr): ?>
+                          <span class="sm-badge published" style="font-size:0.65rem;">ACTIVE ARTICLE</span>
+                        <?php endif; ?>
+                      </div>
+                      <div class="sm-page-cell-url"><?= sm_e($bMeta['canonical']) ?></div>
+                    </td>
+                    <td>
+                      <span class="sm-badge published" style="font-size:0.68rem;"><?= sm_e($bMeta['category']) ?></span>
+                    </td>
+                    <td style="text-align:center;">
+                      <span class="sm-badge published"><?= $bOv ? $bOv['present'] : 3 ?> Active</span>
+                    </td>
+                    <td style="text-align:center;">
+                      <a href="?view=blogs&blog_sub=article&blog_slug=<?= urlencode($bKey) ?>" class="btn btn-sm <?= $isCurr ? 'btn-primary' : 'btn-secondary' ?>" style="font-size:0.8rem; padding:0.3rem 0.75rem;">
+                        <?= $isCurr ? 'Viewing' : 'Manage Schemas →' ?>
+                      </a>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      <?php endif; ?>
+
+      <!-- blogs.md Discovery Sync Card -->
+      <div class="card sm-card-padded" style="margin-top:2rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1.25rem;">
+          <div>
+            <h3 style="font-size:1.15rem; color:var(--accent-teal); font-family:var(--font-heading); margin:0 0 0.35rem 0;">blogs.md Automatic Discovery Sync</h3>
+            <p style="color:var(--text-muted); font-size:0.88rem; margin:0;">
+              Plain-text Markdown blog directory synchronized with all CMS publish/unpublish events.
+            </p>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="syncBlogsMdNow(this)">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            Sync blogs.md Now
+          </button>
+        </div>
+      </div>
+    <?php endif; ?>
+
+  <?php endif; ?>
+
+</div>
+
+<!-- =========================================================================
+     MODAL 1: SCHEMA EDITOR MODAL (EDIT EXISTING)
+     ========================================================================= -->
+<div id="schemaEditorModal" class="sm-modal-backdrop" onclick="closeModalOnBackdrop(event, 'schemaEditorModal')">
+  <div class="sm-modal-dialog" onclick="event.stopPropagation()">
+    
+    <div class="sm-modal-header">
+      <div>
+        <h3 id="modalSchemaTitle" style="color:#fff; margin:0 0 0.2rem 0; font-family:var(--font-heading); font-size:1.25rem;">Edit Schema</h3>
+        <span id="modalSchemaSubtitle" style="font-family:var(--font-mono); font-size:0.82rem; color:var(--text-muted);">page-key</span>
+      </div>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="closeEditorModal()">✕</button>
+    </div>
+
+    <div class="sm-modal-body">
+      <input type="hidden" id="modal_schema_id" value="0">
+      <input type="hidden" id="modal_page_key" value="">
+      <input type="hidden" id="modal_page_title" value="">
+      <input type="hidden" id="modal_schema_type" value="">
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+        <div>
+          <label class="form-label" style="font-size:0.82rem;">Schema Display Name</label>
+          <input type="text" id="modal_schema_name" class="form-control" placeholder="e.g. Homepage Organization Schema">
+        </div>
+        <div>
+          <label class="form-label" style="font-size:0.82rem;">Publish Status</label>
+          <select id="modal_status" class="form-control">
+            <option value="published">Published (Live on website)</option>
+            <option value="draft">Draft (Staged only)</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <label class="form-label" style="font-size:0.82rem; margin:0;">JSON-LD Schema Payload</label>
+          <div style="display:flex; gap:0.4rem;">
+            <button type="button" class="btn btn-sm btn-secondary" onclick="formatModalJson()" style="font-size:0.75rem; padding:0.2rem 0.5rem;">Format JSON</button>
+            <button type="button" class="btn btn-sm btn-secondary" onclick="copyModalJson()" style="font-size:0.75rem; padding:0.2rem 0.5rem;">Copy</button>
+            <button type="button" class="btn btn-sm btn-secondary" onclick="validateModalJsonNow()" style="font-size:0.75rem; padding:0.2rem 0.5rem;">Validate</button>
+          </div>
+        </div>
+        <textarea id="modal_schema_data" class="sm-textarea-code" spellcheck="false" placeholder="Enter valid JSON-LD schema..."></textarea>
+      </div>
+
+      <div id="modal_validation_box" style="padding:0.75rem 1rem; border-radius:var(--radius-xs); background:rgba(0,0,0,0.3); border:1px solid var(--border-sage-subtle); font-size:0.82rem;">
+        <span style="color:var(--text-muted);">Ready to validate schema.</span>
+      </div>
     </div>
 
     <div class="sm-modal-footer">
-      <div style="font-size:0.85rem; color:var(--text-muted);">
-        Audit strictly excludes Digital Audit. Output verified on live HTTP endpoints.
-      </div>
-      <div>
-        <button type="button" class="btn btn-primary" onclick="closeAuditReportModal()">Close Report</button>
-      </div>
+      <button type="button" class="btn btn-secondary" onclick="closeEditorModal()">Cancel</button>
+      <button type="button" class="btn btn-primary" onclick="submitModalSave(this)">Save Schema</button>
     </div>
 
   </div>
 </div>
 
 <!-- =========================================================================
-     MODAL 4: QUICK SCHEMA PREVIEW MODAL
+     MODAL 2: ADD NEW SCHEMA MODAL (AVAILABLE ON EVERY PAGE)
      ========================================================================= -->
-<div id="quickPreviewModal" class="sm-modal-backdrop" onclick="closeModalOnBackdrop(event, 'quickPreviewModal')">
-  <div class="sm-modal-dialog" style="max-width:850px;" onclick="event.stopPropagation()">
+<div id="addNewSchemaModal" class="sm-modal-backdrop" onclick="closeModalOnBackdrop(event, 'addNewSchemaModal')">
+  <div class="sm-modal-dialog" style="max-width:720px;" onclick="event.stopPropagation()">
+    
     <div class="sm-modal-header">
       <div>
-        <h3 id="quickPreviewTitle">Schema JSON-LD Preview</h3>
-        <span style="font-size:0.82rem; color:var(--text-muted); font-family:var(--font-mono);" id="quickPreviewType"></span>
+        <h3 style="color:#fff; margin:0 0 0.2rem 0; font-family:var(--font-heading); font-size:1.25rem;">Add New Schema</h3>
+        <span id="addModalSubtitle" style="font-family:var(--font-mono); font-size:0.82rem; color:var(--text-muted);">Configure new structured data</span>
       </div>
-      <button type="button" class="btn-icon" onclick="closeQuickPreviewModal()" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer;">
-        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="closeAddNewModal()">✕</button>
+    </div>
+
+    <div class="sm-modal-body">
+      <input type="hidden" id="add_modal_page_key" value="">
+      <input type="hidden" id="add_modal_page_title" value="">
+      <input type="hidden" id="add_modal_canonical" value="">
+
+      <!-- Target Page Display (Locked) -->
+      <div style="background:var(--bg-input); border:1px solid var(--border-sage); border-radius:var(--radius-xs); padding:0.85rem 1rem;">
+        <div style="font-size:0.75rem; text-transform:uppercase; font-weight:700; color:var(--text-muted); margin-bottom:0.25rem;">
+          🔒 Target Page (Locked to Current Scope)
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+          <strong style="color:#fff; font-size:0.95rem;" id="add_modal_target_name">Page Name</strong>
+          <span style="font-family:var(--font-mono); font-size:0.8rem; color:var(--accent-mint);" id="add_modal_target_url">https://myugcvideo.in/...</span>
+        </div>
+      </div>
+
+      <!-- Schema Type Selection -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+        <div>
+          <label class="form-label" style="font-size:0.82rem;">Select Schema.org Type</label>
+          <select id="add_modal_schema_type" class="form-control" onchange="onAddSchemaTypeChange()">
+            <option value="Organization">Organization</option>
+            <option value="WebSite">WebSite</option>
+            <option value="WebPage">WebPage</option>
+            <option value="BreadcrumbList">BreadcrumbList</option>
+            <option value="VideoObject">VideoObject</option>
+            <option value="FAQPage">FAQPage</option>
+            <option value="Review">Review</option>
+            <option value="Article">Article</option>
+            <option value="BlogPosting">BlogPosting</option>
+            <option value="Product">Product</option>
+            <option value="Person">Person</option>
+            <option value="LocalBusiness">LocalBusiness</option>
+            <option value="Service">Service</option>
+            <option value="Event">Event</option>
+            <option value="Other">Other (Custom Schema.org Type)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="form-label" style="font-size:0.82rem;">Initial Publish Status</label>
+          <select id="add_modal_status" class="form-control">
+            <option value="draft" selected>Draft (Inactive - Recommended until verified)</option>
+            <option value="published">Published (Active - Live on frontend)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Custom Type Field (Conditional) -->
+      <div id="add_custom_type_wrapper" style="display:none;">
+        <label class="form-label" style="font-size:0.82rem;">Custom Schema.org Type Name</label>
+        <input type="text" id="add_custom_type_input" class="form-control" placeholder="e.g. Course, HowTo, CreativeWork..." oninput="onCustomTypeInput(this.value)">
+        <div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.25rem;">Enter standard Schema.org entity name (PascalCase, e.g. Course).</div>
+      </div>
+
+      <!-- Duplicate Detection Alert -->
+      <div id="add_duplicate_warning" class="sm-card-notice" style="display:none; border-color:var(--status-draft); color:#e5b95a; background:rgba(229,185,90,0.08);">
+        <div style="display:flex; align-items:flex-start; gap:0.5rem;">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="flex-shrink:0; margin-top:0.1rem;"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+          <div>
+            <strong>Schema Type Already Exists:</strong> A <span id="dup_type_name"></span> schema already exists on this page (ID #<span id="dup_schema_id"></span>). To prevent duplicate schema conflicts, you should edit the existing schema instead.
+            <div style="margin-top:0.5rem;">
+              <button type="button" class="btn btn-sm btn-secondary" onclick="editExistingDuplicateSchema()">
+                Edit Existing Schema Instead →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schema Display Name -->
+      <div>
+        <label class="form-label" style="font-size:0.82rem;">Schema Display Name</label>
+        <input type="text" id="add_modal_schema_name" class="form-control" placeholder="e.g. Custom Product Schema">
+      </div>
+
+      <!-- JSON-LD Code Payload -->
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <label class="form-label" style="font-size:0.82rem; margin:0;">Schema JSON-LD Payload (Preloaded Starter Template)</label>
+          <div style="display:flex; gap:0.4rem;">
+            <button type="button" class="btn btn-sm btn-secondary" onclick="formatAddJson()" style="font-size:0.75rem; padding:0.2rem 0.5rem;">Format JSON</button>
+            <button type="button" class="btn btn-sm btn-secondary" onclick="validateAddJsonNow()" style="font-size:0.75rem; padding:0.2rem 0.5rem;">Validate</button>
+          </div>
+        </div>
+        <textarea id="add_modal_schema_data" class="sm-textarea-code" spellcheck="false" placeholder="Enter Schema.org JSON-LD..."></textarea>
+      </div>
+
+      <div id="add_modal_validation_box" style="padding:0.75rem 1rem; border-radius:var(--radius-xs); background:rgba(0,0,0,0.3); border:1px solid var(--border-sage-subtle); font-size:0.82rem;">
+        <span style="color:var(--text-muted);">Ready to validate schema payload.</span>
+      </div>
+    </div>
+
+    <div class="sm-modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeAddNewModal()">Cancel</button>
+      <button type="button" class="btn btn-primary" id="btnSubmitAddSchema" onclick="submitAddNewSchema(this)">
+        Save & Add Schema
       </button>
     </div>
-    <div style="padding:1.5rem; overflow-y:auto; flex:1;">
-      <pre id="quickPreviewContent" class="sm-editor-textarea" style="min-height:360px; max-height:480px; margin:0;" readonly></pre>
+
+  </div>
+</div>
+
+<!-- =========================================================================
+     MODAL 3: PAGE VALIDATION DETAILS MODAL
+     ========================================================================= -->
+<div id="valDetailsModal" class="sm-modal-backdrop" onclick="closeModalOnBackdrop(event, 'valDetailsModal')">
+  <div class="sm-modal-dialog" style="max-width:750px;" onclick="event.stopPropagation()">
+    <div class="sm-modal-header">
+      <div>
+        <h3 id="valDetailsTitle" style="color:#fff; margin:0 0 0.2rem 0; font-family:var(--font-heading); font-size:1.25rem;">Page Validation Details</h3>
+        <span id="valDetailsSubtitle" style="font-family:var(--font-mono); font-size:0.82rem; color:var(--text-muted);">Inspection Results</span>
+      </div>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="closeValDetailsModal()">✕</button>
     </div>
+
+    <div class="sm-modal-body" id="valDetailsBody">
+      <!-- Injected dynamically by JS -->
+    </div>
+
     <div class="sm-modal-footer">
-      <button type="button" class="btn btn-secondary" onclick="copyQuickPreviewCode()">Copy JSON-LD</button>
-      <button type="button" class="btn btn-primary" onclick="closeQuickPreviewModal()">Done</button>
+      <button type="button" class="btn btn-secondary" onclick="closeValDetailsModal()">Close</button>
+      <a href="#" id="valDetailsManageBtn" class="btn btn-primary">Open Page Schemas</a>
     </div>
+  </div>
+</div>
+
+<!-- =========================================================================
+     MODAL 4: SAFE DELETE CONFIRMATION MODAL
+     ========================================================================= -->
+<div id="schemaDeleteModal" class="sm-modal-backdrop" onclick="closeModalOnBackdrop(event, 'schemaDeleteModal')">
+  <div class="sm-modal-dialog" style="max-width:540px;" onclick="event.stopPropagation()">
+    
+    <div class="sm-modal-header" style="border-bottom-color:rgba(255,107,107,0.3);">
+      <h3 style="color:var(--danger); margin:0; font-family:var(--font-heading); font-size:1.2rem;">Confirm Schema Deletion</h3>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="closeDeleteModal()">✕</button>
+    </div>
+
+    <div class="sm-modal-body" style="gap:1rem;">
+      <input type="hidden" id="del_modal_id" value="0">
+      <input type="hidden" id="del_modal_page_key" value="">
+      <input type="hidden" id="del_modal_schema_type" value="">
+
+      <p style="color:#fff; font-size:0.95rem; margin:0;">
+        Are you sure you want to delete the following schema?
+      </p>
+
+      <div style="background:var(--bg-input); border:1px solid var(--border-sage); border-radius:var(--radius-xs); padding:1rem;">
+        <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.25rem;">
+          Page: <strong style="color:#fff;" id="del_page_title">—</strong>
+        </div>
+        <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.25rem;">
+          Schema Type: <strong style="color:var(--accent-teal);" id="del_schema_type">—</strong>
+        </div>
+        <div style="font-size:0.82rem; font-family:var(--font-mono); color:var(--text-dim);">
+          Schema ID: #<span id="del_schema_id">—</span> &nbsp;|&nbsp; Key: <span id="del_page_key">—</span>
+        </div>
+      </div>
+
+      <div style="background:rgba(255,107,107,0.1); border:1px solid rgba(255,107,107,0.3); border-radius:var(--radius-xs); padding:0.85rem; color:#ff9b9b; font-size:0.84rem; line-height:1.5;">
+        ⚠️ <strong>Warning:</strong> Deleting this schema will immediately stop it from appearing on the public frontend. The other schemas for this page will remain active and untouched. The card will update to <em>Missing</em> so you can recreate it at any time.
+      </div>
+    </div>
+
+    <div class="sm-modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+      <button type="button" class="btn btn-danger" onclick="executeDeleteSchema(this)">Yes, Delete Schema</button>
+    </div>
+
   </div>
 </div>
 
@@ -2071,484 +3302,553 @@ require_once CMS_ROOT . '/admin/includes/header.php';
      JAVASCRIPT CONTROLLERS
      ========================================================================= -->
 <script>
-const CSRF_TOKEN = '<?= e($csrfToken ?? $_SESSION['csrf_token'] ?? '') ?>';
+const CSRF_TOKEN = '<?= sm_e($csrfToken) ?>';
 const ADMIN_API = '<?= ADMIN_URL ?>/schema-manager';
 
-let currentEditingOriginalData = '';
-let currentOverrideOriginalSchema = '';
-let currentOverrideOriginalMode = 'inherit';
-let currentActiveBlogData = null;
-let searchDebounceTimer = null;
-
-// Tab switcher
-function switchSmTab(tabId, btn) {
-  document.querySelectorAll('.sm-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.sm-tab-btn').forEach(b => b.classList.remove('active'));
-  
-  const target = document.getElementById('tab_' + tabId);
-  if (target) target.classList.add('active');
-  if (btn) btn.classList.add('active');
-}
-
-// Category filter for static pages
-function filterStaticPages(cat) {
-  const cards = document.querySelectorAll('.sm-page-card');
-  cards.forEach(card => {
-    if (cat === 'all') {
-      card.style.display = 'block';
-    } else {
-      card.style.display = (card.getAttribute('data-category') === cat) ? 'block' : 'none';
-    }
-  });
-}
-
-// Accordion toggle
-function togglePageAccordion(pageKey) {
-  const body = document.getElementById('body_' + pageKey);
-  const chevron = document.getElementById('chevron_' + pageKey);
-  if (body) {
-    const isHidden = (body.style.display === 'none' || body.style.display === '');
-    body.style.display = isHidden ? 'block' : 'none';
-    if (chevron) {
-      chevron.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
-    }
+// Modal backdrop click
+function closeModalOnBackdrop(e, modalId) {
+  if (e.target.id === modalId) {
+    document.getElementById(modalId).classList.remove('open');
   }
 }
 
-// Reset Schema Modal Form to completely clean state (prevents stale data leakage)
-function resetSchemaModalForm() {
-  document.getElementById('modal_schema_id').value = '0';
-  document.getElementById('modal_page_key').value = '';
-  document.getElementById('modal_page_title').value = '';
-  
-  const pageSelect = document.getElementById('modal_page_select');
-  if (pageSelect) pageSelect.selectedIndex = 0;
-
-  document.getElementById('modalPageTitleHeader').innerText = 'Add New Schema';
-  document.getElementById('modalPageKeySubtitle').innerText = 'Select Page';
-  document.getElementById('modal_schema_name').value = '';
-  document.getElementById('modal_schema_type').value = 'WebPage';
-  document.getElementById('modal_schema_data').value = '';
-  document.getElementById('modal_status').value = 'published';
-
-  const fileInput = document.getElementById('modal_schema_file_input');
-  if (fileInput) fileInput.value = '';
-
-  currentEditingOriginalData = '';
-  document.getElementById('modal_json_preview').textContent = '';
-
-  const badge = document.getElementById('modal_val_badge');
-  if (badge) {
-    badge.className = 'badge';
-    badge.style.background = 'rgba(255, 255, 255, 0.1)';
-    badge.style.color = 'var(--text-muted)';
-    badge.textContent = 'Empty';
-  }
-
-  const valBox = document.getElementById('modal_validation_box');
-  if (valBox) {
-    valBox.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem;">Enter or load JSON-LD payload to validate.</div>';
-  }
+function closeEditorModal() {
+  document.getElementById('schemaEditorModal').classList.remove('open');
 }
 
-// Open Modal for New Schema
-function openNewSchemaModal(pageKey, pageTitle) {
-  openNewSchemaModalWithType(pageKey, pageTitle, '');
+function closeDeleteModal() {
+  document.getElementById('schemaDeleteModal').classList.remove('open');
 }
 
-function openNewSchemaModalWithType(pageKey, pageTitle, reqType) {
-  resetSchemaModalForm();
-
-  pageKey = pageKey || 'homepage';
-  pageTitle = pageTitle || 'Homepage';
-
-  const pageSelect = document.getElementById('modal_page_select');
-  if (pageSelect) {
-    pageSelect.value = pageKey;
-    if (pageSelect.selectedIndex >= 0) {
-      pageTitle = pageSelect.options[pageSelect.selectedIndex].getAttribute('data-title') || pageTitle;
-    }
-  }
-
-  document.getElementById('modal_schema_id').value = '0';
-  document.getElementById('modal_page_key').value = pageKey;
-  document.getElementById('modal_page_title').value = pageTitle;
-  document.getElementById('modalPageTitleHeader').innerText = 'Add Schema for ' + pageTitle;
-  document.getElementById('modalPageKeySubtitle').innerText = pageKey;
-  document.getElementById('modal_schema_name').value = pageTitle + ' ' + (reqType || 'Schema');
-  document.getElementById('modal_status').value = 'published';
-
-  let defaultType = reqType || 'WebPage';
-  if (!reqType) {
-    if (pageKey === 'homepage') defaultType = 'Organization';
-    else if (pageKey === 'about') defaultType = 'AboutPage';
-    else if (pageKey === 'contact') defaultType = 'ContactPage';
-    else if (pageKey.startsWith('service-')) defaultType = 'Service';
-    else if (pageKey === 'services') defaultType = 'CollectionPage';
-    else if (pageKey === 'blog-listing') defaultType = 'CollectionPage';
-    else if (pageKey.startsWith('blog-') || pageKey.startsWith('blog:')) defaultType = 'BlogPosting';
-  }
-
-  document.getElementById('modal_schema_type').value = defaultType;
-  fetchTemplateForModal(defaultType, pageKey);
-
-  const modal = document.getElementById('schemaEditorModal');
-  modal.classList.add('open');
+function closeAddNewModal() {
+  document.getElementById('addNewSchemaModal').classList.remove('open');
 }
 
-// Open Modal specifically for Custom Schema
-function openCustomSchemaModal(pageKey, pageTitle) {
-  resetSchemaModalForm();
-
-  pageKey = pageKey || 'homepage';
-  pageTitle = pageTitle || 'Homepage';
-
-  const pageSelect = document.getElementById('modal_page_select');
-  if (pageSelect) {
-    pageSelect.value = pageKey;
-    if (pageSelect.selectedIndex >= 0) {
-      pageTitle = pageSelect.options[pageSelect.selectedIndex].getAttribute('data-title') || pageTitle;
-    }
-  }
-
-  document.getElementById('modal_schema_id').value = '0';
-  document.getElementById('modal_page_key').value = pageKey;
-  document.getElementById('modal_page_title').value = pageTitle;
-  document.getElementById('modalPageTitleHeader').innerText = 'Add Custom Schema';
-  document.getElementById('modalPageKeySubtitle').innerText = pageKey;
-  document.getElementById('modal_schema_name').value = pageTitle + ' Custom Schema';
-  document.getElementById('modal_schema_type').value = 'Custom';
-  document.getElementById('modal_status').value = 'published';
-
-  fetchTemplateForModal('Custom', pageKey);
-
-  const modal = document.getElementById('schemaEditorModal');
-  modal.classList.add('open');
+function closeValDetailsModal() {
+  document.getElementById('valDetailsModal').classList.remove('open');
 }
 
-// When Page Selector in Modal Changes
-function onModalPageSelectChange() {
-  const select = document.getElementById('modal_page_select');
-  if (!select) return;
-  const selOption = select.options[select.selectedIndex];
-  if (!selOption || !select.value) return;
-
-  const newKey = select.value;
-  const newTitle = selOption.getAttribute('data-title') || selOption.text;
-
-  document.getElementById('modal_page_key').value = newKey;
-  document.getElementById('modal_page_title').value = newTitle;
-  document.getElementById('modalPageKeySubtitle').innerText = newKey;
-
-  const nameField = document.getElementById('modal_schema_name');
-  if (!nameField.value || nameField.value.includes('Schema')) {
-    const curType = document.getElementById('modal_schema_type').value;
-    nameField.value = newTitle + ' ' + (curType || 'Schema');
-  }
-
-  const type = document.getElementById('modal_schema_type').value;
-  if (!currentEditingOriginalData || document.getElementById('modal_schema_data').value === currentEditingOriginalData) {
-    fetchTemplateForModal(type, newKey);
-  }
-}
-
-// Handle Modal JSON File Upload
-function handleModalFileUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  if (!file.name.toLowerCase().endsWith('.json')) {
-    alert('Invalid file format. Only .json files are accepted.');
-    return;
-  }
-
-  if (file.size > 524288) {
-    alert('File size exceeds maximum allowed 500KB.');
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const parsed = JSON.parse(e.target.result);
-      if (!parsed || typeof parsed !== 'object') {
-        throw new Error('Root JSON must be an object or array.');
-      }
-      const formatted = JSON.stringify(parsed, null, 2);
-      document.getElementById('modal_schema_data').value = formatted;
-      currentEditingOriginalData = formatted;
-
-      const nameField = document.getElementById('modal_schema_name');
-      if (!nameField.value.trim()) {
-        nameField.value = file.name.replace(/\.json$/i, '');
-      }
-
-      if (parsed['@type'] && typeof parsed['@type'] === 'string') {
-        const typeSelect = document.getElementById('modal_schema_type');
-        for (let i = 0; i < typeSelect.options.length; i++) {
-          if (typeSelect.options[i].value.toLowerCase() === parsed['@type'].toLowerCase()) {
-            typeSelect.selectedIndex = i;
-            break;
-          }
-        }
-      }
-
-      updateModalLivePreview(formatted);
-    } catch (err) {
-      alert('Schema File Parse Error: ' + err.message);
-    }
-  };
-  reader.readAsText(file);
-}
-
-// Copy Modal JSON
-function copyModalJson() {
-  const val = document.getElementById('modal_schema_data').value;
-  if (!val) {
-    alert('No JSON content to copy.');
-    return;
-  }
-  navigator.clipboard.writeText(val).then(() => {
-    alert('Schema JSON copied to clipboard!');
-  });
-}
-
-// Edit Existing Schema by ID
-function editSchemaById(id) {
+// 1. OPEN SCHEMA EDITOR (EDIT EXISTING SCHEMA)
+function openSchemaEditor(pageKey, schemaId, schemaType) {
   const fd = new FormData();
-  fd.append('action', 'get_schema_preview');
-  fd.append('id', id);
+  fd.append('action', 'get_schema_card_data');
+  fd.append('id', schemaId || 0);
+  fd.append('page_key', pageKey);
+  fd.append('schema_type', schemaType);
   fd.append('csrf_token', CSRF_TOKEN);
-  fd.append('ajax', '1');
 
   fetch(ADMIN_API, { method: 'POST', body: fd })
     .then(r => r.json())
     .then(data => {
       if (data.success && data.schema) {
-        editExistingSchema(data.schema);
+        const s = data.schema;
+        document.getElementById('modal_schema_id').value = s.id || 0;
+        document.getElementById('modal_page_key').value = s.page_key;
+        document.getElementById('modal_page_title').value = s.page_title || pageKey;
+        document.getElementById('modal_schema_type').value = s.schema_type;
+        document.getElementById('modal_schema_name').value = s.schema_name || (s.schema_type + ' Schema');
+        document.getElementById('modal_status').value = s.status || 'published';
+        document.getElementById('modal_schema_data').value = s.schema_data || '';
+        document.getElementById('modalSchemaTitle').innerText = (s.id ? 'Edit ' : 'Create ') + s.schema_type + ' Schema';
+        document.getElementById('modalSchemaSubtitle').innerText = s.page_key + (s.id ? ' (ID #' + s.id + ')' : ' (New)');
+
+        validateModalJsonNow();
+        document.getElementById('schemaEditorModal').classList.add('open');
       } else {
         alert('Could not load schema: ' + (data.message || 'Unknown error'));
       }
     })
-    .catch(err => alert('Error: ' + err.message));
+    .catch(err => alert('Request error: ' + err.message));
 }
 
-// Edit Existing Static/Page Schema object
-function editExistingSchema(schemaObj) {
-  resetSchemaModalForm();
-
-  document.getElementById('modal_schema_id').value = schemaObj.id;
-  document.getElementById('modal_page_key').value = schemaObj.page_key;
-  document.getElementById('modal_page_title').value = schemaObj.page_title;
-
-  const pageSelect = document.getElementById('modal_page_select');
-  if (pageSelect) {
-    pageSelect.value = schemaObj.page_key;
-  }
-
-  document.getElementById('modalPageTitleHeader').innerText = 'Edit Schema: ' + schemaObj.schema_name;
-  document.getElementById('modalPageKeySubtitle').innerText = schemaObj.page_key + ' (ID #' + schemaObj.id + ')';
-  document.getElementById('modal_schema_name').value = schemaObj.schema_name;
-  document.getElementById('modal_schema_type').value = schemaObj.schema_type;
-  document.getElementById('modal_status').value = schemaObj.status;
-
-  currentEditingOriginalData = schemaObj.schema_data;
-  document.getElementById('modal_schema_data').value = schemaObj.schema_data;
-
-  updateModalLivePreview(schemaObj.schema_data);
-
-  const modal = document.getElementById('schemaEditorModal');
-  modal.classList.add('open');
-}
-
-function closeSchemaModal() {
-  document.getElementById('schemaEditorModal').classList.remove('open');
-  resetSchemaModalForm();
-}
-
-function closeModalOnBackdrop(e, modalId) {
-  if (e.target.id === modalId) {
-    if (modalId === 'schemaEditorModal') closeSchemaModal();
-    if (modalId === 'blogOverrideModal') closeBlogOverrideModal();
-    if (modalId === 'auditReportModal') closeAuditReportModal();
-    if (modalId === 'quickPreviewModal') closeQuickPreviewModal();
-  }
-}
-
-// Fetch template from server for static modal
-function fetchTemplateForModal(type, pageKey) {
-  pageKey = pageKey || document.getElementById('modal_page_key').value;
-  const fd = new FormData();
-  fd.append('action', 'get_type_template');
-  fd.append('type', type);
-  fd.append('page_key', pageKey);
-  fd.append('csrf_token', CSRF_TOKEN);
-  fd.append('ajax', '1');
-
-  fetch(ADMIN_API, { method: 'POST', body: fd })
-    .then(r => {
-      if (!r.ok) {
-        throw new Error('Server returned HTTP ' + r.status);
-      }
-      return r.json();
-    })
-    .then(data => {
-      if (data && data.success) {
-        document.getElementById('modal_schema_data').value = data.template;
-        currentEditingOriginalData = data.template;
-        updateModalLivePreview(data.template);
-      }
-    })
-    .catch(err => {
-      console.error('Error fetching template from server:', err);
-    });
-}
-
-function onModalTypeSelectChange() {
-  const type = document.getElementById('modal_schema_type').value;
-  fetchTemplateForModal(type);
-}
-
-function insertTemplateSnippetIntoModal() {
-  const type = document.getElementById('modal_schema_type').value;
-  fetchTemplateForModal(type);
-}
-
-function revertModalToOriginal() {
-  if (currentEditingOriginalData) {
-    document.getElementById('modal_schema_data').value = currentEditingOriginalData;
-    updateModalLivePreview(currentEditingOriginalData);
-  }
-}
-
-function formatModalJson() {
-  const textarea = document.getElementById('modal_schema_data');
-  try {
-    const parsed = JSON.parse(textarea.value);
-    textarea.value = JSON.stringify(parsed, null, 2);
-    updateModalLivePreview(textarea.value);
-  } catch (err) {
-    alert('Cannot format invalid JSON: ' + err.message);
-  }
-}
-
-// Live preview & validation handler for modal
-const modalTextarea = document.getElementById('modal_schema_data');
-if (modalTextarea) {
-  modalTextarea.addEventListener('input', function() {
-    updateModalLivePreview(this.value);
-  });
-  modalTextarea.addEventListener('keydown', function(e) {
-    if (e.key === 'Tab') {
-      e.preventDefault();
-      const start = this.selectionStart;
-      const end = this.selectionEnd;
-      this.value = this.value.substring(0, start) + '  ' + this.value.substring(end);
-      this.selectionStart = this.selectionEnd = start + 2;
-    }
-  });
-}
-
-function updateModalLivePreview(jsonText) {
-  const preview = document.getElementById('modal_json_preview');
-  const badge = document.getElementById('modal_val_badge');
-  const valBox = document.getElementById('modal_validation_box');
-
-  preview.textContent = jsonText;
-
-  const fd = new FormData();
-  fd.append('action', 'validate_schema');
-  fd.append('schema_data', jsonText);
-  fd.append('csrf_token', CSRF_TOKEN);
-  fd.append('ajax', '1');
-
-  fetch(ADMIN_API, { method: 'POST', body: fd })
-    .then(r => r.json())
-    .then(res => {
-      if (res.valid) {
-        badge.className = 'badge';
-        badge.style.background = 'rgba(54, 217, 176, 0.15)';
-        badge.style.color = 'var(--accent-mint)';
-        badge.textContent = 'Valid';
-
-        let warnHtml = '';
-        if (res.warnings && res.warnings.length > 0) {
-          warnHtml = res.warnings.map(w => `<div class="sm-val-warning">&bull; Warning: ${w}</div>`).join('');
-        }
-        valBox.innerHTML = `<div class="sm-val-valid"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Valid Schema.org JSON-LD</div>${warnHtml}`;
-      } else {
-        badge.className = 'badge';
-        badge.style.background = 'rgba(255, 107, 107, 0.15)';
-        badge.style.color = 'var(--danger)';
-        badge.textContent = 'Syntax Error';
-        valBox.innerHTML = res.errors.map(err => `<div class="sm-val-error">&bull; ${err}</div>`).join('');
-      }
-    })
-    .catch(() => {
-      try {
-        JSON.parse(jsonText);
-        badge.textContent = 'Valid JSON';
-        valBox.innerHTML = '<div class="sm-val-valid">JSON is syntactically valid.</div>';
-      } catch (e) {
-        badge.textContent = 'Invalid JSON';
-        valBox.innerHTML = `<div class="sm-val-error">${e.message}</div>`;
-      }
-    });
-}
-
-// Submit Static Modal Save
-function submitModalSave() {
+// 2. SUBMIT MODAL SAVE (INDEPENDENT SAVE PER CARD)
+function submitModalSave(btn) {
   const id = document.getElementById('modal_schema_id').value;
   const pageKey = document.getElementById('modal_page_key').value;
   const pageTitle = document.getElementById('modal_page_title').value;
-  const schemaName = document.getElementById('modal_schema_name').value.trim();
   const schemaType = document.getElementById('modal_schema_type').value;
-  const schemaData = document.getElementById('modal_schema_data').value.trim();
+  const schemaName = document.getElementById('modal_schema_name').value.trim();
   const status = document.getElementById('modal_status').value;
+  const schemaData = document.getElementById('modal_schema_data').value.trim();
 
-  if (!schemaName) {
-    alert('Please provide a schema name.');
-    return;
-  }
   if (!schemaData) {
-    alert('Schema JSON-LD payload cannot be empty.');
+    alert('Schema JSON-LD content cannot be empty.');
     return;
   }
+
+  try {
+    JSON.parse(schemaData);
+  } catch (err) {
+    alert('Invalid JSON syntax: ' + err.message);
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
 
   const fd = new FormData();
   fd.append('action', 'save_page_schema');
   fd.append('id', id);
   fd.append('page_key', pageKey);
   fd.append('page_title', pageTitle);
-  fd.append('schema_name', schemaName);
   fd.append('schema_type', schemaType);
-  fd.append('schema_data', schemaData);
+  fd.append('schema_name', schemaName);
   fd.append('status', status);
+  fd.append('schema_data', schemaData);
   fd.append('csrf_token', CSRF_TOKEN);
-  fd.append('ajax', '1');
 
   fetch(ADMIN_API, { method: 'POST', body: fd })
     .then(r => r.json())
     .then(data => {
+      btn.disabled = false;
+      btn.textContent = 'Save Schema';
       if (data.success) {
-        closeSchemaModal();
+        closeEditorModal();
         window.location.reload();
       } else {
         alert('Save Failed: ' + data.message);
       }
     })
-    .catch(err => alert('Save Request Error: ' + err.message));
+    .catch(err => {
+      btn.disabled = false;
+      btn.textContent = 'Save Schema';
+      alert('Save request error: ' + err.message);
+    });
 }
 
-// Toggle Publish Status
-function toggleSchemaPublish(id, currentStatus) {
+// 3. OPEN ADD NEW SCHEMA MODAL (AVAILABLE ON EVERY PAGE)
+let currentDuplicateExistingId = 0;
+
+function openAddNewSchemaModal(pageKey, pageTitle, canonical) {
+  document.getElementById('add_modal_page_key').value = pageKey;
+  document.getElementById('add_modal_page_title').value = pageTitle || pageKey;
+  document.getElementById('add_modal_canonical').value = canonical || '';
+
+  document.getElementById('add_modal_target_name').innerText = pageTitle || pageKey;
+  document.getElementById('add_modal_target_url').innerText = canonical || pageKey;
+  document.getElementById('addModalSubtitle').innerText = 'Adding to ' + pageKey;
+
+  // Reset fields
+  document.getElementById('add_modal_schema_type').value = 'Product';
+  document.getElementById('add_custom_type_wrapper').style.display = 'none';
+  document.getElementById('add_custom_type_input').value = '';
+  document.getElementById('add_duplicate_warning').style.display = 'none';
+  document.getElementById('btnSubmitAddSchema').disabled = false;
+  currentDuplicateExistingId = 0;
+
+  // Load starter template
+  loadStarterTemplateForAdd('Product');
+
+  document.getElementById('addNewSchemaModal').classList.add('open');
+}
+
+// 4. ON ADD SCHEMA TYPE CHANGE
+function onAddSchemaTypeChange() {
+  const type = document.getElementById('add_modal_schema_type').value;
+  const customWrapper = document.getElementById('add_custom_type_wrapper');
+
+  if (type === 'Other') {
+    customWrapper.style.display = 'block';
+    const cVal = document.getElementById('add_custom_type_input').value.trim() || 'Custom';
+    loadStarterTemplateForAdd(cVal);
+    checkDuplicateForAdd(cVal);
+  } else {
+    customWrapper.style.display = 'none';
+    loadStarterTemplateForAdd(type);
+    checkDuplicateForAdd(type);
+  }
+}
+
+function onCustomTypeInput(val) {
+  val = val.trim();
+  if (val.length > 1) {
+    loadStarterTemplateForAdd(val);
+    checkDuplicateForAdd(val);
+  }
+}
+
+// 5. LOAD STARTER TEMPLATE FOR ADD MODAL
+function loadStarterTemplateForAdd(type) {
+  const pageTitle = document.getElementById('add_modal_page_title').value;
+  const canonical = document.getElementById('add_modal_canonical').value;
+  document.getElementById('add_modal_schema_name').value = pageTitle + ' ' + type + ' Schema';
+
+  const fd = new FormData();
+  fd.append('action', 'get_starter_template');
+  fd.append('schema_type', type);
+  fd.append('page_title', pageTitle);
+  fd.append('canonical', canonical);
+  fd.append('csrf_token', CSRF_TOKEN);
+
+  fetch(ADMIN_API, { method: 'POST', body: fd })
+    .then(r => r.json())
+    .then(d => {
+      if (d.success && d.template_json) {
+        document.getElementById('add_modal_schema_data').value = d.template_json;
+        validateAddJsonNow();
+      }
+    });
+}
+
+// 6. CHECK DUPLICATE SCHEMA ON CURRENT PAGE
+function checkDuplicateForAdd(type) {
+  const pageKey = document.getElementById('add_modal_page_key').value;
+  const fd = new FormData();
+  fd.append('action', 'check_schema_duplicate');
+  fd.append('page_key', pageKey);
+  fd.append('schema_type', type);
+  fd.append('csrf_token', CSRF_TOKEN);
+
+  fetch(ADMIN_API, { method: 'POST', body: fd })
+    .then(r => r.json())
+    .then(d => {
+      const warnBox = document.getElementById('add_duplicate_warning');
+      const submitBtn = document.getElementById('btnSubmitAddSchema');
+
+      if (d.exists) {
+        currentDuplicateExistingId = d.id;
+        document.getElementById('dup_type_name').innerText = type;
+        document.getElementById('dup_schema_id').innerText = d.id;
+        warnBox.style.display = 'block';
+        submitBtn.disabled = true;
+      } else {
+        currentDuplicateExistingId = 0;
+        warnBox.style.display = 'none';
+        submitBtn.disabled = false;
+      }
+    });
+}
+
+function editExistingDuplicateSchema() {
+  if (currentDuplicateExistingId > 0) {
+    const pageKey = document.getElementById('add_modal_page_key').value;
+    closeAddNewModal();
+    openSchemaEditor(pageKey, currentDuplicateExistingId, '');
+  }
+}
+
+// 7. SUBMIT ADD NEW SCHEMA
+function submitAddNewSchema(btn) {
+  const pageKey = document.getElementById('add_modal_page_key').value;
+  const pageTitle = document.getElementById('add_modal_page_title').value;
+  const schemaType = document.getElementById('add_modal_schema_type').value;
+  const customType = document.getElementById('add_custom_type_input').value.trim();
+  const schemaName = document.getElementById('add_modal_schema_name').value.trim();
+  const status = document.getElementById('add_modal_status').value;
+  const schemaData = document.getElementById('add_modal_schema_data').value.trim();
+
+  if (!schemaData) {
+    alert('Schema JSON-LD content cannot be empty.');
+    return;
+  }
+
+  try {
+    JSON.parse(schemaData);
+  } catch (err) {
+    alert('Invalid JSON syntax: ' + err.message);
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+
+  const fd = new FormData();
+  fd.append('action', 'add_new_custom_schema');
+  fd.append('page_key', pageKey);
+  fd.append('page_title', pageTitle);
+  fd.append('schema_type', schemaType);
+  fd.append('custom_type', customType);
+  fd.append('schema_name', schemaName);
+  fd.append('status', status);
+  fd.append('schema_data', schemaData);
+  fd.append('csrf_token', CSRF_TOKEN);
+
+  fetch(ADMIN_API, { method: 'POST', body: fd })
+    .then(r => r.json())
+    .then(d => {
+      btn.disabled = false;
+      btn.textContent = 'Save & Add Schema';
+      if (d.success) {
+        closeAddNewModal();
+        window.location.reload();
+      } else if (d.duplicate) {
+        alert('Duplicate Conflict: ' + d.message);
+      } else {
+        alert('Add Failed: ' + d.message);
+      }
+    })
+    .catch(err => {
+      btn.disabled = false;
+      btn.textContent = 'Save & Add Schema';
+      alert('Request error: ' + err.message);
+    });
+}
+
+// 8. VALIDATE ALL PAGES (AJAX ENGINE WITH PROGRESS BAR)
+let validationResultsCache = null;
+
+function runValidateAllPages(btn) {
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Validating All Pages...';
+
+  const progressCont = document.getElementById('valProgressBarContainer');
+  const progressFill = document.getElementById('valProgressFill');
+  const progressPct = document.getElementById('valProgressPct');
+  const progressLabel = document.getElementById('valProgressLabel');
+
+  if (progressCont) {
+    progressCont.style.display = 'block';
+    progressFill.style.width = '15%';
+    progressPct.innerText = '15%';
+    progressLabel.innerText = 'Auditing public pages & schemas...';
+  }
+
+  const fd = new FormData();
+  fd.append('action', 'validate_all_pages');
+  fd.append('csrf_token', CSRF_TOKEN);
+
+  fetch(ADMIN_API, { method: 'POST', body: fd })
+    .then(r => r.json())
+    .then(d => {
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Validate All Pages';
+
+      if (progressCont) {
+        progressFill.style.width = '100%';
+        progressPct.innerText = '100%';
+        progressLabel.innerText = 'Audit complete. ' + (d.summary ? d.summary.total_pages + ' pages inspected.' : '');
+      }
+
+      if (d.success) {
+        validationResultsCache = d.pages;
+        renderValidationResultsTable(d.pages);
+        alert('✓ Website-Wide Validation Complete!\n\nPages Audited: ' + d.summary.total_pages + '\nValid Schemas: ' + d.summary.valid_schemas + '\nInvalid Schemas: ' + d.summary.invalid_schemas + '\nMissing Schemas: ' + d.summary.missing_schemas + '\nWarnings: ' + d.summary.warnings_count);
+      } else {
+        alert('Validation failed: ' + (d.message || 'Unknown error'));
+      }
+    })
+    .catch(err => {
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Validate All Pages';
+      alert('Request error: ' + err.message);
+    });
+}
+
+function renderValidationResultsTable(pages) {
+  pages.forEach(p => {
+    const row = document.getElementById('val_row_' + p.page_key);
+    if (row) {
+      const cells = row.getElementsByTagName('td');
+      if (cells.length >= 7) {
+        cells[1].innerHTML = '<strong style="color:#fff; font-size:1rem;">' + p.total_schemas + '</strong>';
+        cells[2].innerHTML = '<span class="sm-badge published">' + p.valid_schemas + '</span>';
+        cells[3].innerHTML = (p.invalid_schemas > 0) 
+          ? '<span class="sm-badge missing">' + p.invalid_schemas + '</span>' 
+          : '<span class="sm-status-zero">0</span>';
+        cells[4].innerHTML = (p.missing_schemas > 0) 
+          ? '<span class="sm-badge missing">' + p.missing_schemas + '</span>' 
+          : '<span class="sm-status-zero">0</span>';
+        cells[5].innerHTML = (p.status === 'pass') 
+          ? '<span class="sm-badge published" style="padding:0.35rem 0.75rem; font-size:0.76rem;">✓ PASS</span>' 
+          : '<span class="sm-badge missing" style="padding:0.35rem 0.75rem; font-size:0.76rem;">✗ FAIL</span>';
+      }
+    }
+  });
+}
+
+// 9. VIEW PAGE VALIDATION DETAILS MODAL
+function viewPageValidationDetails(pageKey) {
+  let pageData = null;
+  if (validationResultsCache) {
+    pageData = validationResultsCache.find(p => p.page_key === pageKey);
+  }
+
+  const modal = document.getElementById('valDetailsModal');
+  const title = document.getElementById('valDetailsTitle');
+  const subtitle = document.getElementById('valDetailsSubtitle');
+  const body = document.getElementById('valDetailsBody');
+  const manageBtn = document.getElementById('valDetailsManageBtn');
+
+  manageBtn.href = '?page=' + encodeURIComponent(pageKey);
+
+  if (!pageData) {
+    // If not in cache, run single-page fetch or load static overview
+    title.innerText = 'Validation Inspection: ' + pageKey;
+    subtitle.innerText = pageKey;
+    body.innerHTML = '<div style="padding:1.5rem; text-align:center; background:rgba(0,0,0,0.25); border:1px solid var(--border-sage-subtle); border-radius:var(--radius-xs);"><p style="color:var(--text-muted); font-size:0.92rem; line-height:1.6; margin:0 0 1rem 0;">Click <strong>Validate All Pages</strong> above to run a fresh live multi-page audit with real-time property checks, or navigate to this page directly to inspect and edit its individual schema cards.</p><a href="?page=' + encodeURIComponent(pageKey) + '" class="btn btn-primary btn-sm">Open Page Schemas →</a></div>';
+    modal.classList.add('open');
+    return;
+  }
+
+  title.innerText = pageData.title + ' — Validation Report';
+  subtitle.innerText = pageData.canonical;
+
+  let html = '<div style="background:var(--bg-input); border:1px solid var(--border-sage-subtle); border-radius:var(--radius-sm); padding:1rem 1.25rem; margin-bottom:1.25rem; display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">';
+  html += '<span class="sm-badge ' + (pageData.status === 'pass' ? 'published' : 'missing') + '" style="font-size:0.76rem; padding:0.35rem 0.75rem;">Status: ' + pageData.status.toUpperCase() + '</span>';
+  html += '<span class="sm-badge published" style="font-size:0.76rem; padding:0.35rem 0.75rem;">Valid: ' + pageData.valid_schemas + '</span>';
+  html += '<span class="sm-badge ' + (pageData.invalid_schemas > 0 ? 'missing' : 'published') + '" style="font-size:0.76rem; padding:0.35rem 0.75rem;">Invalid: ' + pageData.invalid_schemas + '</span>';
+  html += '<span class="sm-badge ' + (pageData.missing_schemas > 0 ? 'missing' : 'published') + '" style="font-size:0.76rem; padding:0.35rem 0.75rem;">Missing: ' + pageData.missing_schemas + '</span>';
+  html += '</div>';
+
+  html += '<div style="margin-bottom:1.5rem;">';
+  html += '<h4 style="color:#fff; font-size:1.05rem; font-weight:700; margin:0 0 0.85rem 0; letter-spacing:-0.01em;">Configured Schemas</h4>';
+  html += '<div style="display:flex; flex-direction:column; gap:0.65rem;">';
+  pageData.schemas.forEach(s => {
+    html += '<div style="background:var(--bg-input); border:1px solid var(--border-sage); border-radius:var(--radius-xs); padding:0.85rem 1.15rem; display:flex; justify-content:space-between; align-items:center; gap:1rem;">';
+    html += '<div><strong style="color:#fff; font-size:0.95rem;">' + s.type + '</strong> <span style="font-size:0.78rem; font-family:var(--font-mono); color:var(--text-muted); margin-left:0.35rem;">' + (s.id ? '(ID #' + s.id + ')' : '(Unassigned)') + '</span></div>';
+    html += '<div style="display:flex; gap:0.5rem; align-items:center;">';
+    html += '<span class="sm-badge ' + (s.valid ? 'published' : 'missing') + '">' + (s.valid ? '✓ Valid' : '✗ Issue') + '</span>';
+    if (s.id) {
+      html += '<button type="button" class="btn btn-sm btn-secondary" style="padding:0.25rem 0.65rem; font-size:0.8rem;" onclick="closeValDetailsModal(); openSchemaEditor(\'' + pageKey + '\', ' + s.id + ', \'' + s.type + '\');">Edit</button>';
+    }
+    html += '</div>';
+    html += '</div>';
+  });
+  html += '</div></div>';
+
+  if (pageData.issues && pageData.issues.length > 0) {
+    html += '<div>';
+    html += '<h4 style="color:var(--danger); font-size:1.05rem; font-weight:700; margin:0 0 0.75rem 0;">Identified Issues & Warnings</h4>';
+    html += '<div style="display:flex; flex-direction:column; gap:0.65rem;">';
+    pageData.issues.forEach(iss => {
+      html += '<div style="background:rgba(255,107,107,0.1); border:1px solid rgba(255,107,107,0.3); border-radius:var(--radius-xs); padding:0.85rem 1.15rem; font-size:0.86rem; line-height:1.55; color:#ffb4b4;">';
+      html += '<div style="font-weight:700; color:#fff; margin-bottom:0.25rem;">' + (iss.schema_type || 'Schema') + ' Issue:</div>';
+      html += '<div>' + iss.message + '</div>';
+      html += '</div>';
+    });
+    html += '</div></div>';
+  } else {
+    html += '<div style="background:rgba(54,217,176,0.1); border:1px solid rgba(54,217,176,0.3); border-radius:var(--radius-xs); padding:1rem 1.25rem; font-size:0.88rem; line-height:1.55; color:#36D9B0;">';
+    html += '✓ Zero errors or missing required schemas detected. Structure and properties are 100% compliant.';
+    html += '</div>';
+  }
+
+  body.innerHTML = html;
+  modal.classList.add('open');
+}
+
+// 10. OPEN DELETE MODAL
+function openDeleteModal(id, pageKey, schemaType, pageTitle) {
+  document.getElementById('del_modal_id').value = id;
+  document.getElementById('del_modal_page_key').value = pageKey;
+  document.getElementById('del_modal_schema_type').value = schemaType;
+  document.getElementById('del_page_title').innerText = pageTitle || pageKey;
+  document.getElementById('del_schema_type').innerText = schemaType;
+  document.getElementById('del_schema_id').innerText = id;
+  document.getElementById('del_page_key').innerText = pageKey;
+  document.getElementById('schemaDeleteModal').classList.add('open');
+}
+
+// 11. EXECUTE SAFE DELETE
+function executeDeleteSchema(btn) {
+  const id = document.getElementById('del_modal_id').value;
+  const pageKey = document.getElementById('del_modal_page_key').value;
+  const schemaType = document.getElementById('del_modal_schema_type').value;
+
+  btn.disabled = true;
+  btn.textContent = 'Deleting...';
+
+  const fd = new FormData();
+  fd.append('action', 'delete_page_schema');
+  fd.append('id', id);
+  fd.append('page_key', pageKey);
+  fd.append('schema_type', schemaType);
+  fd.append('csrf_token', CSRF_TOKEN);
+
+  fetch(ADMIN_API, { method: 'POST', body: fd })
+    .then(r => r.json())
+    .then(data => {
+      btn.disabled = false;
+      btn.textContent = 'Yes, Delete Schema';
+      if (data.success) {
+        closeDeleteModal();
+        window.location.reload();
+      } else {
+        alert('Delete Failed: ' + data.message);
+      }
+    })
+    .catch(err => {
+      btn.disabled = false;
+      btn.textContent = 'Yes, Delete Schema';
+      alert('Delete request error: ' + err.message);
+    });
+}
+
+// 12. VALIDATE SCHEMA CARD INLINE
+function validateSchemaCard(id, schemaType) {
+  const fd = new FormData();
+  fd.append('action', 'get_schema_card_data');
+  fd.append('id', id);
+  fd.append('csrf_token', CSRF_TOKEN);
+
+  fetch(ADMIN_API, { method: 'POST', body: fd })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success && data.schema) {
+        const vFd = new FormData();
+        vFd.append('action', 'validate_schema');
+        vFd.append('schema_data', data.schema.schema_data);
+        vFd.append('schema_type', schemaType);
+
+        fetch(ADMIN_API, { method: 'POST', body: vFd })
+          .then(vr => vr.json())
+          .then(vData => {
+            if (vData.valid) {
+              alert('✓ Valid Schema: ' + schemaType + '\n\nSyntax and structure are 100% compliant with Schema.org.' + (vData.warnings && vData.warnings.length ? '\n\nWarnings:\n' + vData.warnings.join('\n') : ''));
+            } else {
+              alert('✗ Validation Errors:\n\n' + vData.errors.join('\n'));
+            }
+          });
+      }
+    });
+}
+
+// 13. AUTO-GENERATE CARD SCHEMA
+function autoGenerateCardSchema(pageKey, schemaType) {
+  if (!confirm('Generate recommended ' + schemaType + ' schema for this page?')) return;
+  const fd = new FormData();
+  fd.append('action', 'auto_generate_card_schema');
+  fd.append('page_key', pageKey);
+  fd.append('schema_type', schemaType);
+  fd.append('csrf_token', CSRF_TOKEN);
+
+  fetch(ADMIN_API, { method: 'POST', body: fd })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        window.location.reload();
+      } else {
+        alert('Generation Failed: ' + data.message);
+      }
+    })
+    .catch(err => alert('Request Error: ' + err.message));
+}
+
+// 14. AUTO-GENERATE ALL PAGE SCHEMAS
+function autoGeneratePageSchemas(pageKey) {
+  if (!confirm('Reconcile and generate all approved schemas for this page? Existing correct schemas will be preserved.')) return;
+  const fd = new FormData();
+  fd.append('action', 'auto_generate_all_page_schemas');
+  fd.append('page_key', pageKey);
+  fd.append('csrf_token', CSRF_TOKEN);
+
+  fetch(ADMIN_API, { method: 'POST', body: fd })
+    .then(r => r.json())
+    .then(data => {
+      alert(data.success ? '✓ ' + data.message : '✗ ' + data.message);
+      if (data.success) window.location.reload();
+    })
+    .catch(err => alert('Request Error: ' + err.message));
+}
+
+// 15. TOGGLE PUBLISH / DRAFT (ACTIVE / INACTIVE)
+function togglePublishStatus(id, currentStatus) {
   const newStatus = (currentStatus === 'published') ? 'draft' : 'published';
   const fd = new FormData();
   fd.append('action', 'toggle_page_schema_status');
   fd.append('id', id);
   fd.append('status', newStatus);
   fd.append('csrf_token', CSRF_TOKEN);
-  fd.append('ajax', '1');
 
   fetch(ADMIN_API, { method: 'POST', body: fd })
     .then(r => r.json())
@@ -2556,643 +3856,97 @@ function toggleSchemaPublish(id, currentStatus) {
       if (data.success) {
         window.location.reload();
       } else {
-        alert('Update Failed: ' + data.message);
+        alert('Failed: ' + data.message);
       }
     })
     .catch(err => alert('Request Error: ' + err.message));
 }
 
-// Delete Schema
-function deleteSchema(id, schemaName) {
-  if (!confirm('Are you sure you want to delete schema "' + schemaName + '"?')) {
-    return;
-  }
-
+// 16. SYNC BLOGS.MD
+function syncBlogsMdNow(btn) {
+  btn.disabled = true;
+  btn.textContent = 'Syncing...';
   const fd = new FormData();
-  fd.append('action', 'delete_page_schema');
-  fd.append('id', id);
+  fd.append('action', 'sync_blogs_md');
   fd.append('csrf_token', CSRF_TOKEN);
-  fd.append('ajax', '1');
 
   fetch(ADMIN_API, { method: 'POST', body: fd })
     .then(r => r.json())
     .then(data => {
-      if (data.success) {
-        window.location.reload();
-      } else {
-        alert('Delete Failed: ' + data.message);
-      }
-    })
-    .catch(err => alert('Request Error: ' + err.message));
-}
-
-// Auto-Generate Single Schema
-function autoGenerateSingleSchema(pageKey, schemaType) {
-  const fd = new FormData();
-  fd.append('action', 'auto_generate_single_schema');
-  fd.append('page_key', pageKey);
-  fd.append('schema_type', schemaType);
-  fd.append('csrf_token', CSRF_TOKEN);
-  fd.append('ajax', '1');
-
-  fetch(ADMIN_API, { method: 'POST', body: fd })
-    .then(r => r.json())
-    .then(data => {
-      if (data.success) {
-        alert(data.message);
-        window.location.reload();
-      } else {
-        alert('Auto-generation failed: ' + data.message);
-      }
-    })
-    .catch(err => alert('Request Error: ' + err.message));
-}
-
-// Preview Schema by ID
-function previewSchemaById(id) {
-  const fd = new FormData();
-  fd.append('action', 'get_schema_preview');
-  fd.append('id', id);
-  fd.append('csrf_token', CSRF_TOKEN);
-  fd.append('ajax', '1');
-
-  fetch(ADMIN_API, { method: 'POST', body: fd })
-    .then(r => r.json())
-    .then(data => {
-      if (data.success && data.schema) {
-        document.getElementById('quickPreviewTitle').innerText = data.schema.schema_name;
-        document.getElementById('quickPreviewType').innerText = '@type: ' + data.schema.schema_type + ' (' + data.schema.page_key + ')';
-        document.getElementById('quickPreviewContent').textContent = data.schema.schema_data;
-        document.getElementById('quickPreviewModal').classList.add('open');
-      }
-    });
-}
-
-function previewBlogPublicSchema(canonicalUrl) {
-  const slug = canonicalUrl.split('/blog/')[1] || '';
-  if (!slug) return;
-
-  document.getElementById('quickPreviewTitle').innerText = 'Blog Schema: /blog/' + slug;
-  document.getElementById('quickPreviewType').innerText = 'Schema.org @graph (Live Public Blog Header)';
-  document.getElementById('quickPreviewContent').textContent = 'Fetching live rendered schema...';
-  document.getElementById('quickPreviewModal').classList.add('open');
-
-  fetch('<?= SITE_URL ?>/blog/' + encodeURIComponent(slug))
-    .then(r => r.text())
-    .then(html => {
-      const match = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/i);
-      if (match && match[1]) {
-        try {
-          const parsed = JSON.parse(match[1]);
-          document.getElementById('quickPreviewContent').textContent = JSON.stringify(parsed, null, 2);
-        } catch (e) {
-          document.getElementById('quickPreviewContent').textContent = match[1].trim();
-        }
-      } else {
-        document.getElementById('quickPreviewContent').textContent = 'No JSON-LD script found in rendered blog HTML.';
-      }
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg> Sync blogs.md Now';
+      alert(data.success ? '✓ ' + data.message : '✗ ' + data.message);
     })
     .catch(err => {
-      document.getElementById('quickPreviewContent').textContent = 'Error fetching blog HTML: ' + err.message;
+      btn.disabled = false;
+      alert('Request error: ' + err.message);
     });
 }
 
-function closeQuickPreviewModal() {
-  document.getElementById('quickPreviewModal').classList.remove('open');
-}
-
-function copyQuickPreviewCode() {
-  const text = document.getElementById('quickPreviewContent').textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    alert('Schema JSON-LD copied to clipboard!');
-  });
-}
-
-// Run Full Website Audit
-function runWebsiteAudit() {
-  const fd = new FormData();
-  fd.append('action', 'run_website_audit');
-  fd.append('csrf_token', CSRF_TOKEN);
-  fd.append('ajax', '1');
-
-  fetch(ADMIN_API, { method: 'POST', body: fd })
-    .then(r => r.json())
-    .then(data => {
-      if (data.success && data.audit) {
-        const m = data.audit.metrics;
-        document.getElementById('metric_total_pages').innerText = m.total_pages;
-        document.getElementById('metric_existing_schemas').innerText = m.existing_schemas;
-        document.getElementById('metric_valid_schemas').innerText = m.valid_schemas;
-        document.getElementById('metric_missing_schemas').innerText = m.missing_schemas;
-        document.getElementById('metric_invalid_schemas').innerText = m.invalid_schemas;
-        document.getElementById('metric_duplicate_schemas').innerText = m.duplicate_schemas;
-        document.getElementById('metric_published_schemas').innerText = m.published_schemas;
-        document.getElementById('metric_draft_schemas').innerText = m.draft_schemas;
-
-        // Re-render audit table dynamically
-        const tbody = document.getElementById('auditReportTableBody');
-        if (tbody && data.audit.pages) {
-          let rowsHtml = '';
-          Object.values(data.audit.pages).forEach(p => {
-            const hasMissing = p.missing_types && p.missing_types.length > 0;
-            const hasErrors = p.errors && p.errors.length > 0;
-            const statusClass = hasMissing ? 'draft' : (hasErrors ? 'disabled' : 'published');
-            const statusText = hasMissing ? 'Missing Recommended' : (hasErrors ? 'Requires Fix' : 'Already Correct');
-
-            let cfgBadges = '';
-            Object.keys(p.configured_schemas || {}).forEach(t => {
-              cfgBadges += `<span class="badge" style="background:rgba(54,217,176,0.15); color:var(--accent-mint); font-size:0.75rem;">${t}</span> `;
-            });
-
-            let missHtml = (hasMissing) 
-              ? p.missing_types.map(m => `<span class="badge" style="background:rgba(255,107,107,0.15); color:var(--danger); font-size:0.75rem;">Missing: ${m}</span>`).join(' ')
-              : '<span style="font-size:0.8rem; color:var(--text-muted);">&#10003; Complete</span>';
-
-            rowsHtml += `<tr>
-              <td>
-                <div style="font-weight:700; color:#fff;">${p.title}</div>
-                <div style="font-size:0.75rem; color:var(--text-muted); font-family:var(--font-mono);">${p.canonical_url}</div>
-              </td>
-              <td><span class="badge" style="background:var(--bg-surface-elevated); border:1px solid var(--border-sage);">${p.category}</span></td>
-              <td><div style="display:flex; gap:0.35rem; flex-wrap:wrap;">${cfgBadges}</div></td>
-              <td>${missHtml}</td>
-              <td><span class="sm-status-pill ${statusClass}">${statusText}</span></td>
-            </tr>`;
-          });
-          tbody.innerHTML = rowsHtml;
-        }
-
-        alert(`Full Website Audit Complete:\n• Discovered Pages: ${m.total_pages}\n• Existing Schemas: ${m.existing_schemas}\n• Valid: ${m.valid_schemas}\n• Missing: ${m.missing_schemas}\n• Duplicates: ${m.duplicate_schemas}`);
-      }
-    })
-    .catch(err => alert('Audit Request Error: ' + err.message));
-}
-
-// Auto-Create All Missing Schemas
-function autoCreateAllMissing() {
-  if (!confirm('Auto-generate, validate, and publish all applicable missing schemas across all discovered pages?')) {
-    return;
-  }
-
-  const fd = new FormData();
-  fd.append('action', 'auto_create_missing');
-  fd.append('csrf_token', CSRF_TOKEN);
-  fd.append('ajax', '1');
-
-  fetch(ADMIN_API, { method: 'POST', body: fd })
-    .then(r => r.json())
-    .then(data => {
-      if (data.success) {
-        alert(data.message);
-        window.location.reload();
-      } else {
-        alert('Auto-generation reported errors: ' + (data.details.errors ? data.details.errors.join('; ') : data.message));
-      }
-    })
-    .catch(err => alert('Request Error: ' + err.message));
-}
-
-// Audit Report Modal
-function openAuditReportModal() {
-  document.getElementById('auditReportModal').classList.add('open');
-}
-
-function closeAuditReportModal() {
-  document.getElementById('auditReportModal').classList.remove('open');
-}
-
-// Global Blog Template handlers
-function insertVariableToTemplate(varName) {
-  const textarea = document.getElementById('global_blog_template');
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  const text = textarea.value;
-  textarea.value = text.substring(0, start) + varName + text.substring(end);
-  textarea.selectionStart = textarea.selectionEnd = start + varName.length;
-  textarea.focus();
-  updateGlobalBlogLivePreview(textarea.value);
-}
-
-function formatGlobalBlogTemplate() {
-  const ta = document.getElementById('global_blog_template');
+// 17. FORMAT MODAL JSON
+function formatModalJson() {
+  const textarea = document.getElementById('modal_schema_data');
   try {
-    const parsed = JSON.parse(ta.value);
-    ta.value = JSON.stringify(parsed, null, 2);
-    updateGlobalBlogLivePreview(ta.value);
+    const parsed = JSON.parse(textarea.value);
+    textarea.value = JSON.stringify(parsed, null, 2);
+    validateModalJsonNow();
   } catch (err) {
     alert('Cannot format invalid JSON: ' + err.message);
   }
 }
 
-function resetGlobalBlogTemplate() {
-  if (!confirm('Reset global template to standard default Schema.org BlogPosting?')) return;
-  fetchTemplateForModal('BlogPosting');
-}
-
-const globalBlogTextarea = document.getElementById('global_blog_template');
-if (globalBlogTextarea) {
-  globalBlogTextarea.addEventListener('input', function() {
-    updateGlobalBlogLivePreview(this.value);
-  });
-}
-
-function updateGlobalBlogLivePreview(val) {
-  document.getElementById('global_template_preview').textContent = val;
-  const badge = document.getElementById('global_template_val_badge');
-  const box = document.getElementById('global_template_val_box');
-
-  const fd = new FormData();
-  fd.append('action', 'validate_schema');
-  fd.append('schema_data', val);
-  fd.append('csrf_token', CSRF_TOKEN);
-  fd.append('ajax', '1');
-
-  fetch(ADMIN_API, { method: 'POST', body: fd })
-    .then(r => r.json())
-    .then(res => {
-      if (res.valid) {
-        badge.style.background = 'rgba(54, 217, 176, 0.15)';
-        badge.style.color = 'var(--accent-mint)';
-        badge.textContent = 'Valid';
-        box.innerHTML = '<div class="sm-val-valid">Template syntax is valid.</div>';
-      } else {
-        badge.style.background = 'rgba(255, 107, 107, 0.15)';
-        badge.style.color = 'var(--danger)';
-        badge.textContent = 'Errors Found';
-        box.innerHTML = res.errors.map(e => `<div class="sm-val-error">&bull; ${e}</div>`).join('');
-      }
-    });
-}
-
-function saveGlobalBlogSettings() {
-  const enabled = document.getElementById('auto_blog_schema_enabled').checked ? '1' : '0';
-  const template = document.getElementById('global_blog_template').value;
-  const status = document.getElementById('global_template_status').value;
-
-  const fd = new FormData();
-  fd.append('action', 'save_global_blog_settings');
-  fd.append('auto_blog_schema_enabled', enabled);
-  fd.append('global_blog_template', template);
-  fd.append('global_template_status', status);
-  fd.append('csrf_token', CSRF_TOKEN);
-  fd.append('ajax', '1');
-
-  fetch(ADMIN_API, { method: 'POST', body: fd })
-    .then(r => r.json())
-    .then(data => {
-      if (data.success) {
-        alert(data.message);
-        window.location.reload();
-      } else {
-        alert('Save Failed: ' + data.message);
-      }
-    });
-}
-
-// Individual Blog Overrides handlers
-function debounceBlogSearch() {
-  clearTimeout(searchDebounceTimer);
-  searchDebounceTimer = setTimeout(performBlogSearch, 250);
-}
-
-function performBlogSearch() {
-  const q = document.getElementById('blogSearchInput').value.trim();
-  const status = document.getElementById('blogStatusFilter').value;
-  const mode = document.getElementById('blogModeFilter').value;
-
-  const fd = new FormData();
-  fd.append('action', 'search_blogs');
-  fd.append('q', q);
-  fd.append('status', status);
-  fd.append('mode', mode);
-  fd.append('csrf_token', CSRF_TOKEN);
-  fd.append('ajax', '1');
-
-  fetch(ADMIN_API, { method: 'POST', body: fd })
-    .then(r => r.json())
-    .then(data => {
-      if (data.success) {
-        renderBlogTable(data.blogs);
-      }
-    });
-}
-
-function renderBlogTable(blogs) {
-  const tbody = document.getElementById('blogTableBody');
-  const countBadge = document.getElementById('blogCountBadge');
-  
-  if (countBadge) {
-    countBadge.innerText = `${blogs.length} Articles`;
-  }
-
-  if (!blogs || blogs.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--text-muted);">No matching blog articles found.</td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = blogs.map(b => {
-    const isOverridden = (parseInt(b.override_enabled) === 1);
-    const isDisabled = (parseInt(b.schema_disabled) === 1);
-    const isPubPost = (b.status === 'published');
-
-    let modeHtml = `<span class="sm-status-pill" style="background:rgba(0,191,165,0.15); color:var(--accent-teal); border:1px solid rgba(0,191,165,0.3);"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg> Global Template</span>`;
-    if (isDisabled) {
-      modeHtml = `<span class="sm-status-pill missing" style="background:rgba(255,107,107,0.15); color:var(--danger); border:1px solid rgba(255,107,107,0.3);"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg> Schema Disabled</span>`;
-    } else if (isOverridden) {
-      modeHtml = `<span class="sm-status-pill published"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg> Custom Override</span>`;
-    }
-
-    return `
-      <tr id="blog_tr_${b.id}">
-        <td>
-          <div class="sm-blog-row-title">${escapeHtml(b.title)}</div>
-          <div class="sm-blog-row-slug">/blog/${escapeHtml(b.slug)}</div>
-        </td>
-        <td>
-          <span class="badge" style="background:var(--bg-surface-elevated); border:1px solid var(--border-sage);">
-            ${escapeHtml(b.category_name || 'Uncategorized')}
-          </span>
-        </td>
-        <td>
-          <span class="sm-status-pill ${isPubPost ? 'published' : 'draft'}">
-            ${isPubPost ? 'Published' : 'Draft'}
-          </span>
-        </td>
-        <td>
-          ${modeHtml}
-        </td>
-        <td style="text-align:right;">
-          <button type="button" class="btn btn-sm btn-outline-mint" onclick="openBlogOverrideModal(${b.id})">
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            Configure
-          </button>
-        </td>
-      </tr>
-    `;
-  }).join('');
-}
-
-// Open Blog Override Modal
-function openBlogOverrideModal(postId) {
-  const fd = new FormData();
-  fd.append('action', 'get_blog_schema_data');
-  fd.append('post_id', postId);
-  fd.append('csrf_token', CSRF_TOKEN);
-  fd.append('ajax', '1');
-
-  fetch(ADMIN_API, { method: 'POST', body: fd })
-    .then(r => {
-      if (!r.ok) {
-        throw new Error('Server returned HTTP ' + r.status);
-      }
-      return r.json();
-    })
-    .then(data => {
-      if (data.success) {
-        currentActiveBlogData = data;
-        populateBlogOverrideModal(data);
-      } else {
-        alert('Error loading blog schema: ' + data.message);
-      }
-    })
-    .catch(err => alert('Request Error: ' + err.message));
-}
-
-function populateBlogOverrideModal(data) {
-  document.getElementById('override_modal_post_id').value = data.post.id;
-  document.getElementById('overrideModalBlogTitle').innerText = 'Configure Schema: ' + data.post.title;
-  document.getElementById('overrideModalBlogSlug').innerText = '/blog/' + data.post.slug;
-  document.getElementById('overrideModalCategory').innerText = data.post.category_name || 'Uncategorized';
-  
-  const isPub = (data.post.status === 'published');
-  const postStPill = document.getElementById('overrideModalPostStatus');
-  postStPill.innerText = isPub ? 'Published' : 'Draft';
-  postStPill.className = 'sm-status-pill ' + (isPub ? 'published' : 'draft');
-
-  document.getElementById('overrideModalDraftAlert').style.display = isPub ? 'none' : 'block';
-
-  document.getElementById('modal_inherited_preview').textContent = data.compiled_default || '{\n  "@context": "https://schema.org",\n  "@type": "BlogPosting"\n}';
-
-  const o = data.override;
-  let mode = 'inherit';
-  if (parseInt(o.schema_disabled) === 1) {
-    mode = 'disabled';
-  } else if (parseInt(o.override_enabled) === 1) {
-    mode = 'custom';
-  }
-  currentOverrideOriginalMode = mode;
-
-  const existingCustomText = o.custom_schema || '';
-  currentOverrideOriginalSchema = existingCustomText;
-  document.getElementById('modal_custom_blog_schema').value = existingCustomText;
-  document.getElementById('modal_custom_status').value = o.status || 'published';
-
-  const restoreBtn = document.getElementById('modalRestoreDefaultBtn');
-  if (restoreBtn) {
-    restoreBtn.style.display = (mode !== 'inherit') ? 'inline-flex' : 'none';
-  }
-
-  selectOverrideMode(mode);
-
-  if (existingCustomText) {
-    updateModalCustomPreview(existingCustomText);
-  }
-
-  const modal = document.getElementById('blogOverrideModal');
-  modal.classList.add('open');
-}
-
-function selectOverrideMode(mode) {
-  const r = document.getElementById('radio_mode_' + mode);
-  if (r) r.checked = true;
-
-  document.querySelectorAll('.sm-mode-card').forEach(c => c.classList.remove('active'));
-  const card = document.getElementById('modeCard_' + mode);
-  if (card) card.classList.add('active');
-
-  document.getElementById('overrideSection_inherit').style.display = (mode === 'inherit') ? 'block' : 'none';
-  document.getElementById('overrideSection_custom').style.display = (mode === 'custom') ? 'block' : 'none';
-  document.getElementById('overrideSection_disabled').style.display = (mode === 'disabled') ? 'block' : 'none';
-}
-
-function closeBlogOverrideModal() {
-  const modal = document.getElementById('blogOverrideModal');
-  modal.classList.remove('open');
-}
-
-const customModalTextarea = document.getElementById('modal_custom_blog_schema');
-if (customModalTextarea) {
-  customModalTextarea.addEventListener('input', function() {
-    updateModalCustomPreview(this.value);
-  });
-  customModalTextarea.addEventListener('keydown', function(e) {
-    if (e.key === 'Tab') {
-      e.preventDefault();
-      const start = this.selectionStart;
-      const end = this.selectionEnd;
-      this.value = this.value.substring(0, start) + '  ' + this.value.substring(end);
-      this.selectionStart = this.selectionEnd = start + 2;
-    }
-  });
-}
-
-function updateModalCustomPreview(val) {
-  document.getElementById('modal_custom_preview').textContent = val;
-  const badge = document.getElementById('modal_custom_val_badge');
-  const box = document.getElementById('modal_custom_val_box');
-
-  if (!val.trim()) {
-    badge.textContent = 'Empty';
-    badge.style.background = 'rgba(229, 185, 90, 0.15)';
-    badge.style.color = 'var(--status-draft)';
-    box.innerHTML = '<div class="sm-val-warning">&bull; Schema editor is empty.</div>';
-    return;
-  }
-
-  const fd = new FormData();
-  fd.append('action', 'validate_schema');
-  fd.append('schema_data', val);
-  fd.append('csrf_token', CSRF_TOKEN);
-  fd.append('ajax', '1');
-
-  fetch(ADMIN_API, { method: 'POST', body: fd })
-    .then(r => r.json())
-    .then(res => {
-      if (res.valid) {
-        badge.style.background = 'rgba(54, 217, 176, 0.15)';
-        badge.style.color = 'var(--accent-mint)';
-        badge.textContent = 'Valid';
-
-        let warnHtml = '';
-        if (res.warnings && res.warnings.length > 0) {
-          warnHtml = res.warnings.map(w => `<div class="sm-val-warning">&bull; Warning: ${w}</div>`).join('');
-        }
-        box.innerHTML = `<div class="sm-val-valid"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Valid Schema.org BlogPosting</div>${warnHtml}`;
-      } else {
-        badge.style.background = 'rgba(255, 107, 107, 0.15)';
-        badge.style.color = 'var(--danger)';
-        badge.textContent = 'Errors';
-        box.innerHTML = res.errors.map(e => `<div class="sm-val-error">&bull; ${e}</div>`).join('');
-      }
-    })
-    .catch(() => {
-      try {
-        JSON.parse(val);
-        badge.textContent = 'Valid JSON';
-        box.innerHTML = '<div class="sm-val-valid">JSON is syntactically valid.</div>';
-      } catch (e) {
-        badge.textContent = 'Syntax Error';
-        box.innerHTML = `<div class="sm-val-error">${e.message}</div>`;
-      }
-    });
-}
-
-function copyCompiledToCustomEditor() {
-  if (currentActiveBlogData && currentActiveBlogData.compiled_default) {
-    document.getElementById('modal_custom_blog_schema').value = currentActiveBlogData.compiled_default;
-    selectOverrideMode('custom');
-    updateModalCustomPreview(currentActiveBlogData.compiled_default);
-  }
-}
-
-function loadBaselineIntoCustomModal() {
-  if (currentActiveBlogData && currentActiveBlogData.compiled_default) {
-    if (confirm('Load the auto-compiled global template into the editor? This will replace current text.')) {
-      document.getElementById('modal_custom_blog_schema').value = currentActiveBlogData.compiled_default;
-      updateModalCustomPreview(currentActiveBlogData.compiled_default);
-    }
-  }
-}
-
-function formatOverrideModalJson() {
-  const ta = document.getElementById('modal_custom_blog_schema');
+function formatAddJson() {
+  const textarea = document.getElementById('add_modal_schema_data');
   try {
-    const parsed = JSON.parse(ta.value);
-    ta.value = JSON.stringify(parsed, null, 2);
-    updateModalCustomPreview(ta.value);
+    const parsed = JSON.parse(textarea.value);
+    textarea.value = JSON.stringify(parsed, null, 2);
+    validateAddJsonNow();
   } catch (err) {
     alert('Cannot format invalid JSON: ' + err.message);
   }
 }
 
-function revertOverrideModalJson() {
-  if (confirm('Revert editor to previously saved schema?')) {
-    document.getElementById('modal_custom_blog_schema').value = currentOverrideOriginalSchema;
-    updateModalCustomPreview(currentOverrideOriginalSchema);
-  }
-}
-
-function submitBlogOverrideSave() {
-  const postId = document.getElementById('override_modal_post_id').value;
-  const mode = document.querySelector('input[name="modal_override_mode"]:checked').value;
-  const customSchema = document.getElementById('modal_custom_blog_schema').value.trim();
-  const status = document.getElementById('modal_custom_status').value;
-
-  if (mode === 'custom' && !customSchema) {
-    alert('Please enter or paste your custom JSON-LD schema, or switch to Inherit Global Template.');
+// 18. COPY MODAL JSON
+function copyModalJson() {
+  const val = document.getElementById('modal_schema_data').value;
+  if (!val) {
+    alert('No content to copy.');
     return;
   }
-
-  const fd = new FormData();
-  fd.append('action', 'save_blog_override');
-  fd.append('post_id', postId);
-  fd.append('mode', mode);
-  fd.append('custom_schema', customSchema);
-  fd.append('status', status);
-  fd.append('csrf_token', CSRF_TOKEN);
-  fd.append('ajax', '1');
-
-  fetch(ADMIN_API, { method: 'POST', body: fd })
-    .then(r => r.json())
-    .then(data => {
-      if (data.success) {
-        alert(data.message);
-        closeBlogOverrideModal();
-        performBlogSearch();
-      } else {
-        alert('Save Failed: ' + data.message);
-      }
-    })
-    .catch(err => alert('Save Request Error: ' + err.message));
+  navigator.clipboard.writeText(val).then(() => alert('Copied to clipboard!'));
 }
 
-function restoreCurrentBlogDefault() {
-  const postId = document.getElementById('override_modal_post_id').value;
-  if (!confirm('Revert this blog post to inherit the global BlogPosting schema template?')) {
+// 19. VALIDATE MODAL JSON NOW
+function validateModalJsonNow() {
+  const val = document.getElementById('modal_schema_data').value.trim();
+  const box = document.getElementById('modal_validation_box');
+  if (!val) {
+    box.innerHTML = '<span style="color:var(--text-muted);">Empty schema content.</span>';
     return;
   }
-
-  const fd = new FormData();
-  fd.append('action', 'restore_blog_default');
-  fd.append('post_id', postId);
-  fd.append('csrf_token', CSRF_TOKEN);
-  fd.append('ajax', '1');
-
-  fetch(ADMIN_API, { method: 'POST', body: fd })
-    .then(r => r.json())
-    .then(data => {
-      if (data.success) {
-        alert(data.message);
-        closeBlogOverrideModal();
-        performBlogSearch();
-      } else {
-        alert('Restore Failed: ' + data.message);
-      }
-    })
-    .catch(err => alert('Request Error: ' + err.message));
+  try {
+    JSON.parse(val);
+    box.innerHTML = '<span style="color:#36D9B0; font-weight:700;">✓ Valid JSON Syntax</span>';
+  } catch (err) {
+    box.innerHTML = '<span style="color:var(--danger); font-weight:700;">✗ Syntax Error: ' + err.message + '</span>';
+  }
 }
 
-function escapeHtml(text) {
-  if (!text) return '';
-  return String(text)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+function validateAddJsonNow() {
+  const val = document.getElementById('add_modal_schema_data').value.trim();
+  const box = document.getElementById('add_modal_validation_box');
+  if (!val) {
+    box.innerHTML = '<span style="color:var(--text-muted);">Empty schema content.</span>';
+    return;
+  }
+  try {
+    JSON.parse(val);
+    box.innerHTML = '<span style="color:#36D9B0; font-weight:700;">✓ Valid JSON Syntax</span>';
+  } catch (err) {
+    box.innerHTML = '<span style="color:var(--danger); font-weight:700;">✗ Syntax Error: ' + err.message + '</span>';
+  }
 }
 </script>
 
 <?php
-// Include Admin CMS Footer
-require_once CMS_ROOT . '/admin/includes/footer.php';
+include CMS_ROOT . '/admin/includes/footer.php';

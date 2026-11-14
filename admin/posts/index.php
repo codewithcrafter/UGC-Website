@@ -31,6 +31,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     if (function_exists('syncBlogPostArtifacts')) {
         syncBlogPostArtifacts($postId);
     }
+    // Sync blogs.md listing
+    if (function_exists('syncBlogsMd')) {
+        syncBlogsMd();
+    }
     if (function_exists('runFullReconciliation')) {
         runFullReconciliation();
     }

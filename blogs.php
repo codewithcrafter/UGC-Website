@@ -35,16 +35,34 @@ $ogImage = $featuredPost && !empty($featuredPost['featured_image'])
 // Structured Data (Managed via Centralized Schema Manager with fallback)
 $structuredData = [
     "@context" => "https://schema.org",
-    "@type" => "CollectionPage",
-    "name" => "MY UGC VIDEO Insights & Editorial Journal",
-    "url" => $canonicalUrl,
-    "description" => $metaDescription,
-    "publisher" => [
-        "@type" => "Organization",
-        "name" => "MY UGC VIDEO",
-        "logo" => [
-            "@type" => "ImageObject",
-            "url" => $canonicalBase . "/images/hero/hero-creator.jpg"
+    "@graph" => [
+        [
+            "@type" => "BreadcrumbList",
+            "@id" => $canonicalUrl . "#breadcrumb",
+            "itemListElement" => [
+                [
+                    "@type" => "ListItem",
+                    "position" => 1,
+                    "name" => "Home",
+                    "item" => rtrim($canonicalBase, '/')
+                ],
+                [
+                    "@type" => "ListItem",
+                    "position" => 2,
+                    "name" => "Blogs",
+                    "item" => $canonicalUrl
+                ]
+            ]
+        ],
+        [
+            "@type" => "WebPage",
+            "@id" => $canonicalUrl . "#webpage",
+            "url" => $canonicalUrl,
+            "name" => $pageTitle,
+            "description" => $metaDescription,
+            "isPartOf" => [
+                "@id" => rtrim($canonicalBase, '/') . "/#organization"
+            ]
         ]
     ]
 ];

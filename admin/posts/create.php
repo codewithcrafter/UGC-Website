@@ -185,6 +185,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $syncRes = syncBlogPostArtifacts($newId);
         $syncNote = $syncRes['success'] ? ' & Markdown/Schema generated' : '';
 
+        // Sync blogs.md listing
+        if (function_exists('syncBlogsMd')) {
+            syncBlogsMd();
+        }
+
         // Automatically regenerate discovery systems for published articles
         if ($status === 'published') {
             $canonicalBase = function_exists('getLlmCanonicalBaseUrl') ? getLlmCanonicalBaseUrl() : 'https://myugcvideo.in';

@@ -1,0 +1,66 @@
+[
+    {
+        "id": 1,
+        "name": "UGC Trends",
+        "slug": "ugc-trends",
+        "description": "Articles and expert guides covering UGC Trends",
+        "created_at": "2026-11-04 10:43:25",
+        "updated_at": "2026-11-04 10:43:25"
+    },
+    {
+        "id": 2,
+        "name": "Branding",
+        "slug": "branding",
+        "description": "Articles and expert guides covering Branding",
+        "created_at": "2026-11-04 10:43:25",
+        "updated_at": "2026-11-04 10:43:25"
+    },
+    {
+        "id": 3,
+        "name": "Creator Tips",
+        "slug": "creator-tips",
+        "description": "Articles and expert guides covering Creator Tips",
+        "created_at": "2026-11-04 10:43:25",
+        "updated_at": "2026-11-04 10:43:25"
+    },
+    {
+        "id": 4,
+        "name": "E-commerce",
+        "slug": "e-commerce",
+        "description": "Articles and expert guides covering E-commerce",
+        "created_at": "2026-11-04 10:43:25",
+        "updated_at": "2026-11-04 10:43:25"
+    },
+    {
+        "id": 5,
+        "name": "Content Strategy",
+        "slug": "content-strategy",
+        "description": "Articles and expert guides covering Content Strategy",
+        "created_at": "2026-11-04 10:43:25",
+        "updated_at": "2026-11-04 10:43:25"
+    },
+    {
+        "id": 6,
+        "name": "Social Strategy",
+        "slug": "social-strategy",
+        "description": "Articles and expert guides covering Social Strategy",
+        "created_at": "2026-11-04 10:43:25",
+        "updated_at": "2026-11-04 10:43:25"
+    },
+    {
+        "id": 7,
+        "name": "UGC Marketing",
+        "slug": "ugc-marketing",
+        "description": "Articles and expert guides covering UGC Marketing",
+        "created_at": "2026-11-04 10:43:25",
+        "updated_at": "2026-11-04 10:43:25"
+    },
+    {
+        "id": 8,
+        "name": "Marketing Tips",
+        "slug": "marketing-tips",
+        "description": "Articles and expert guides covering Marketing Tips",
+        "created_at": "2026-11-04 10:43:25",
+        "updated_at": "2026-11-04 10:43:25"
+    }
+]

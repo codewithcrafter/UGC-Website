@@ -33,7 +33,7 @@
   <link rel="stylesheet" href="css/style.css">
 
   <!-- JSON-LD Structured Data: Organization & Agency -->
-        <!-- Centralized Schema Manager JSON-LD -->
+                  <!-- Centralized Schema Manager JSON-LD -->
   <script type="application/ld+json">
 {
     "@context": "https://schema.org",
@@ -77,10 +77,10 @@
         {
             "@type": "WebPage",
             "@id": "https://myugcvideo.in/#webpage",
-            "url": "https://myugcvideo.in",
+            "url": "https://myugcvideo.in/",
             "name": "MY UGC VIDEO \u2014 Premier UGC Video Production Agency",
             "description": "High-performing user-generated content video ads, product demonstrations, and creator-led marketing campaigns.",
-            "isPartOf": {
+            "publisher": {
                 "@id": "https://myugcvideo.in/#organization"
             },
             "about": {
@@ -88,19 +88,16 @@
             }
         },
         {
-            "@type": "Service",
-            "@id": "https://myugcvideo.in/#service-core",
-            "name": "UGC Video Production Services",
-            "serviceType": "User Generated Content Video Advertising",
-            "provider": {
-                "@id": "https://myugcvideo.in/#organization"
-            },
-            "description": "End-to-end UGC video production covering creator casting, creative brief development, scriptwriting, professional editing, and performance ad creative delivery.",
-            "areaServed": {
-                "@type": "Country",
-                "name": "India"
-            },
-            "url": "https://myugcvideo.in"
+            "@type": "VideoObject",
+            "@id": "https://myugcvideo.in/#video-showcase",
+            "name": "Creator-Led Video Production \u2014 UGC Video Showcase",
+            "description": "Watch our creator-led video production preview showcasing authentic 9:16 vertical UGC video content crafted for direct-to-consumer brand campaigns.",
+            "thumbnailUrl": [
+                "https://myugcvideo.in/images/hero/hero-ugc-production.jpg"
+            ],
+            "uploadDate": "2026-01-01T00:00:00+05:30",
+            "contentUrl": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
+            "embedUrl": "https://myugcvideo.in/#video-showcase"
         }
     ]
 }

@@ -17,17 +17,13 @@ require_once CMS_ROOT . '/config/config.php';
 function getSupportedSchemaTypes(): array {
     return [
         'Organization'        => 'Organization (Corporate & Brand Identity)',
-        'ProfessionalService' => 'Professional Service (Local Business / Agency)',
-        'WebSite'             => 'WebSite (Root Site & Search)',
         'WebPage'             => 'WebPage (Standard Webpage)',
-        'AboutPage'           => 'AboutPage (About Studio / Company)',
-        'ContactPage'         => 'ContactPage (Contact Us & Direct Channels)',
-        'Service'             => 'Service (Specific Service Offering)',
-        'Article'             => 'Article (General News & Editorial)',
-        'BlogPosting'         => 'BlogPosting (Blog Article & Thought Leadership)',
+        'VideoObject'         => 'VideoObject (Hero / Showcase Video)',
         'BreadcrumbList'      => 'BreadcrumbList (Hierarchical Navigation)',
-        'CollectionPage'      => 'CollectionPage (Directory & Catalog Page)',
         'FAQPage'             => 'FAQPage (Frequently Asked Questions)',
+        'Review'              => 'Review (Customer Testimonial / Review)',
+        'BlogPosting'         => 'BlogPosting (Blog Article & Thought Leadership)',
+        'Article'             => 'Article (General News & Editorial)',
         'Custom'              => 'Custom Schema (Freeform Custom JSON-LD / Upload)'
     ];
 }
@@ -83,6 +79,36 @@ function getDefaultSchemaTemplate(string $type): string {
             'name' => 'MY UGC VIDEO',
             'url' => $baseUrl . '/',
             'description' => 'Performance UGC video production, creator sourcing, and high-impact social advertising.'
+        ],
+        'VideoObject' => [
+            '@context' => 'https://schema.org',
+            '@type' => 'VideoObject',
+            'name' => 'Creator-Led Video Production — UGC Video Showcase',
+            'description' => 'Watch our creator-led video production preview showcasing authentic 9:16 vertical UGC video content crafted for direct-to-consumer brand campaigns.',
+            'thumbnailUrl' => [
+                $baseUrl . '/images/hero/hero-ugc-production.jpg'
+            ],
+            'uploadDate' => '2026-01-01T00:00:00+05:30',
+            'contentUrl' => $baseUrl . '/images/hero/hero-ugc-production.jpg',
+            'embedUrl' => $baseUrl . '/#video-showcase'
+        ],
+        'Review' => [
+            '@context' => 'https://schema.org',
+            '@type' => 'Review',
+            'itemReviewed' => [
+                '@type' => 'Organization',
+                'name' => 'MY UGC VIDEO'
+            ],
+            'author' => [
+                '@type' => 'Person',
+                'name' => 'Verified Client'
+            ],
+            'reviewRating' => [
+                '@type' => 'Rating',
+                'ratingValue' => '5',
+                'bestRating' => '5'
+            ],
+            'reviewBody' => 'Exceptional performance UGC video production delivered on-brief.'
         ],
         'AboutPage' => [
             '@context' => 'https://schema.org',
@@ -534,38 +560,83 @@ function renderCentralizedBlogSchema(array $post, array $faqs = []): ?array {
 
     $graph = [];
 
-    // 1. Organization Schema (Canonical complete entity)
-    $orgEntity = getCentralizedOrganizationSchema();
-    unset($orgEntity['@context']);
-    $graph[] = $orgEntity;
+    // Fetch any saved/custom page-level schemas from page_schemas table
+    $customSchemasByType = [];
+    $otherCustomSchemas = [];
+    try {
+        $db = getDb();
+        $customStmt = $db->prepare("SELECT `schema_type`, `schema_data` FROM `page_schemas` WHERE (`page_key` = :pk1 OR `page_key` = :pk2) AND `status` = 'published'");
+        $customStmt->execute([':pk1' => 'blog-' . $cleanSlug, ':pk2' => 'blog:' . $cleanSlug]);
+        $customRows = $customStmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($customRows as $crow) {
+            $cdata = json_decode($crow['schema_data'], true);
+            if ($cdata && is_array($cdata)) {
+                if (isset($cdata['@graph']) && is_array($cdata['@graph'])) {
+                    foreach ($cdata['@graph'] as $gItem) {
+                        $t = $gItem['@type'] ?? '';
+                        if (in_array($t, ['Organization', 'BreadcrumbList', 'BlogPosting'], true)) {
+                            $customSchemasByType[$t] = $gItem;
+                        } else {
+                            $otherCustomSchemas[] = $gItem;
+                        }
+                    }
+                } else {
+                    unset($cdata['@context']);
+                    $t = $crow['schema_type'] ?: ($cdata['@type'] ?? '');
+                    if (in_array($t, ['Organization', 'BreadcrumbList', 'BlogPosting'], true)) {
+                        $customSchemasByType[$t] = $cdata;
+                    } else {
+                        $otherCustomSchemas[] = $cdata;
+                    }
+                }
+            }
+        }
+    } catch (Throwable $e) {}
 
-    // 2. Breadcrumbs Schema (Homepage URL without trailing slash)
-    $homeUrl = rtrim($canonicalBase, '/');
-    $breadcrumbs = [
-        ["@type" => "ListItem", "position" => 1, "name" => "Home", "item" => $homeUrl],
-        ["@type" => "ListItem", "position" => 2, "name" => "Blogs", "item" => $canonicalBase . "/blogs"]
-    ];
-    $pos = 3;
-    if (!empty($post['category_name'])) {
-        $catSlug = function_exists('slugify') ? slugify($post['category_name']) : strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $post['category_name']), '-'));
-        $breadcrumbs[] = ["@type" => "ListItem", "position" => $pos, "name" => $post['category_name'], "item" => $canonicalBase . "/blogs?category=" . urlencode($catSlug)];
-        $pos++;
+    // 1. Organization Schema (Custom override from page_schemas or Canonical complete entity)
+    if (!empty($customSchemasByType['Organization'])) {
+        $graph[] = $customSchemasByType['Organization'];
+    } else {
+        $orgEntity = getCentralizedOrganizationSchema();
+        unset($orgEntity['@context']);
+        $graph[] = $orgEntity;
     }
-    $breadcrumbs[] = ["@type" => "ListItem", "position" => $pos, "name" => $post['title'], "item" => $canonical];
 
-    $graph[] = [
-        "@type" => "BreadcrumbList",
-        "@id"   => $canonical . "#breadcrumb",
-        "itemListElement" => $breadcrumbs
-    ];
+    // 2. Breadcrumbs Schema (Custom override from page_schemas or Canonical breadcrumbs)
+    if (!empty($customSchemasByType['BreadcrumbList'])) {
+        $graph[] = $customSchemasByType['BreadcrumbList'];
+    } else {
+        $homeUrl = rtrim($canonicalBase, '/');
+        $breadcrumbs = [
+            ["@type" => "ListItem", "position" => 1, "name" => "Home", "item" => $homeUrl],
+            ["@type" => "ListItem", "position" => 2, "name" => "Blogs", "item" => $canonicalBase . "/blogs"]
+        ];
+        $pos = 3;
+        if (!empty($post['category_name'])) {
+            $catSlug = function_exists('slugify') ? slugify($post['category_name']) : strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $post['category_name']), '-'));
+            $breadcrumbs[] = ["@type" => "ListItem", "position" => $pos, "name" => $post['category_name'], "item" => $canonicalBase . "/blogs?category=" . urlencode($catSlug)];
+            $pos++;
+        }
+        $breadcrumbs[] = ["@type" => "ListItem", "position" => $pos, "name" => $post['title'], "item" => $canonical];
 
-    // 3. BlogPosting Schema (Resolved via Centralized Manager Priority Rules)
-    $blogPosting = resolveBlogPostingSchema($post, $faqs);
-    if ($blogPosting) {
-        $graph[] = $blogPosting;
+        $graph[] = [
+            "@type" => "BreadcrumbList",
+            "@id"   => $canonical . "#breadcrumb",
+            "itemListElement" => $breadcrumbs
+        ];
     }
 
-    // 4. FAQPage Schema
+    // 3. BlogPosting Schema (Custom override from page_schemas or Resolved via Centralized Manager Priority Rules)
+    if (!empty($customSchemasByType['BlogPosting'])) {
+        $graph[] = $customSchemasByType['BlogPosting'];
+    } else {
+        $blogPosting = resolveBlogPostingSchema($post, $faqs);
+        if ($blogPosting) {
+            $graph[] = $blogPosting;
+        }
+    }
+
+    // 4. FAQPage Schema (Only if valid visible FAQs exist)
     $validFaqs = array_filter($faqs, fn($f) => !empty(trim($f['question'] ?? '')) && !empty(trim($f['answer'] ?? '')));
     if (!empty($validFaqs)) {
         $graph[] = [
@@ -582,26 +653,10 @@ function renderCentralizedBlogSchema(array $post, array $faqs = []): ?array {
         ];
     }
 
-    // 5. Append any Page-Level Custom Schemas from page_schemas table
-    try {
-        $db = getDb();
-        $customStmt = $db->prepare("SELECT `schema_data` FROM `page_schemas` WHERE (`page_key` = :pk1 OR `page_key` = :pk2) AND `status` = 'published'");
-        $customStmt->execute([':pk1' => 'blog-' . $cleanSlug, ':pk2' => 'blog:' . $cleanSlug]);
-        $customRows = $customStmt->fetchAll(PDO::FETCH_ASSOC);
-        foreach ($customRows as $crow) {
-            $cdata = json_decode($crow['schema_data'], true);
-            if ($cdata && is_array($cdata)) {
-                if (isset($cdata['@graph']) && is_array($cdata['@graph'])) {
-                    foreach ($cdata['@graph'] as $gItem) {
-                        $graph[] = $gItem;
-                    }
-                } else {
-                    unset($cdata['@context']);
-                    $graph[] = $cdata;
-                }
-            }
-        }
-    } catch (Throwable $e) {}
+    // 5. Append any Other Page-Level Schemas from page_schemas table
+    foreach ($otherCustomSchemas as $other) {
+        $graph[] = $other;
+    }
 
     return [
         "@context" => "https://schema.org",
@@ -724,47 +779,36 @@ function syncPublishedSchemasToStaticFile(string $pageKey): bool {
 
 /**
  * Recommended schema types by page key per project specifications
+ * Strictly implements the approved schema structure (Task 7):
+ * - Homepage: Organization, WebPage, VideoObject
+ * - About: Organization, BreadcrumbList, WebPage
+ * - Services Listing: Organization, BreadcrumbList, WebPage, FAQPage
+ * - Individual Service Pages: Organization, BreadcrumbList, FAQPage, WebPage (Review only if genuine data exists)
+ * - Blogs Listing: BreadcrumbList, WebPage
+ * - Individual Blog Pages: Organization, BreadcrumbList, BlogPosting
+ * - Contact: BreadcrumbList, WebPage, Organization
  */
 function getPageRecommendedSchemaTypes(string $pageKey): array {
     if ($pageKey === 'homepage') {
-        return ['Organization', 'WebPage', 'Service'];
+        return ['Organization', 'WebPage', 'VideoObject'];
     }
     if ($pageKey === 'about') {
-        return ['Organization', 'BreadcrumbList', 'AboutPage', 'Service'];
+        return ['Organization', 'BreadcrumbList', 'WebPage'];
     }
     if ($pageKey === 'services') {
-        return ['Organization', 'BreadcrumbList', 'Service', 'FAQPage'];
+        return ['Organization', 'BreadcrumbList', 'WebPage', 'FAQPage'];
     }
     if (str_starts_with($pageKey, 'service-')) {
-        return ['Organization', 'BreadcrumbList', 'Service', 'FAQPage'];
+        return ['Organization', 'BreadcrumbList', 'FAQPage', 'WebPage'];
     }
     if ($pageKey === 'blog-listing') {
-        return ['Organization', 'BreadcrumbList', 'CollectionPage', 'Blog', 'ItemList'];
+        return ['BreadcrumbList', 'WebPage'];
     }
     if ($pageKey === 'contact') {
-        return ['Organization', 'BreadcrumbList', 'ContactPage'];
+        return ['BreadcrumbList', 'WebPage', 'Organization'];
     }
     if (str_starts_with($pageKey, 'blog-') || str_starts_with($pageKey, 'blog:')) {
-        $types = ['BlogPosting', 'BreadcrumbList', 'Organization'];
-        $slug = preg_replace('/^blog[-:]/', '', $pageKey);
-        try {
-            $db = getDb();
-            $stmt = $db->prepare("SELECT faqs_json FROM blog_posts WHERE slug = :s LIMIT 1");
-            $stmt->execute([':s' => $slug]);
-            $rawFaqs = $stmt->fetchColumn();
-            if ($rawFaqs) {
-                $faqs = json_decode($rawFaqs, true);
-                if (!empty($faqs) && is_array($faqs)) {
-                    foreach ($faqs as $f) {
-                        if (!empty($f['question']) && !empty($f['answer'])) {
-                            $types[] = 'FAQPage';
-                            break;
-                        }
-                    }
-                }
-            }
-        } catch (Throwable $e) {}
-        return $types;
+        return ['Organization', 'BreadcrumbList', 'BlogPosting'];
     }
     return ['WebPage'];
 }
@@ -917,112 +961,106 @@ function buildAutomaticPageSchema(string $pageKey, string $schemaType): ?array {
         } catch (Throwable $e) {}
     }
 
-    // 3. WebPage (Homepage)
-    if ($schemaType === 'WebPage' && $pageKey === 'homepage') {
+    // 3. WebPage (Standard page entity across Homepage, About, Services, Contact, Blog Listing, and Individual Services)
+    if ($schemaType === 'WebPage') {
         $homeUrl = rtrim($canonicalBase, '/');
-        return [
-            "@context" => "https://schema.org",
-            "@type" => "WebPage",
-            "@id" => $homeUrl . "/#webpage",
-            "url" => $homeUrl,
-            "name" => "MY UGC VIDEO — Premier UGC Video Production Agency",
-            "description" => "High-performing user-generated content video ads, product demonstrations, and creator-led marketing campaigns.",
-            "isPartOf" => ["@id" => $homeUrl . "/#organization"],
-            "about" => ["@id" => $homeUrl . "/#organization"]
-        ];
-    }
-
-    // 4. AboutPage
-    if ($schemaType === 'AboutPage') {
-        return [
-            "@context" => "https://schema.org",
-            "@type" => "AboutPage",
-            "@id" => $canonicalBase . "/about#aboutpage",
-            "url" => $canonicalBase . "/about",
-            "name" => "About MY UGC VIDEO",
-            "description" => "Discover MY UGC VIDEO — a premier platform bridging ambitious brands and authentic content creators to craft engaging, high-performing creator-led video content.",
-            "mainEntity" => ["@id" => $canonicalBase . "/#organization"]
-        ];
-    }
-
-    // 5. ContactPage / WebPage
-    if ($schemaType === 'ContactPage' || ($schemaType === 'WebPage' && $pageKey === 'contact')) {
-        return [
-            "@context" => "https://schema.org",
-            "@type" => "ContactPage",
-            "@id" => $canonicalBase . "/contact#contactpage",
-            "url" => $canonicalBase . "/contact",
-            "name" => "Contact MY UGC VIDEO",
-            "description" => "Contact channels and project inquiry form for MY UGC VIDEO production agency.",
-            "mainEntity" => ["@id" => $canonicalBase . "/#organization"]
-        ];
-    }
-
-    // 6. Service schemas
-    if ($schemaType === 'Service') {
         if ($pageKey === 'homepage') {
-            $homeUrl = rtrim($canonicalBase, '/');
             return [
                 "@context" => "https://schema.org",
-                "@type" => "Service",
-                "@id" => $homeUrl . "/#service-core",
-                "name" => "UGC Video Production Services",
-                "serviceType" => "User Generated Content Video Advertising",
-                "provider" => ["@id" => $homeUrl . "/#organization"],
-                "description" => "End-to-end UGC video production covering creator casting, creative brief development, scriptwriting, professional editing, and performance ad creative delivery.",
-                "areaServed" => ["@type" => "Country", "name" => "India"],
-                "url" => $homeUrl
+                "@type" => "WebPage",
+                "@id" => $homeUrl . "/#webpage",
+                "url" => $homeUrl . "/",
+                "name" => "MY UGC VIDEO — Premier UGC Video Production Agency",
+                "description" => "High-performing user-generated content video ads, product demonstrations, and creator-led marketing campaigns.",
+                "publisher" => ["@id" => $homeUrl . "/#organization"],
+                "about" => ["@id" => $homeUrl . "/#organization"]
             ];
         }
         if ($pageKey === 'about') {
             return [
                 "@context" => "https://schema.org",
-                "@type" => "Service",
-                "@id" => $canonicalBase . "/about#service-creator-network",
-                "name" => "Creator Network & Talent Management",
-                "serviceType" => "Creator Discovery & Campaign Management",
-                "provider" => ["@id" => $canonicalBase . "/#organization"],
-                "description" => "Curated network of pre-vetted, high-converting UGC video creators with end-to-end contract, briefing, and compliance management.",
-                "url" => $canonicalBase . "/about"
+                "@type" => "WebPage",
+                "@id" => $canonicalBase . "/about#webpage",
+                "url" => $canonicalBase . "/about",
+                "name" => "About MY UGC VIDEO",
+                "description" => "Discover MY UGC VIDEO — a premier platform bridging ambitious brands and authentic content creators to craft engaging, high-performing creator-led video content.",
+                "publisher" => ["@id" => $homeUrl . "/#organization"]
             ];
         }
         if ($pageKey === 'services') {
             return [
                 "@context" => "https://schema.org",
-                "@type" => "Service",
-                "@id" => $canonicalBase . "/services#service-directory",
-                "name" => "MY UGC VIDEO Services Directory",
-                "serviceType" => "UGC Video Production Agency",
-                "provider" => ["@id" => $canonicalBase . "/#organization"],
-                "description" => "Eight core UGC video production disciplines spanning creator-led content, performance ad creatives, product demos, unboxing videos, and lifestyle UGC.",
-                "url" => $canonicalBase . "/services"
+                "@type" => "WebPage",
+                "@id" => $canonicalBase . "/services#webpage",
+                "url" => $canonicalBase . "/services",
+                "name" => "UGC Video Production Services Directory",
+                "description" => "Explore our comprehensive suite of user-generated content video production services, from performance video ads to unboxings and reviews.",
+                "publisher" => ["@id" => $homeUrl . "/#organization"]
+            ];
+        }
+        if ($pageKey === 'contact') {
+            return [
+                "@context" => "https://schema.org",
+                "@type" => "WebPage",
+                "@id" => $canonicalBase . "/contact#webpage",
+                "url" => $canonicalBase . "/contact",
+                "name" => "Contact MY UGC VIDEO",
+                "description" => "Contact channels and project inquiry form for MY UGC VIDEO production agency.",
+                "publisher" => ["@id" => $homeUrl . "/#organization"]
+            ];
+        }
+        if ($pageKey === 'blog-listing') {
+            return [
+                "@context" => "https://schema.org",
+                "@type" => "WebPage",
+                "@id" => $canonicalBase . "/blogs#webpage",
+                "url" => $canonicalBase . "/blogs",
+                "name" => "The Creator Journal — UGC Insights, Trends & Strategy",
+                "description" => "Explore in-depth articles on UGC video strategy, creator management, paid social performance, and e-commerce content marketing from MY UGC VIDEO.",
+                "publisher" => ["@id" => $homeUrl . "/#organization"]
             ];
         }
         if (str_starts_with($pageKey, 'service-')) {
             $slug = $pageMeta['service_slug'] ?? str_replace('service-', '', $pageKey);
             $pageUrl = $canonicalBase . '/services/' . $slug;
-            
-            // Extract meta description from HTML if available
             $desc = "Professional " . $pageMeta['title'] . " delivered with high-converting creator-led content.";
             if (preg_match('/<meta\s+name=[\'"]description[\'"]\s+content=[\'"]([^\'"]+)[\'"]/i', $htmlContent, $dm)) {
                 $desc = trim($dm[1]);
             }
-            
             return [
                 "@context" => "https://schema.org",
-                "@type" => "Service",
-                "@id" => $pageUrl . "#service",
-                "name" => $pageMeta['title'],
-                "serviceType" => "UGC Video Production",
-                "provider" => ["@id" => $canonicalBase . "/#organization"],
+                "@type" => "WebPage",
+                "@id" => $pageUrl . "#webpage",
+                "url" => $pageUrl,
+                "name" => $pageMeta['title'] . " — MY UGC VIDEO",
                 "description" => $desc,
-                "areaServed" => ["@type" => "Country", "name" => "India"],
-                "url" => $pageUrl
+                "publisher" => ["@id" => $homeUrl . "/#organization"]
             ];
         }
     }
 
-    // 7. FAQPage schema
+    // 4. VideoObject (Homepage Hero Video Showcase)
+    if ($schemaType === 'VideoObject') {
+        if ($pageKey === 'homepage') {
+            $homeUrl = rtrim($canonicalBase, '/');
+            return [
+                "@context" => "https://schema.org",
+                "@type" => "VideoObject",
+                "@id" => $homeUrl . "/#video-showcase",
+                "name" => "Creator-Led Video Production — UGC Video Showcase",
+                "description" => "Watch our creator-led video production preview showcasing authentic 9:16 vertical UGC video content crafted for direct-to-consumer brand campaigns.",
+                "thumbnailUrl" => [
+                    $homeUrl . "/images/hero/hero-ugc-production.jpg"
+                ],
+                "uploadDate" => "2026-01-01T00:00:00+05:30",
+                "contentUrl" => $homeUrl . "/images/hero/hero-ugc-production.jpg",
+                "embedUrl" => $homeUrl . "/#video-showcase"
+            ];
+        }
+        return null;
+    }
+
+    // 5. FAQPage schema (Strictly generated only when visible FAQs exist on page)
     if ($schemaType === 'FAQPage') {
         $faqs = extractFaqsFromHtmlContent($htmlContent);
         if (empty($faqs)) {
@@ -1042,67 +1080,12 @@ function buildAutomaticPageSchema(string $pageKey, string $schemaType): ?array {
         ];
     }
 
-    // 8. Blog Listing Schemas
-    if ($pageKey === 'blog-listing') {
-        if ($schemaType === 'CollectionPage') {
-            return [
-                "@context" => "https://schema.org",
-                "@type" => "CollectionPage",
-                "@id" => $canonicalBase . "/blogs#collectionpage",
-                "url" => $canonicalBase . "/blogs",
-                "name" => "The Creator Journal — UGC Insights, Trends & Strategy",
-                "description" => "Explore in-depth articles on UGC video strategy, creator management, paid social performance, and e-commerce content marketing from MY UGC VIDEO.",
-                "isPartOf" => ["@id" => $canonicalBase . "/#organization"]
-            ];
-        }
-
-        if ($schemaType === 'Blog' || $schemaType === 'ItemList') {
-            $db = getDb();
-            $posts = $db->query("SELECT id, title, slug, excerpt, meta_description, published_at FROM blog_posts WHERE status = 'published' ORDER BY published_at DESC, id DESC")->fetchAll(PDO::FETCH_ASSOC);
-
-            if ($schemaType === 'ItemList') {
-                $items = [];
-                $pos = 1;
-                foreach ($posts as $p) {
-                    $desc = !empty($p['meta_description']) ? $p['meta_description'] : $p['excerpt'];
-                    $items[] = [
-                        "@type" => "ListItem",
-                        "position" => $pos++,
-                        "name" => $p['title'],
-                        "url" => $canonicalBase . "/blog/" . urlencode($p['slug']),
-                        "description" => $desc
-                    ];
-                }
-                return [
-                    "@context" => "https://schema.org",
-                    "@type" => "ItemList",
-                    "@id" => $canonicalBase . "/blogs#itemlist",
-                    "name" => "The Creator Journal — Published UGC Articles",
-                    "numberOfItems" => count($items),
-                    "itemListElement" => $items
-                ];
-            }
-
-            if ($schemaType === 'Blog') {
-                return [
-                    "@context" => "https://schema.org",
-                    "@type" => "Blog",
-                    "@id" => $canonicalBase . "/blogs#blog",
-                    "name" => "The Creator Journal",
-                    "description" => "Fresh perspectives on UGC, creator culture and the ideas shaping the future of brand storytelling.",
-                    "url" => $canonicalBase . "/blogs",
-                    "publisher" => ["@id" => $canonicalBase . "/#organization"],
-                    "blogPost" => array_map(fn($p) => [
-                        "@type" => "BlogPosting",
-                        "headline" => $p['title'],
-                        "url" => $canonicalBase . "/blog/" . urlencode($p['slug']),
-                        "datePublished" => !empty($p['published_at']) ? date('c', strtotime($p['published_at'])) : date('c')
-                    ], $posts)
-                ];
-            }
-        }
+    // 6. Review schema (Special Review condition: strictly genuine data only; if not present, return null)
+    if ($schemaType === 'Review') {
+        return null;
     }
 
+    // All unapproved/legacy schema types return null to prevent generation
     return null;
 }
 
@@ -1300,6 +1283,11 @@ function autoCreateAndPublishAllMissingSchemas(): array {
 
     foreach ($managedPages as $pKey => $pMeta) {
         $recommended = getPageRecommendedSchemaTypes($pKey);
+
+        // Remove obsolete / unapproved schema types for this page
+        $recEscaped = implode("','", array_map('addslashes', $recommended));
+        $delStmt = $db->prepare("DELETE FROM page_schemas WHERE page_key = :pk AND schema_type NOT IN ('$recEscaped')");
+        $delStmt->execute([':pk' => $pKey]);
 
         foreach ($recommended as $recType) {
             // Check if already exists in DB

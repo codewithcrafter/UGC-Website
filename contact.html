@@ -33,31 +33,11 @@
   <link rel="stylesheet" href="css/style.css">
 
   <!-- JSON-LD Structured Data: ContactPage -->
-        <!-- Centralized Schema Manager JSON-LD -->
+              <!-- Centralized Schema Manager JSON-LD -->
   <script type="application/ld+json">
 {
     "@context": "https://schema.org",
     "@graph": [
-        {
-            "@type": "ContactPage",
-            "@id": "https://myugcvideo.in/contact#contactpage",
-            "url": "https://myugcvideo.in/contact",
-            "name": "Contact MY UGC VIDEO",
-            "description": "Contact channels and project inquiry form for MY UGC VIDEO production agency.",
-            "mainEntity": {
-                "@type": "ProfessionalService",
-                "@id": "https://myugcvideo.in/#organization",
-                "name": "MY UGC VIDEO",
-                "telephone": "+91-98765-43210",
-                "email": "hello@myugcvideo.in",
-                "address": {
-                    "@type": "PostalAddress",
-                    "addressLocality": "Delhi",
-                    "addressRegion": "DL",
-                    "addressCountry": "IN"
-                }
-            }
-        },
         {
             "@type": "Organization",
             "@id": "https://myugcvideo.in/#organization",
@@ -111,6 +91,16 @@
                     "item": "https://myugcvideo.in/contact"
                 }
             ]
+        },
+        {
+            "@type": "WebPage",
+            "@id": "https://myugcvideo.in/contact#webpage",
+            "url": "https://myugcvideo.in/contact",
+            "name": "Contact MY UGC VIDEO",
+            "description": "Contact channels and project inquiry form for MY UGC VIDEO production agency.",
+            "publisher": {
+                "@id": "https://myugcvideo.in/#organization"
+            }
         }
     ]
 }

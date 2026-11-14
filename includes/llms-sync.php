@@ -1807,3 +1807,113 @@ function runFullReconciliation(array $options = []): array {
         ];
     }
 }
+
+
+/**
+ * -------------------------------------------------------------------------
+ * blogs.md Generation & Synchronization
+ * Generates a plain-text Markdown file at CMS_ROOT/blogs.md listing all
+ * published blog articles sorted newest-first.
+ * -------------------------------------------------------------------------
+ */
+
+/**
+ * Generate the content of blogs.md from published blog posts in the database.
+ */
+function generateBlogsMd(): string {
+    $baseUrl  = getLlmCanonicalBaseUrl();
+    $articles = [];
+
+    try {
+        $db   = getDb();
+        $stmt = $db->query(
+            "SELECT p.id, p.title, p.slug, p.excerpt, p.meta_description,
+                    p.published_at, p.updated_at,
+                    c.name AS category_name
+             FROM blog_posts p
+             LEFT JOIN categories c ON p.category_id = c.id
+             WHERE p.status = 'published' AND p.published_at <= NOW()
+             ORDER BY p.published_at DESC, p.id DESC"
+        );
+        $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Throwable $e) {
+        error_log("generateBlogsMd: DB fetch failed: " . $e->getMessage());
+    }
+
+    $now   = date('Y-m-d');
+    $count = count($articles);
+
+    $lines = [];
+    $lines[] = "# MY UGC VIDEO — Blogs";
+    $lines[] = "";
+    $lines[] = "Published blog articles from MY UGC VIDEO — a UGC video production company helping brands drive authentic content and performance marketing results.";
+    $lines[] = "";
+    $lines[] = "Website: {$baseUrl}/";
+    $lines[] = "Blogs: {$baseUrl}/blogs";
+    $lines[] = "Total published articles: {$count}";
+    $lines[] = "Last updated: {$now}";
+    $lines[] = "";
+    $lines[] = "---";
+    $lines[] = "";
+
+    if (empty($articles)) {
+        $lines[] = "No published blog articles found.";
+        $lines[] = "";
+    } else {
+        foreach ($articles as $post) {
+            $title    = trim($post['title']);
+            $slug     = trim($post['slug']);
+            $desc     = !empty($post['meta_description'])
+                ? trim($post['meta_description'])
+                : trim($post['excerpt'] ?? '');
+            if (empty($desc)) {
+                $desc = 'Strategic analysis and performance marketing insights on User Generated Content by MY UGC VIDEO.';
+            }
+            $category    = !empty($post['category_name']) ? trim($post['category_name']) : 'Editorial';
+            $publishedAt = !empty($post['published_at']) ? date('Y-m-d', strtotime($post['published_at'])) : $now;
+            $updatedAt   = !empty($post['updated_at'])   ? date('Y-m-d', strtotime($post['updated_at']))   : $publishedAt;
+            $url         = $baseUrl . '/blog/' . rawurlencode($slug);
+
+            $lines[] = "## [{$title}]({$url})";
+            $lines[] = "";
+            $lines[] = $desc;
+            $lines[] = "";
+            $lines[] = "- **Category:** {$category}";
+            $lines[] = "- **Published:** {$publishedAt}";
+            $lines[] = "- **Last Updated:** {$updatedAt}";
+            $lines[] = "- **URL:** {$url}";
+            $lines[] = "";
+            $lines[] = "---";
+            $lines[] = "";
+        }
+    }
+
+    return implode("\n", $lines);
+}
+
+/**
+ * Atomically write blogs.md to the project root.
+ *
+ * @return array{success: bool, bytes: int, error: string}
+ */
+function syncBlogsMd(): array {
+    try {
+        $content  = generateBlogsMd();
+        $destPath = CMS_ROOT . DIRECTORY_SEPARATOR . 'blogs.md';
+        $tmpPath  = $destPath . '.tmp.' . getmypid();
+
+        $bytes = file_put_contents($tmpPath, $content, LOCK_EX);
+        if ($bytes === false) {
+            return ['success' => false, 'bytes' => 0, 'error' => "Failed to write temp file: {$tmpPath}"];
+        }
+
+        if (!rename($tmpPath, $destPath)) {
+            @unlink($tmpPath);
+            return ['success' => false, 'bytes' => 0, 'error' => "Failed to rename temp file to {$destPath}"];
+        }
+
+        return ['success' => true, 'bytes' => $bytes, 'error' => ''];
+    } catch (Throwable $e) {
+        return ['success' => false, 'bytes' => 0, 'error' => $e->getMessage()];
+    }
+}

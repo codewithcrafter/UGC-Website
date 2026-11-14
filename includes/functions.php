@@ -1373,6 +1373,10 @@ function reconcileAllBlogsToMarkdown(): array {
         syncLlmsTxt();
     }
 
+    if (function_exists('syncBlogsMd')) {
+        syncBlogsMd();
+    }
+
     return [
         'total'  => count($posts),
         'synced' => $synced,

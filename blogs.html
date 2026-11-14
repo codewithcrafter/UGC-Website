@@ -33,47 +33,11 @@
   <link rel="stylesheet" href="css/style.css">
 
   <!-- JSON-LD Structured Data: CollectionPage -->
-        <!-- Centralized Schema Manager JSON-LD -->
+                  <!-- Centralized Schema Manager JSON-LD -->
   <script type="application/ld+json">
 {
     "@context": "https://schema.org",
     "@graph": [
-        {
-            "@type": "Organization",
-            "@id": "https://myugcvideo.in/#organization",
-            "name": "MY UGC VIDEO",
-            "url": "https://myugcvideo.in",
-            "logo": {
-                "@type": "ImageObject",
-                "@id": "https://myugcvideo.in/#logo",
-                "url": "https://myugcvideo.in/images/hero/hero-creator.jpg",
-                "caption": "MY UGC VIDEO Studio Logo"
-            },
-            "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
-            "description": "Premier performance-driven UGC video production studio and creator network connecting brands with authentic creator-led video content.",
-            "email": "hello@myugcvideo.in",
-            "sameAs": [
-                "https://instagram.com",
-                "https://linkedin.com"
-            ],
-            "contactPoint": [
-                {
-                    "@type": "ContactPoint",
-                    "contactType": "customer service",
-                    "email": "hello@myugcvideo.in",
-                    "availableLanguage": [
-                        "English",
-                        "Hindi"
-                    ]
-                }
-            ],
-            "areaServed": [
-                {
-                    "@type": "Country",
-                    "name": "India"
-                }
-            ]
-        },
         {
             "@type": "BreadcrumbList",
             "@id": "https://myugcvideo.in/blogs#breadcrumb",
@@ -93,164 +57,14 @@
             ]
         },
         {
-            "@type": "CollectionPage",
-            "@id": "https://myugcvideo.in/blogs#collectionpage",
+            "@type": "WebPage",
+            "@id": "https://myugcvideo.in/blogs#webpage",
             "url": "https://myugcvideo.in/blogs",
             "name": "The Creator Journal \u2014 UGC Insights, Trends & Strategy",
             "description": "Explore in-depth articles on UGC video strategy, creator management, paid social performance, and e-commerce content marketing from MY UGC VIDEO.",
-            "isPartOf": {
-                "@id": "https://myugcvideo.in/#organization"
-            }
-        },
-        {
-            "@type": "Blog",
-            "@id": "https://myugcvideo.in/blogs#blog",
-            "name": "The Creator Journal",
-            "description": "Fresh perspectives on UGC, creator culture and the ideas shaping the future of brand storytelling.",
-            "url": "https://myugcvideo.in/blogs",
             "publisher": {
                 "@id": "https://myugcvideo.in/#organization"
-            },
-            "blogPost": [
-                {
-                    "@type": "BlogPosting",
-                    "headline": "How to Build a Consistent Brand Identity Through Content",
-                    "url": "https://myugcvideo.in/blog/brand-identity-through-content",
-                    "datePublished": "2026-10-28T12:00:00+01:00"
-                },
-                {
-                    "@type": "BlogPosting",
-                    "headline": "UGC Content Strategy for Instagram and TikTok",
-                    "url": "https://myugcvideo.in/blog/ugc-instagram-tiktok-strategy",
-                    "datePublished": "2026-10-27T08:00:00+01:00"
-                },
-                {
-                    "@type": "BlogPosting",
-                    "headline": "The Psychology of Authenticity: How UGC Directly Influences Consumer Purchasing",
-                    "url": "https://myugcvideo.in/blog/authentic-content-and-buying-decisions",
-                    "datePublished": "2026-10-26T10:00:00+01:00"
-                },
-                {
-                    "@type": "BlogPosting",
-                    "headline": "The Role of Product Photography in Modern E-commerce",
-                    "url": "https://myugcvideo.in/blog/product-photography-guide",
-                    "datePublished": "2026-10-25T11:45:00+01:00"
-                },
-                {
-                    "@type": "BlogPosting",
-                    "headline": "How Brands Can Work Effectively With UGC Creators",
-                    "url": "https://myugcvideo.in/blog/working-with-ugc-creators",
-                    "datePublished": "2026-10-24T09:30:00+02:00"
-                },
-                {
-                    "@type": "BlogPosting",
-                    "headline": "10 Creative UGC Content Ideas Every E-commerce Brand Should Try",
-                    "url": "https://myugcvideo.in/blog/ugc-content-ideas",
-                    "datePublished": "2026-10-23T14:00:00+02:00"
-                },
-                {
-                    "@type": "BlogPosting",
-                    "headline": "How to Create Engaging UGC Videos for Your Brand",
-                    "url": "https://myugcvideo.in/blog/how-to-create-ugc-videos",
-                    "datePublished": "2026-10-22T08:30:00+02:00"
-                },
-                {
-                    "@type": "BlogPosting",
-                    "headline": "UGC vs Influencer Marketing: Understanding the Strategic Differences",
-                    "url": "https://myugcvideo.in/blog/ugc-vs-influencer-marketing",
-                    "datePublished": "2026-10-20T11:00:00+02:00"
-                },
-                {
-                    "@type": "BlogPosting",
-                    "headline": "Why UGC Marketing Is Essential for Building Brand Trust",
-                    "url": "https://myugcvideo.in/blog/why-ugc-marketing-matters",
-                    "datePublished": "2026-10-18T10:15:00+02:00"
-                },
-                {
-                    "@type": "BlogPosting",
-                    "headline": "What Is User Generated Content? A Complete Guide for Modern Brands",
-                    "url": "https://myugcvideo.in/blog/what-is-ugc",
-                    "datePublished": "2026-10-15T09:00:00+02:00"
-                }
-            ]
-        },
-        {
-            "@type": "ItemList",
-            "@id": "https://myugcvideo.in/blogs#itemlist",
-            "name": "The Creator Journal \u2014 Published UGC Articles",
-            "numberOfItems": 10,
-            "itemListElement": [
-                {
-                    "@type": "ListItem",
-                    "position": 1,
-                    "name": "How to Build a Consistent Brand Identity Through Content",
-                    "url": "https://myugcvideo.in/blog/brand-identity-through-content",
-                    "description": "Learn how premium brands maintain aesthetic coherence and brand DNA while embracing diverse creator voices across TikTok, Instagram, and paid media."
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 2,
-                    "name": "UGC Content Strategy for Instagram and TikTok",
-                    "url": "https://myugcvideo.in/blog/ugc-instagram-tiktok-strategy",
-                    "description": "Master platform-specific vertical video strategy: algorithmic retention mechanics on TikTok, aesthetic dynamics on Instagram Reels, and search intent on YouTube Shorts."
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 3,
-                    "name": "The Psychology of Authenticity: How UGC Directly Influences Consumer Purchasing",
-                    "url": "https://myugcvideo.in/blog/authentic-content-and-buying-decisions",
-                    "description": "Explore behavioral economics and consumer psychology: System 1 heuristics, mirror neurons, the Pratfall effect, and why human authenticity drives e-commerce sales."
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 4,
-                    "name": "The Role of Product Photography in Modern E-commerce",
-                    "url": "https://myugcvideo.in/blog/product-photography-guide",
-                    "description": "Discover how context-rich, lifestyle product photography bridges the digital touch gap, elevates perceived product value, and decreases e-commerce returns."
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 5,
-                    "name": "How Brands Can Work Effectively With UGC Creators",
-                    "url": "https://myugcvideo.in/blog/working-with-ugc-creators",
-                    "description": "Master creator collaboration: crafting airtight creative briefs, managing shipping logistics, structuring legal usage rights, and providing constructive feedback."
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 6,
-                    "name": "10 Creative UGC Content Ideas Every E-commerce Brand Should Try",
-                    "url": "https://myugcvideo.in/blog/ugc-content-ideas",
-                    "description": "Break through ad creative fatigue with 10 proven UGC concepts: ASMR unboxings, competitor switch breakdowns, myth-busting reviews, and day-in-the-life vlogs."
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 7,
-                    "name": "How to Create Engaging UGC Videos for Your Brand",
-                    "url": "https://myugcvideo.in/blog/how-to-create-ugc-videos",
-                    "description": "A comprehensive studio production blueprint: mastering the first 3 seconds, natural lighting techniques, audio clarity, script structure, and editing velocity."
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 8,
-                    "name": "UGC vs Influencer Marketing: Understanding the Strategic Differences",
-                    "url": "https://myugcvideo.in/blog/ugc-vs-influencer-marketing",
-                    "description": "Understand the critical differences between UGC and influencer marketing: asset rights, distribution reach, cost structures, and how to allocate your creative budget."
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 9,
-                    "name": "Why UGC Marketing Is Essential for Building Brand Trust",
-                    "url": "https://myugcvideo.in/blog/why-ugc-marketing-matters",
-                    "description": "Discover why User Generated Content has become the primary trust anchor for modern consumers and how authenticity impacts brand equity and e-commerce conversions."
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 10,
-                    "name": "What Is User Generated Content? A Complete Guide for Modern Brands",
-                    "url": "https://myugcvideo.in/blog/what-is-ugc",
-                    "description": "Discover what User Generated Content (UGC) is, why it outperforms traditional advertising, and how modern brands leverage creator storytelling to scale trust."
-                }
-            ]
+            }
         }
     ]
 }

@@ -1,0 +1,22 @@
+[
+    {
+        "setting_key": "auto_blog_schema_enabled",
+        "setting_value": "1",
+        "updated_at": "2026-11-06 12:18:58"
+    },
+    {
+        "setting_key": "field_mappings",
+        "setting_value": "{\n    \"title\": \"title\",\n    \"description\": \"meta_description\",\n    \"author_name\": \"author_name\",\n    \"author_role\": \"author_role\",\n    \"featured_image\": \"featured_image\",\n    \"published_at\": \"published_at\",\n    \"updated_at\": \"updated_at\",\n    \"canonical_url\": \"canonical_url\"\n}",
+        "updated_at": "2026-11-05 14:14:44"
+    },
+    {
+        "setting_key": "global_blog_template",
+        "setting_value": "{\n    \"@context\": \"https://schema.org\",\n    \"@type\": \"BlogPosting\",\n    \"@id\": \"{{canonical_url}}#article\",\n    \"headline\": \"{{title}}\",\n    \"description\": \"{{description}}\",\n    \"image\": \"{{featured_image}}\",\n    \"datePublished\": \"{{published_at}}\",\n    \"dateModified\": \"{{updated_at}}\",\n    \"mainEntityOfPage\": {\n        \"@type\": \"WebPage\",\n        \"@id\": \"{{canonical_url}}\"\n    },\n    \"author\": {\n        \"@type\": \"Person\",\n        \"name\": \"{{author_name}}\",\n        \"jobTitle\": \"{{author_role}}\"\n    },\n    \"publisher\": {\n        \"@type\": \"Organization\",\n        \"name\": \"MY UGC VIDEO\",\n        \"url\": \"https://myugcvideo.in/\",\n        \"logo\": {\n            \"@type\": \"ImageObject\",\n            \"url\": \"https://myugcvideo.in/images/hero/hero-creator.jpg\"\n        }\n    }\n}",
+        "updated_at": "2026-11-13 14:13:58"
+    },
+    {
+        "setting_key": "global_template_status",
+        "setting_value": "published",
+        "updated_at": "2026-11-05 14:14:44"
+    }
+]

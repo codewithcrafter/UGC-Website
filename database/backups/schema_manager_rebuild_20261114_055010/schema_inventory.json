@@ -1,0 +1,650 @@
+[
+    {
+        "id": 15,
+        "page_key": "homepage",
+        "schema_type": "Organization",
+        "schema_name": "Homepage Organization Schema",
+        "status": "published",
+        "bytes": 1135
+    },
+    {
+        "id": 16,
+        "page_key": "homepage",
+        "schema_type": "WebPage",
+        "schema_name": "Homepage WebPage Schema",
+        "status": "published",
+        "bytes": 504
+    },
+    {
+        "id": 18,
+        "page_key": "about",
+        "schema_type": "Organization",
+        "schema_name": "Referenced Organization",
+        "status": "published",
+        "bytes": 1135
+    },
+    {
+        "id": 19,
+        "page_key": "about",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "About Us BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 471
+    },
+    {
+        "id": 21,
+        "page_key": "services",
+        "schema_type": "Organization",
+        "schema_name": "Referenced Organization",
+        "status": "published",
+        "bytes": 1135
+    },
+    {
+        "id": 22,
+        "page_key": "services",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "Services Directory BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 477
+    },
+    {
+        "id": 23,
+        "page_key": "services",
+        "schema_type": "FAQPage",
+        "schema_name": "Services Directory FAQPage Schema",
+        "status": "published",
+        "bytes": 2302
+    },
+    {
+        "id": 24,
+        "page_key": "contact",
+        "schema_type": "Organization",
+        "schema_name": "Referenced Organization",
+        "status": "published",
+        "bytes": 1135
+    },
+    {
+        "id": 25,
+        "page_key": "contact",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "Contact Us BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 477
+    },
+    {
+        "id": 27,
+        "page_key": "blog-listing",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "Blog Listing BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 468
+    },
+    {
+        "id": 31,
+        "page_key": "service-ai-ugc-video-creation-company",
+        "schema_type": "Organization",
+        "schema_name": "Referenced Organization",
+        "status": "published",
+        "bytes": 1135
+    },
+    {
+        "id": 32,
+        "page_key": "service-ai-ugc-video-creation-company",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "Ai Ugc Video Creation Service BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 724
+    },
+    {
+        "id": 34,
+        "page_key": "service-ai-ugc-video-creation-company",
+        "schema_type": "FAQPage",
+        "schema_name": "Ai Ugc Video Creation Service FAQPage Schema",
+        "status": "published",
+        "bytes": 2744
+    },
+    {
+        "id": 35,
+        "page_key": "service-ugc-product-review-videos-company",
+        "schema_type": "Organization",
+        "schema_name": "Referenced Organization",
+        "status": "published",
+        "bytes": 1135
+    },
+    {
+        "id": 36,
+        "page_key": "service-ugc-product-review-videos-company",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "Ugc Product Review Videos Service BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 736
+    },
+    {
+        "id": 38,
+        "page_key": "service-ugc-product-review-videos-company",
+        "schema_type": "FAQPage",
+        "schema_name": "Ugc Product Review Videos Service FAQPage Schema",
+        "status": "published",
+        "bytes": 1865
+    },
+    {
+        "id": 39,
+        "page_key": "service-ugc-product-video-company",
+        "schema_type": "Organization",
+        "schema_name": "Referenced Organization",
+        "status": "published",
+        "bytes": 1135
+    },
+    {
+        "id": 40,
+        "page_key": "service-ugc-product-video-company",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "Ugc Product Video Service BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 712
+    },
+    {
+        "id": 42,
+        "page_key": "service-ugc-product-video-company",
+        "schema_type": "FAQPage",
+        "schema_name": "Ugc Product Video Service FAQPage Schema",
+        "status": "published",
+        "bytes": 2572
+    },
+    {
+        "id": 43,
+        "page_key": "service-ugc-testimonial-videos-company",
+        "schema_type": "Organization",
+        "schema_name": "Referenced Organization",
+        "status": "published",
+        "bytes": 1135
+    },
+    {
+        "id": 44,
+        "page_key": "service-ugc-testimonial-videos-company",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "Ugc Testimonial Videos Service BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 727
+    },
+    {
+        "id": 46,
+        "page_key": "service-ugc-testimonial-videos-company",
+        "schema_type": "FAQPage",
+        "schema_name": "Ugc Testimonial Videos Service FAQPage Schema",
+        "status": "published",
+        "bytes": 1913
+    },
+    {
+        "id": 47,
+        "page_key": "service-ugc-unboxing-videos-company",
+        "schema_type": "Organization",
+        "schema_name": "Referenced Organization",
+        "status": "published",
+        "bytes": 1135
+    },
+    {
+        "id": 48,
+        "page_key": "service-ugc-unboxing-videos-company",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "Ugc Unboxing Videos Service BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 718
+    },
+    {
+        "id": 50,
+        "page_key": "service-ugc-unboxing-videos-company",
+        "schema_type": "FAQPage",
+        "schema_name": "Ugc Unboxing Videos Service FAQPage Schema",
+        "status": "published",
+        "bytes": 1931
+    },
+    {
+        "id": 51,
+        "page_key": "service-ugc-video-ads-company",
+        "schema_type": "Organization",
+        "schema_name": "Referenced Organization",
+        "status": "published",
+        "bytes": 1135
+    },
+    {
+        "id": 52,
+        "page_key": "service-ugc-video-ads-company",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "Ugc Video Ads Service BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 700
+    },
+    {
+        "id": 54,
+        "page_key": "service-ugc-video-ads-company",
+        "schema_type": "FAQPage",
+        "schema_name": "Ugc Video Ads Service FAQPage Schema",
+        "status": "published",
+        "bytes": 2074
+    },
+    {
+        "id": 55,
+        "page_key": "service-ugc-video-creation-services-company",
+        "schema_type": "Organization",
+        "schema_name": "Referenced Organization",
+        "status": "published",
+        "bytes": 1135
+    },
+    {
+        "id": 56,
+        "page_key": "service-ugc-video-creation-services-company",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "Ugc Video Creation Services Service BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 742
+    },
+    {
+        "id": 58,
+        "page_key": "service-ugc-video-creation-services-company",
+        "schema_type": "FAQPage",
+        "schema_name": "Ugc Video Creation Services Service FAQPage Schema",
+        "status": "published",
+        "bytes": 2104
+    },
+    {
+        "id": 59,
+        "page_key": "service-ugc-video-editing-service-company",
+        "schema_type": "Organization",
+        "schema_name": "Referenced Organization",
+        "status": "published",
+        "bytes": 1135
+    },
+    {
+        "id": 60,
+        "page_key": "service-ugc-video-editing-service-company",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "Ugc Video Editing Service Service BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 720
+    },
+    {
+        "id": 62,
+        "page_key": "service-ugc-video-editing-service-company",
+        "schema_type": "FAQPage",
+        "schema_name": "Ugc Video Editing Service Service FAQPage Schema",
+        "status": "published",
+        "bytes": 1637
+    },
+    {
+        "id": 63,
+        "page_key": "service-ugc-video-company-in-delhi-company",
+        "schema_type": "Organization",
+        "schema_name": "Referenced Organization",
+        "status": "published",
+        "bytes": 1135
+    },
+    {
+        "id": 64,
+        "page_key": "service-ugc-video-company-in-delhi-company",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "Ugc Video In Delhi Service BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 731
+    },
+    {
+        "id": 66,
+        "page_key": "service-ugc-video-company-in-delhi-company",
+        "schema_type": "FAQPage",
+        "schema_name": "Ugc Video In Delhi Service FAQPage Schema",
+        "status": "published",
+        "bytes": 1790
+    },
+    {
+        "id": 86,
+        "page_key": "homepage",
+        "schema_type": "VideoObject",
+        "schema_name": "Homepage VideoObject Schema",
+        "status": "published",
+        "bytes": 640
+    },
+    {
+        "id": 87,
+        "page_key": "about",
+        "schema_type": "WebPage",
+        "schema_name": "About Us WebPage Schema",
+        "status": "published",
+        "bytes": 458
+    },
+    {
+        "id": 88,
+        "page_key": "services",
+        "schema_type": "WebPage",
+        "schema_name": "Services Directory WebPage Schema",
+        "status": "published",
+        "bytes": 456
+    },
+    {
+        "id": 89,
+        "page_key": "contact",
+        "schema_type": "WebPage",
+        "schema_name": "Contact Us WebPage Schema",
+        "status": "published",
+        "bytes": 375
+    },
+    {
+        "id": 90,
+        "page_key": "blog-listing",
+        "schema_type": "WebPage",
+        "schema_name": "Blog Listing WebPage Schema",
+        "status": "published",
+        "bytes": 477
+    },
+    {
+        "id": 91,
+        "page_key": "service-ai-ugc-video-creation-company",
+        "schema_type": "WebPage",
+        "schema_name": "Ai Ugc Video Creation Service WebPage Schema",
+        "status": "published",
+        "bytes": 530
+    },
+    {
+        "id": 92,
+        "page_key": "service-ugc-product-review-videos-company",
+        "schema_type": "WebPage",
+        "schema_name": "Ugc Product Review Videos Service WebPage Schema",
+        "status": "published",
+        "bytes": 552
+    },
+    {
+        "id": 93,
+        "page_key": "service-ugc-product-video-company",
+        "schema_type": "WebPage",
+        "schema_name": "Ugc Product Video Service WebPage Schema",
+        "status": "published",
+        "bytes": 506
+    },
+    {
+        "id": 94,
+        "page_key": "service-ugc-testimonial-videos-company",
+        "schema_type": "WebPage",
+        "schema_name": "Ugc Testimonial Videos Service WebPage Schema",
+        "status": "published",
+        "bytes": 537
+    },
+    {
+        "id": 95,
+        "page_key": "service-ugc-unboxing-videos-company",
+        "schema_type": "WebPage",
+        "schema_name": "Ugc Unboxing Videos Service WebPage Schema",
+        "status": "published",
+        "bytes": 515
+    },
+    {
+        "id": 96,
+        "page_key": "service-ugc-video-ads-company",
+        "schema_type": "WebPage",
+        "schema_name": "Ugc Video Ads Service WebPage Schema",
+        "status": "published",
+        "bytes": 511
+    },
+    {
+        "id": 97,
+        "page_key": "service-ugc-video-company-in-delhi-company",
+        "schema_type": "WebPage",
+        "schema_name": "Ugc Video In Delhi Service WebPage Schema",
+        "status": "published",
+        "bytes": 545
+    },
+    {
+        "id": 98,
+        "page_key": "service-ugc-video-creation-services-company",
+        "schema_type": "WebPage",
+        "schema_name": "Ugc Video Creation Services Service WebPage Schema",
+        "status": "published",
+        "bytes": 550
+    },
+    {
+        "id": 99,
+        "page_key": "service-ugc-video-editing-service-company",
+        "schema_type": "WebPage",
+        "schema_name": "Ugc Video Editing Service Service WebPage Schema",
+        "status": "published",
+        "bytes": 512
+    },
+    {
+        "id": 101,
+        "page_key": "blog-product-photography-shapes-online",
+        "schema_type": "Organization",
+        "schema_name": "How Product Photography Shapes Online Shopping Today Organization Schema",
+        "status": "published",
+        "bytes": 423
+    },
+    {
+        "id": 102,
+        "page_key": "blog-product-photography-shapes-online",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "How Product Photography Shapes Online Shopping Today BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 656
+    },
+    {
+        "id": 103,
+        "page_key": "blog-product-photography-shapes-online",
+        "schema_type": "BlogPosting",
+        "schema_name": "How Product Photography Shapes Online Shopping Today BlogPosting Schema",
+        "status": "published",
+        "bytes": 1018
+    },
+    {
+        "id": 104,
+        "page_key": "blog-authentic-content-and-buying-decisions",
+        "schema_type": "Organization",
+        "schema_name": "The Psychology of Authenticity: How UGC Directly Influences Consumer Purchasing Organization Schema",
+        "status": "published",
+        "bytes": 423
+    },
+    {
+        "id": 105,
+        "page_key": "blog-authentic-content-and-buying-decisions",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "The Psychology of Authenticity: How UGC Directly Influences Consumer Purchasing BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 688
+    },
+    {
+        "id": 106,
+        "page_key": "blog-authentic-content-and-buying-decisions",
+        "schema_type": "BlogPosting",
+        "schema_name": "The Psychology of Authenticity: How UGC Directly Influences Consumer Purchasing BlogPosting Schema",
+        "status": "published",
+        "bytes": 1070
+    },
+    {
+        "id": 107,
+        "page_key": "blog-how-to-create-ugc-videos",
+        "schema_type": "Organization",
+        "schema_name": "How to Create Engaging UGC Videos for Your Brand Organization Schema",
+        "status": "published",
+        "bytes": 423
+    },
+    {
+        "id": 108,
+        "page_key": "blog-how-to-create-ugc-videos",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "How to Create Engaging UGC Videos for Your Brand BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 643
+    },
+    {
+        "id": 109,
+        "page_key": "blog-how-to-create-ugc-videos",
+        "schema_type": "BlogPosting",
+        "schema_name": "How to Create Engaging UGC Videos for Your Brand BlogPosting Schema",
+        "status": "published",
+        "bytes": 1007
+    },
+    {
+        "id": 110,
+        "page_key": "blog-product-photography-guide",
+        "schema_type": "Organization",
+        "schema_name": "The Role of Product Photography in Modern E-commerce Organization Schema",
+        "status": "published",
+        "bytes": 423
+    },
+    {
+        "id": 111,
+        "page_key": "blog-product-photography-guide",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "The Role of Product Photography in Modern E-commerce BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 648
+    },
+    {
+        "id": 112,
+        "page_key": "blog-product-photography-guide",
+        "schema_type": "BlogPosting",
+        "schema_name": "The Role of Product Photography in Modern E-commerce BlogPosting Schema",
+        "status": "published",
+        "bytes": 1009
+    },
+    {
+        "id": 113,
+        "page_key": "blog-ugc-content-ideas",
+        "schema_type": "Organization",
+        "schema_name": "10 Creative UGC Content Ideas Every E-commerce Brand Should Try Organization Schema",
+        "status": "published",
+        "bytes": 423
+    },
+    {
+        "id": 114,
+        "page_key": "blog-ugc-content-ideas",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "10 Creative UGC Content Ideas Every E-commerce Brand Should Try BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 651
+    },
+    {
+        "id": 115,
+        "page_key": "blog-ugc-content-ideas",
+        "schema_type": "BlogPosting",
+        "schema_name": "10 Creative UGC Content Ideas Every E-commerce Brand Should Try BlogPosting Schema",
+        "status": "published",
+        "bytes": 1006
+    },
+    {
+        "id": 116,
+        "page_key": "blog-ugc-instagram-strategy",
+        "schema_type": "Organization",
+        "schema_name": "UGC Content Strategy for Instagram and TikTok Organization Schema",
+        "status": "published",
+        "bytes": 423
+    },
+    {
+        "id": 117,
+        "page_key": "blog-ugc-instagram-strategy",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "UGC Content Strategy for Instagram and TikTok BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 638
+    },
+    {
+        "id": 118,
+        "page_key": "blog-ugc-instagram-strategy",
+        "schema_type": "BlogPosting",
+        "schema_name": "UGC Content Strategy for Instagram and TikTok BlogPosting Schema",
+        "status": "published",
+        "bytes": 1009
+    },
+    {
+        "id": 119,
+        "page_key": "blog-ugc-vs-influencer-marketing",
+        "schema_type": "Organization",
+        "schema_name": "UGC vs Influencer Marketing: Understanding the Strategic Differences Organization Schema",
+        "status": "published",
+        "bytes": 423
+    },
+    {
+        "id": 120,
+        "page_key": "blog-ugc-vs-influencer-marketing",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "UGC vs Influencer Marketing: Understanding the Strategic Differences BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 666
+    },
+    {
+        "id": 121,
+        "page_key": "blog-ugc-vs-influencer-marketing",
+        "schema_type": "BlogPosting",
+        "schema_name": "UGC vs Influencer Marketing: Understanding the Strategic Differences BlogPosting Schema",
+        "status": "published",
+        "bytes": 1040
+    },
+    {
+        "id": 122,
+        "page_key": "blog-what-is-ugc",
+        "schema_type": "Organization",
+        "schema_name": "What Is User Generated Content? A Complete Guide for Modern Brands Organization Schema",
+        "status": "published",
+        "bytes": 423
+    },
+    {
+        "id": 123,
+        "page_key": "blog-what-is-ugc",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "What Is User Generated Content? A Complete Guide for Modern Brands BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 648
+    },
+    {
+        "id": 124,
+        "page_key": "blog-what-is-ugc",
+        "schema_type": "BlogPosting",
+        "schema_name": "What Is User Generated Content? A Complete Guide for Modern Brands BlogPosting Schema",
+        "status": "published",
+        "bytes": 998
+    },
+    {
+        "id": 125,
+        "page_key": "blog-why-ugc-marketing-matters",
+        "schema_type": "Organization",
+        "schema_name": "Why UGC Marketing Is Essential for Building Brand Trust Organization Schema",
+        "status": "published",
+        "bytes": 423
+    },
+    {
+        "id": 126,
+        "page_key": "blog-why-ugc-marketing-matters",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "Why UGC Marketing Is Essential for Building Brand Trust BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 651
+    },
+    {
+        "id": 127,
+        "page_key": "blog-why-ugc-marketing-matters",
+        "schema_type": "BlogPosting",
+        "schema_name": "Why UGC Marketing Is Essential for Building Brand Trust BlogPosting Schema",
+        "status": "published",
+        "bytes": 1019
+    },
+    {
+        "id": 128,
+        "page_key": "blog-working-with-ugc-creators",
+        "schema_type": "Organization",
+        "schema_name": "How Brands Can Work Effectively With UGC Creators Organization Schema",
+        "status": "published",
+        "bytes": 423
+    },
+    {
+        "id": 129,
+        "page_key": "blog-working-with-ugc-creators",
+        "schema_type": "BreadcrumbList",
+        "schema_name": "How Brands Can Work Effectively With UGC Creators BreadcrumbList Schema",
+        "status": "published",
+        "bytes": 645
+    },
+    {
+        "id": 130,
+        "page_key": "blog-working-with-ugc-creators",
+        "schema_type": "BlogPosting",
+        "schema_name": "How Brands Can Work Effectively With UGC Creators BlogPosting Schema",
+        "status": "published",
+        "bytes": 1013
+    }
+]
