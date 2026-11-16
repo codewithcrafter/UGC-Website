@@ -1,8 +1,11 @@
 -- =========================================================================
 -- MY UGC VIDEO — Production Database Migration Schema (Complete 11 Tables)
+-- Target Hostinger Database: u555726154_ugcvideo
+-- Database User: u555726154_myugcvideo
+-- Database Host: srv1328.hstgr.io (Port: 3306)
 -- Compatible with Hostinger Shared/Cloud MySQL & MariaDB
 -- NO 'CREATE DATABASE' or 'USE' statements (Safe for Hostinger phpMyAdmin)
--- Generated: 2026-11-16 07:12:24
+-- Directly imports into active database `u555726154_ugcvideo`
 -- =========================================================================
 
 SET FOREIGN_KEY_CHECKS = 0;

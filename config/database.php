@@ -39,13 +39,13 @@ class Database {
             $isProduction = (defined('ENVIRONMENT') && ENVIRONMENT === 'production');
 
             // Secure environment separation:
+            // Production defaults configured for Hostinger database: u555726154_ugcvideo
             // Local development defaults to XAMPP standards.
-            // Production NEVER falls back to blank root credentials.
-            $defaultHost = $isProduction ? 'localhost' : '127.0.0.1';
+            $defaultHost = $isProduction ? 'srv1328.hstgr.io' : '127.0.0.1';
             $defaultPort = '3306';
-            $defaultDb   = $isProduction ? null : 'my_ugc_video_cms';
-            $defaultUser = $isProduction ? null : 'root';
-            $defaultPass = $isProduction ? null : '';
+            $defaultDb   = $isProduction ? 'u555726154_ugcvideo' : 'my_ugc_video_cms';
+            $defaultUser = $isProduction ? 'u555726154_myugcvideo' : 'root';
+            $defaultPass = $isProduction ? 'Ugcwebsite@2026' : '';
 
             $host   = self::getEnvVar('DB_HOST', $defaultHost);
             $port   = self::getEnvVar('DB_PORT', $defaultPort);
@@ -70,6 +70,17 @@ class Database {
             try {
                 self::$instance = new PDO($dsn, $user ?? '', $pass ?? '', $options);
             } catch (PDOException $e) {
+                // If Hostinger server hostname failed, attempt local socket/localhost fallback
+                if ($host !== 'localhost' && $host !== '127.0.0.1') {
+                    try {
+                        $fallbackDsn = "mysql:host=localhost;port={$port};dbname={$dbname};charset=utf8mb4";
+                        self::$instance = new PDO($fallbackDsn, $user ?? '', $pass ?? '', $options);
+                        return self::$instance;
+                    } catch (PDOException $fallbackErr) {
+                        // Keep primary error for logging
+                    }
+                }
+
                 // In production, do not expose SQL credentials or raw error message
                 error_log("Database Connection Error: " . $e->getMessage());
                 if (defined('ENVIRONMENT') && ENVIRONMENT === 'development') {

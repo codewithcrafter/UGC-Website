@@ -277,12 +277,12 @@ if (!$dbName || !$dbUser) {
     }
 }
 
-// Fallback to local default if still null and running on CLI
-if (!$dbHost) $dbHost = '127.0.0.1';
+// Production defaults
+if (!$dbHost) $dbHost = 'srv1328.hstgr.io';
 if (!$dbPort) $dbPort = '3306';
-if (!$dbName) $dbName = 'my_ugc_video_cms';
-if (!$dbUser) $dbUser = 'root';
-if ($dbPass === null) $dbPass = '';
+if (!$dbName) $dbName = 'u555726154_ugcvideo';
+if (!$dbUser) $dbUser = 'u555726154_myugcvideo';
+if ($dbPass === null) $dbPass = 'Ugcwebsite@2026';
 
 // 3. Connect to MySQL Read-Only
 try {
@@ -293,6 +293,24 @@ try {
         PDO::ATTR_TIMEOUT => 5
     ]);
 } catch (PDOException $e) {
+    // If external host failed on Hostinger, try localhost socket
+    if ($dbHost !== 'localhost' && $dbHost !== '127.0.0.1') {
+        try {
+            $fallbackDsn = "mysql:host=localhost;port={$dbPort};dbname={$dbName};charset=utf8mb4";
+            $pdo = new PDO($fallbackDsn, $dbUser, $dbPass, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_TIMEOUT => 5
+            ]);
+            $dbHost = 'localhost';
+        } catch (PDOException $e2) {
+            // fall through to error handling
+        }
+    }
+}
+
+if (!isset($pdo)) {
+    $errorMsg = "Database Connection Failed: " . ($e->getMessage() ?? 'Unknown error');
     $errorMsg = "Database Connection Failed: " . $e->getMessage();
     if ($isCli) {
         fwrite(STDERR, "[AUDIT ERROR] " . $errorMsg . PHP_EOL);

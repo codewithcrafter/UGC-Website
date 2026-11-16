@@ -1,15 +1,11 @@
 -- =========================================================================
 -- MY UGC VIDEO - Dynamic Blog CMS Database Schema
 -- Version: 1.0.0
--- Database: my_ugc_video_cms
+-- Database: u555726154_ugcvideo (Direct import safe for Hostinger phpMyAdmin)
 -- Charset: utf8mb4 / Collation: utf8mb4_unicode_ci
 -- =========================================================================
 
-CREATE DATABASE IF NOT EXISTS `my_ugc_video_cms` 
-  CHARACTER SET utf8mb4 
-  COLLATE utf8mb4_unicode_ci;
-
-USE `my_ugc_video_cms`;
+-- Note: No CREATE DATABASE or USE statements to ensure seamless import in Hostinger phpMyAdmin.
 
 -- 1. Admins Table
 CREATE TABLE IF NOT EXISTS `admins` (
