@@ -2,8 +2,3 @@
 # MY UGC VIDEO - Admin Directory Configuration
 # =========================================================================
 DirectoryIndex index.php
-
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteOptions Inherit
-</IfModule>

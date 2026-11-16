@@ -28,6 +28,10 @@ AddType text/markdown; charset=UTF-8 .md
   # -------------------------------------------------------------------------
 
   # I. Redirect mistaken /blogs/*.php requests to clean canonical counterparts
+  # Redirect /blogs/admin or /blogs/admin/* to /admin
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blogs/admin [NC]
+  RewriteRule ^ %1/admin? [R=301,L,NE]
+
   RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blogs/about\.(?:php|html) [NC]
   RewriteRule ^ %1/about? [R=301,L,NE]
 
