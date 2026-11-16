@@ -113,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
 
     <div style="text-align: center; margin-top: 2.25rem; padding-top: 1.5rem; border-top: 1px solid var(--border-sage-subtle);">
-      <a href="<?= SITE_URL ?>/index.html" style="font-size: 0.85rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: 0.4rem;">
+      <a href="<?= SITE_URL ?>/" style="font-size: 0.85rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: 0.4rem;">
         <span>&larr; Return to Public Website</span>
       </a>
     </div>

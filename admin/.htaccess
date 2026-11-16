@@ -1,7 +1,9 @@
 # =========================================================================
-# Admin Directory Configuration
+# MY UGC VIDEO - Admin Directory Configuration
 # =========================================================================
-<IfModule mod_dir.c>
-  DirectorySlash Off
-</IfModule>
+DirectoryIndex index.php
 
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteOptions Inherit
+</IfModule>

@@ -57,7 +57,9 @@ function clearLoginAttempts(string $ip): void {
 }
 
 function loginAdmin(array $admin): void {
-    session_regenerate_id(true);
+    if (!headers_sent()) {
+        session_regenerate_id(true);
+    }
     $_SESSION['admin_logged_in'] = true;
     $_SESSION['admin_id']        = $admin['id'];
     $_SESSION['admin_name']      = $admin['name'];
@@ -75,7 +77,7 @@ function logoutAdmin(): void {
         session_start();
     }
     $_SESSION = [];
-    if (ini_get("session.use_cookies")) {
+    if (!headers_sent() && ini_get("session.use_cookies")) {
         $params = session_get_cookie_params();
         setcookie(session_name(), '', time() - 42000,
             $params["path"], $params["domain"],

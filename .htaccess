@@ -9,7 +9,16 @@ AddType text/markdown; charset=UTF-8 .md
   RewriteEngine On
 
   # Protect sensitive directories, configurations, environment, logs, and database files
-  RewriteRule ^(\.env|\.git|config/|logs/|database/(?!sync_llms\.php)) - [F,L,NC]
+  RewriteRule ^(\.env|\.git|config/|logs/|scratch/|database/(?!sync_llms\.php)) - [F,L,NC]
+
+  # Canonical HTTPS & Non-WWW Redirection (Production Only - Edge reverse-proxy aware)
+  RewriteCond %{HTTP_HOST} ^(?:www\.)?myugcvideo\.(?:in|com)$ [NC]
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
+  RewriteRule ^ https://myugcvideo.in%{REQUEST_URI} [R=301,L,NE]
+
+  RewriteCond %{HTTP_HOST} ^www\.myugcvideo\.(?:in|com)$ [NC]
+  RewriteRule ^ https://myugcvideo.in%{REQUEST_URI} [R=301,L,NE]
 
   # Admin Media Decommissioned (Enforce 404 response immediately for all media routes)
   RewriteRule ^admin/media(?:/.*)?$ - [R=404,L,NC]
@@ -162,8 +171,10 @@ AddType text/markdown; charset=UTF-8 .md
   # -------------------------------------------------------------------------
   # 3. Universal Trailing Slash Stripping (GET/HEAD requests only)
   #    All page routes ending in / redirect 301 to slash-free URL.
+  #    Excludes physical directories to prevent mod_dir infinite loops.
   # -------------------------------------------------------------------------
   RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$ [NC]
+  RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]+?)/+(?:\?[^\s]*)?[\s] [NC]
   RewriteCond %1 !^/(?:UGC%20Website)?$ [NC]
   RewriteCond %1 !^/?$ [NC]
@@ -205,22 +216,22 @@ AddType text/markdown; charset=UTF-8 .md
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule ^blog/([^/]+)$ blog.php?slug=$1 [L,QSA]
 
-  # Admin Clean Routes
-  RewriteRule ^admin$ admin/index.php [L]
-  RewriteRule ^admin/login$ admin/login.php [L,QSA]
-  RewriteRule ^admin/dashboard$ admin/dashboard.php [L,QSA]
-  RewriteRule ^admin/schema-manager$ admin/schema-manager.php [L,QSA]
-  RewriteRule ^admin/logout$ admin/logout.php [L,QSA]
-  RewriteRule ^admin/posts$ admin/posts/index.php [L,QSA]
-  RewriteRule ^admin/posts/create$ admin/posts/create.php [L,QSA]
-  RewriteRule ^admin/posts/edit$ admin/posts/edit.php [L,QSA]
-  RewriteRule ^admin/posts/delete$ admin/posts/delete.php [L,QSA]
-  RewriteRule ^admin/categories$ admin/categories/index.php [L,QSA]
-  RewriteRule ^admin/markdown$ admin/markdown/index.php [L,QSA]
+  # Admin Clean Routes (supports optional trailing slash smoothly)
+  RewriteRule ^admin/?$ admin/index.php [L,QSA]
+  RewriteRule ^admin/login/?$ admin/login.php [L,QSA]
+  RewriteRule ^admin/dashboard/?$ admin/dashboard.php [L,QSA]
+  RewriteRule ^admin/schema-manager/?$ admin/schema-manager.php [L,QSA]
+  RewriteRule ^admin/logout/?$ admin/logout.php [L,QSA]
+  RewriteRule ^admin/posts/?$ admin/posts/index.php [L,QSA]
+  RewriteRule ^admin/posts/create/?$ admin/posts/create.php [L,QSA]
+  RewriteRule ^admin/posts/edit/?$ admin/posts/edit.php [L,QSA]
+  RewriteRule ^admin/posts/delete/?$ admin/posts/delete.php [L,QSA]
+  RewriteRule ^admin/categories/?$ admin/categories/index.php [L,QSA]
+  RewriteRule ^admin/markdown/?$ admin/markdown/index.php [L,QSA]
   # Admin Media Decommissioned (Enforce 404 response)
   RewriteRule ^admin/media(?:/.*)?$ - [R=404,L,NC]
-  RewriteRule ^admin/leads$ admin/leads.php [L,QSA]
-  RewriteRule ^admin/setup$ admin/setup.php [L,QSA]
+  RewriteRule ^admin/leads/?$ admin/leads.php [L,QSA]
+  RewriteRule ^admin/setup/?$ admin/setup.php [L,QSA]
 
   # Public API Endpoints
   RewriteRule ^api/contact$ api/contact.php [L,QSA]
@@ -231,8 +242,16 @@ DirectoryIndex index.html index.php
 Options -Indexes
 DirectorySlash Off
 
+# Custom Error Pages
+ErrorDocument 404 /404.html
+
 # Protect .htaccess and dotfiles
 <FilesMatch "^\.">
-  Order allow,deny
-  Deny from all
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
 </FilesMatch>

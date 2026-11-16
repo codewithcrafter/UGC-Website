@@ -3,7 +3,8 @@
  * MY UGC VIDEO - Database Connection Configuration (PDO)
  * 
  * Provides a secure, persistent-ready PDO connection singleton with utf8mb4 charset,
- * prepared statements emulation disabled, and error reporting tailored to environment.
+ * prepared statements emulation disabled, and multi-environment credential resolution.
+ * Supports $_ENV, $_SERVER, and getenv() across XAMPP and Hostinger PHP-FPM/LiteSpeed.
  */
 
 if (!defined('CMS_ROOT')) {
@@ -13,13 +14,50 @@ if (!defined('CMS_ROOT')) {
 class Database {
     private static ?PDO $instance = null;
 
+    /**
+     * Resilient environment variable resolver:
+     * Checks $_ENV first, then $_SERVER, then getenv().
+     */
+    private static function getEnvVar(string $key, ?string $default = null): ?string {
+        if (isset($_ENV[$key]) && $_ENV[$key] !== '') {
+            return (string)$_ENV[$key];
+        }
+        if (isset($_SERVER[$key]) && $_SERVER[$key] !== '') {
+            return (string)$_SERVER[$key];
+        }
+        if (function_exists('getenv')) {
+            $val = getenv($key);
+            if ($val !== false && $val !== '') {
+                return (string)$val;
+            }
+        }
+        return $default;
+    }
+
     public static function getConnection(): PDO {
         if (self::$instance === null) {
-            $host = getenv('DB_HOST') ?: '127.0.0.1';
-            $port = getenv('DB_PORT') ?: '3306';
-            $dbname = getenv('DB_NAME') ?: 'my_ugc_video_cms';
-            $user = getenv('DB_USER') ?: 'root';
-            $pass = getenv('DB_PASS') !== false ? getenv('DB_PASS') : '';
+            $isProduction = (defined('ENVIRONMENT') && ENVIRONMENT === 'production');
+
+            // Secure environment separation:
+            // Local development defaults to XAMPP standards.
+            // Production NEVER falls back to blank root credentials.
+            $defaultHost = $isProduction ? 'localhost' : '127.0.0.1';
+            $defaultPort = '3306';
+            $defaultDb   = $isProduction ? null : 'my_ugc_video_cms';
+            $defaultUser = $isProduction ? null : 'root';
+            $defaultPass = $isProduction ? null : '';
+
+            $host   = self::getEnvVar('DB_HOST', $defaultHost);
+            $port   = self::getEnvVar('DB_PORT', $defaultPort);
+            $dbname = self::getEnvVar('DB_NAME', $defaultDb);
+            $user   = self::getEnvVar('DB_USER', $defaultUser);
+            $pass   = self::getEnvVar('DB_PASS', $defaultPass);
+
+            // Fail safely in production if credentials have not been configured
+            if ($isProduction && (empty($dbname) || empty($user))) {
+                error_log("CRITICAL: Database configuration missing in production environment. Verify .env file on Hostinger.");
+                die("An error occurred connecting to the service. Please try again later.");
+            }
 
             $dsn = "mysql:host={$host};port={$port};dbname={$dbname};charset=utf8mb4";
             
@@ -30,7 +68,7 @@ class Database {
             ];
 
             try {
-                self::$instance = new PDO($dsn, $user, $pass, $options);
+                self::$instance = new PDO($dsn, $user ?? '', $pass ?? '', $options);
             } catch (PDOException $e) {
                 // In production, do not expose SQL credentials or raw error message
                 error_log("Database Connection Error: " . $e->getMessage());

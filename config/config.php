@@ -10,27 +10,37 @@ if (!defined('CMS_ROOT')) {
     define('CMS_ROOT', dirname(__DIR__));
 }
 
-// 1. Load Optional .env File If Present
-$envFile = CMS_ROOT . DIRECTORY_SEPARATOR . '.env';
-if (file_exists($envFile)) {
-    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($lines as $line) {
-        $line = trim($line);
-        if ($line === '' || str_starts_with($line, '#')) continue;
-        if (str_contains($line, '=')) {
-            [$key, $val] = explode('=', $line, 2);
-            $key = trim($key);
-            $val = trim($val, " \t\n\r\0\x0B\"'");
-            putenv("{$key}={$val}");
-            $_ENV[$key] = $val;
+// 1. Load Optional .env File If Present (Check Root and Parent Directory)
+$envPaths = [
+    CMS_ROOT . DIRECTORY_SEPARATOR . '.env',
+    dirname(CMS_ROOT) . DIRECTORY_SEPARATOR . '.env'
+];
+foreach ($envPaths as $envFile) {
+    if (file_exists($envFile) && is_readable($envFile)) {
+        $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line === '' || str_starts_with($line, '#')) continue;
+            if (str_contains($line, '=')) {
+                [$key, $val] = explode('=', $line, 2);
+                $key = trim($key);
+                $val = trim($val, " \t\n\r\0\x0B\"'");
+                if (function_exists('putenv')) {
+                    @putenv("{$key}={$val}");
+                }
+                $_ENV[$key] = $val;
+                $_SERVER[$key] = $val;
+            }
         }
+        break;
     }
 }
 
 // 2. Environment Setup
 function getAppEnvironment(): string {
-    if (getenv('APP_ENV')) {
-        $e = strtolower(getenv('APP_ENV'));
+    $envVal = $_ENV['APP_ENV'] ?? $_SERVER['APP_ENV'] ?? (function_exists('getenv') ? getenv('APP_ENV') : false);
+    if (!empty($envVal)) {
+        $e = strtolower(trim((string)$envVal));
         if (in_array($e, ['prod', 'production'])) return 'production';
         if (in_array($e, ['local', 'development', 'dev'])) return 'local';
         return $e;
@@ -72,11 +82,32 @@ if (!is_dir($logDir)) {
 }
 ini_set('error_log', $logDir . DIRECTORY_SEPARATOR . 'php_errors.log');
 
+/**
+ * Detects whether the current request is served over HTTPS,
+ * including behind Hostinger CloudLinux/LiteSpeed/Nginx/Cloudflare reverse proxies.
+ */
+function isHttps(): bool {
+    if (!empty($_SERVER['HTTPS']) && strtolower((string)$_SERVER['HTTPS']) !== 'off') {
+        return true;
+    }
+    if (isset($_SERVER['SERVER_PORT']) && (int)$_SERVER['SERVER_PORT'] === 443) {
+        return true;
+    }
+    if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string)$_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https') {
+        return true;
+    }
+    if (!empty($_SERVER['HTTP_X_FORWARDED_SSL']) && strtolower((string)$_SERVER['HTTP_X_FORWARDED_SSL']) === 'on') {
+        return true;
+    }
+    return false;
+}
+
 // 3. Dynamic Base URL Resolution
 // Computes correct base URL whether hosted at root, in a subdirectory, or across LAN/drive links
 function getBaseUrl(): string {
-    if (getenv('APP_URL')) {
-        return rtrim(getenv('APP_URL'), '/');
+    $appUrl = $_ENV['APP_URL'] ?? $_SERVER['APP_URL'] ?? (function_exists('getenv') ? getenv('APP_URL') : false);
+    if (!empty($appUrl)) {
+        return rtrim((string)$appUrl, '/');
     }
 
     $host = $_SERVER['HTTP_HOST'] ?? '';
@@ -84,8 +115,7 @@ function getBaseUrl(): string {
         return 'https://myugcvideo.in';
     }
 
-    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || 
-                (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
+    $protocol = isHttps() ? 'https://' : 'http://';
     
     // When invoked via CLI without HTTP_HOST, default to local XAMPP application path
     if (php_sapi_name() === 'cli' && empty($host)) {
@@ -216,7 +246,7 @@ if (session_status() === PHP_SESSION_NONE) {
         'lifetime' => 0,
         'path'     => '/',
         'domain'   => '',
-        'secure'   => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+        'secure'   => isHttps(),
         'httponly' => true,
         'samesite' => 'Lax'
     ];
