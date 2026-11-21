@@ -124,16 +124,16 @@ function getBaseUrl(): string {
 
     $host = $_SERVER['HTTP_HOST'] ?? '';
     if (!empty($host)) {
-        if (str_contains($host, 'demo.myugcvideo.in')) {
-            return 'https://demo.myugcvideo.in';
-        }
         if (str_contains($host, 'myugcvideo.in') || str_contains($host, 'myugcvideo.com')) {
             return 'https://myugcvideo.in';
+        }
+        if (str_contains($host, 'demo.myugcvideo.in')) {
+            return 'https://demo.myugcvideo.in';
         }
     }
 
     if (getAppEnvironment() === 'production') {
-        return 'https://demo.myugcvideo.in';
+        return 'https://myugcvideo.in';
     }
 
     $protocol = isHttps() ? 'https://' : 'http://';

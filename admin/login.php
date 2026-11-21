@@ -93,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <div class="form-group">
         <label for="email" class="form-label">Admin Email Address <span class="required">*</span></label>
-        <input type="email" id="email" name="email" class="form-control" value="<?= e($email) ?>" placeholder="admin@myugcvideo.example.com" required autofocus autocomplete="username">
+        <input type="email" id="email" name="email" class="form-control" value="<?= e($email) ?>" placeholder="admin@myugcvideo.in" required autofocus autocomplete="username">
       </div>
 
       <div class="form-group">

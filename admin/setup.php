@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       <div class="form-group">
         <label for="email" class="form-label">Work Email</label>
-        <input type="email" id="email" name="email" class="form-control" value="<?= e($email) ?>" placeholder="admin@myugcvideo.example.com" required>
+        <input type="email" id="email" name="email" class="form-control" value="<?= e($email) ?>" placeholder="admin@myugcvideo.in" required>
       </div>
 
       <div class="form-group">

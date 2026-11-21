@@ -7,3 +7,4 @@ scratch/
 !.env.example
 !.env.production.example
 database/backups/
+DATABASE_CREDENTIALS_AUDIT_REPORT.md
