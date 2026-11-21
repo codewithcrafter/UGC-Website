@@ -14,16 +14,36 @@ if (!defined('CMS_ROOT')) {
     <div class="container">
       <div class="footer-top">
         <div class="footer-brand">
-          <a href="<?= SITE_URL ?>/index.html" class="brand-logo" aria-label="MY UGC VIDEO Home">
+          <a href="<?= SITE_URL ?>/" class="brand-logo" aria-label="MY UGC VIDEO Home">
             <span class="brand-title">MY UGC VIDEO</span>
             <span class="brand-subtitle">UGC Creative Agency</span>
           </a>
-          <p>
-            A modern creative agency engineering authentic, scroll-stopping UGC video production, creator-led content, and performance marketing video ads for ambitious brands.
+          <p class="footer-tagline">
+            Let's Create Videos That Make Your Brand Stand Out
           </p>
-          <div class="social-links">
-            <a href="https://instagram.com" class="social-link" target="_blank" rel="noopener noreferrer">Instagram</a>
-            <a href="https://linkedin.com" class="social-link" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <div class="footer-contact-info">
+            <a href="mailto:hello@myugcvideo.in" class="footer-contact-link">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <span>hello@myugcvideo.in</span>
+            </a>
+            <a href="tel:+919876543210" class="footer-contact-link">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <span>+91 98765 43210</span>
+            </a>
+          </div>
+          <div class="footer-social-wrap">
+            <span class="footer-social-label">Follow Us.</span>
+            <div class="footer-social-links">
+              <a href="https://facebook.com" class="footer-social-icon" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Facebook">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+              </a>
+              <a href="https://instagram.com" class="footer-social-icon" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Instagram">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+              </a>
+              <a href="https://linkedin.com" class="footer-social-icon" target="_blank" rel="noopener noreferrer" aria-label="Follow us on LinkedIn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+              </a>
+            </div>
           </div>
         </div>
 
@@ -71,10 +91,10 @@ if (!defined('CMS_ROOT')) {
         <div class="copyright">
           &copy; <?= date('Y') ?> MY UGC VIDEO Creative Agency. All rights reserved.
         </div>
-        <div class="contact-placeholder-strip">
-          <span class="tag-mono" style="background: rgba(0, 34, 30, 0.6); border-color: var(--border-medium); color: var(--text-secondary);">
-            Inquiries: hello@myugcvideo.in
-          </span>
+        <div class="footer-bottom-contact">
+          <a href="mailto:hello@myugcvideo.in" class="footer-bottom-link">hello@myugcvideo.in</a>
+          <span class="footer-bottom-divider" aria-hidden="true">|</span>
+          <a href="tel:+919876543210" class="footer-bottom-link">+91 98765 43210</a>
         </div>
       </div>
     </div>

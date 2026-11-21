@@ -6,6 +6,7 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  updateHeaderHeight();
   initStickyHeader();
   initMobileNav();
   initMobileDropdown();
@@ -28,6 +29,29 @@ document.addEventListener('DOMContentLoaded', () => {
   initAnnouncementBar();
   initFloatingCtasAndChatbot();
 });
+
+/* --------------------------------------------------------------------------
+   0. REAL-TIME RESPONSIVE HEADER HEIGHT SYNC
+   Measures exact header wrapper height (including contact strip & announcement
+   bar on all viewports) and publishes --site-header-height to CSS :root.
+   -------------------------------------------------------------------------- */
+function updateHeaderHeight() {
+  const wrapper = document.querySelector('.site-header-wrapper') || document.querySelector('.site-header');
+  if (wrapper) {
+    const h = Math.ceil(wrapper.offsetHeight || wrapper.getBoundingClientRect().height);
+    if (h > 0) {
+      document.documentElement.style.setProperty('--site-header-height', `${h}px`);
+    }
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', updateHeaderHeight);
+} else {
+  updateHeaderHeight();
+}
+window.addEventListener('load', updateHeaderHeight);
+window.addEventListener('resize', updateHeaderHeight, { passive: true });
 
 /* --------------------------------------------------------------------------
    1. STICKY HEADER SCROLL EFFECT
@@ -2235,9 +2259,12 @@ async function initAnnouncementBar() {
       } else {
         annWrap.style.display = 'none';
       }
+      updateHeaderHeight();
     }
   } catch (err) {
     console.warn('Could not load dynamic announcement bar:', err);
+  } finally {
+    updateHeaderHeight();
   }
 }
 
