@@ -1,0 +1,260 @@
+# =========================================================================
+# MY UGC VIDEO - Apache URL Rewriting & Security Directives
+# =========================================================================
+
+# Serve .md files as plain text/markdown (physical files served directly)
+AddType text/markdown; charset=UTF-8 .md
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Protect sensitive directories, configurations, environment, logs, and database files
+  RewriteRule ^(\.env|\.git|config/|logs/|scratch/|database/(?!sync_llms\.php)) - [F,L,NC]
+
+  # Canonical HTTPS & Non-WWW Redirection (Production Only - Edge reverse-proxy aware)
+  RewriteCond %{HTTP_HOST} ^(?:www\.)?myugcvideo\.(?:in|com)$ [NC]
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
+  RewriteRule ^ https://myugcvideo.in%{REQUEST_URI} [R=301,L,NE]
+
+  RewriteCond %{HTTP_HOST} ^www\.myugcvideo\.(?:in|com)$ [NC]
+  RewriteRule ^ https://myugcvideo.in%{REQUEST_URI} [R=301,L,NE]
+
+  # Admin Media Decommissioned (Enforce 404 response immediately for all media routes)
+  RewriteRule ^admin/media(?:/.*)?$ - [R=404,L,NC]
+
+  # -------------------------------------------------------------------------
+  # 1. 301 Permanent Redirects: Old Extensions & Legacy Routes -> Clean Routes
+  # -------------------------------------------------------------------------
+
+  # I. Redirect mistaken /blogs/*.php requests to clean canonical counterparts
+  # Redirect /blogs/admin or /blogs/admin/* to /admin
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blogs/admin [NC]
+  RewriteRule ^ %1/admin? [R=301,L,NE]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blogs/about\.(?:php|html) [NC]
+  RewriteRule ^ %1/about? [R=301,L,NE]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blogs/services?\.(?:php|html) [NC]
+  RewriteRule ^ %1/services? [R=301,L,NE]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blogs/contact\.(?:php|html) [NC]
+  RewriteRule ^ %1/contact? [R=301,L,NE]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blogs/[^/\s]+\.php [NC]
+  RewriteRule ^ %1/blogs? [R=301,L,NE]
+
+  # -------------------------------------------------------------------------
+  # 2. Administrative Browser Page 301 Redirects (.php -> Clean URL)
+  #    Evaluated first so admin index.php redirects to slash-free /admin/posts, etc.
+  #    Only for GET/HEAD requests to prevent breaking POST submissions.
+  # -------------------------------------------------------------------------
+  RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$ [NC]
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/admin/index\.php [NC]
+  RewriteRule ^ %1/admin? [R=301,L,NE]
+
+  RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$ [NC]
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/admin/login\.php [NC]
+  RewriteRule ^ %1/admin/login? [R=301,L,NE]
+
+  RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$ [NC]
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/admin/dashboard\.php [NC]
+  RewriteRule ^ %1/admin/dashboard? [R=301,L,NE]
+
+  RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$ [NC]
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/admin/schema-manager\.php [NC]
+  RewriteRule ^ %1/admin/schema-manager? [R=301,L,NE]
+
+  RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$ [NC]
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/admin/logout\.php [NC]
+  RewriteRule ^ %1/admin/logout? [R=301,L,NE]
+
+  RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$ [NC]
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/admin/posts/index\.php [NC]
+  RewriteRule ^ %1/admin/posts? [R=301,L,NE]
+
+  RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$ [NC]
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/admin/posts/create\.php [NC]
+  RewriteRule ^ %1/admin/posts/create? [R=301,L,NE]
+
+  RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$ [NC]
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/admin/posts/edit\.php [NC]
+  RewriteRule ^ %1/admin/posts/edit [R=301,L,NE]
+
+  RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$ [NC]
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/admin/categories/index\.php [NC]
+  RewriteRule ^ %1/admin/categories? [R=301,L,NE]
+
+  RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$ [NC]
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/admin/markdown/index\.php [NC]
+  RewriteRule ^ %1/admin/markdown [R=301,L,NE]
+
+  RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$ [NC]
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/admin/leads\.php [NC]
+  RewriteRule ^ %1/admin/leads? [R=301,L,NE]
+
+  RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$ [NC]
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/admin/announcement\.php [NC]
+  RewriteRule ^ %1/admin/announcement? [R=301,L,NE]
+
+  # A. Redirect /index.html, /index.php, /index -> /
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/index(?:\.(?:html|php))?[\s?] [NC]
+  RewriteCond %1 !^.*/admin.* [NC]
+  RewriteRule ^ %1/? [R=301,L,NE]
+
+  # B. Redirect /about.html, /about.php -> /about
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/about\.(?:html|php) [NC]
+  RewriteRule ^ %1/about? [R=301,L,NE]
+
+  # C. Redirect /services.html, /services.php -> /services
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services\.(?:html|php) [NC]
+  RewriteRule ^ %1/services? [R=301,L,NE]
+
+  # D. Redirect /contact.html, /contact.php -> /contact
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/contact\.(?:html|php) [NC]
+  RewriteRule ^ %1/contact? [R=301,L,NE]
+
+  # E. Redirect /blogs.php or /blogs.html -> /blogs
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blogs\.(?:php|html) [NC]
+  RewriteRule ^ %1/blogs? [R=301,L,NE]
+
+  # F. 301 Permanent Redirects: Old Service Page Slugs -> Standardized Service Page Slugs
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/(?:ugc-video-creation-services-company|ugc-video-creation)(?:\.html)?[\s?] [NC]
+  RewriteRule ^ %1/services/ugc-video-creation-company? [R=301,L,NE]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/ugc-video-ads(?:\.html)?[\s?] [NC]
+  RewriteRule ^ %1/services/ugc-video-ads-company? [R=301,L,NE]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/ai-ugc-videos(?:-company)?(?:\.html)?[\s?] [NC]
+  RewriteRule ^ %1/services/ai-ugc-video-creation-company? [R=301,L,NE]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/ugc-product-video(?:\.html)?[\s?] [NC]
+  RewriteRule ^ %1/services/ugc-product-video-company? [R=301,L,NE]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/ugc-product-videos(?:-company)?(?:\.html)?[\s?] [NC]
+  RewriteRule ^ %1/services/ugc-product-video-company? [R=301,L,NE]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/ugc-product-review-videos(?:\.html)?[\s?] [NC]
+  RewriteRule ^ %1/services/ugc-product-review-videos-company? [R=301,L,NE]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/ugc-product-reviews-videos(?:-company)?(?:\.html)?[\s?] [NC]
+  RewriteRule ^ %1/services/ugc-product-review-videos-company? [R=301,L,NE]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/(?:ugc-video-company-in-delhi-company|ugc-video-service-in-delhi(?:-company)?)(?:\.html)?[\s?] [NC]
+  RewriteRule ^ %1/services/ugc-video-company-in-delhi? [R=301,L,NE]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/ugc-unboxing-videos(?:\.html)?[\s?] [NC]
+  RewriteRule ^ %1/services/ugc-unboxing-videos-company? [R=301,L,NE]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/ugc-testimonial-videos(?:\.html)?[\s?] [NC]
+  RewriteRule ^ %1/services/ugc-testimonial-videos-company? [R=301,L,NE]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/(?:ugc-video-editing-service-company|ugc-video-editing)(?:\.html)?[\s?] [NC]
+  RewriteRule ^ %1/services/ugc-video-editing-company? [R=301,L,NE]
+
+  # G. Redirect /services/xxx.html -> /services/xxx
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/([^/\s?]+)\.html [NC]
+  RewriteRule ^ %1/services/%2? [R=301,L,NE]
+
+  # H. Redirect old query-string URLs: blog.php?slug=xxx -> /blog/xxx
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blog\.php\?slug=([^\s&]+) [NC]
+  RewriteRule ^ %1/blog/%2? [R=301,L,NE]
+
+  # I. Redirect old static URLs: blogs/xxx.html -> /blog/xxx
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blogs/([^/\s]+)\.html [NC]
+  RewriteRule ^ %1/blog/%2? [R=301,L,NE]
+
+  # J. Redirect /blog or /blog/ (missing slug) -> /blogs
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blog/?[\s?] [NC]
+  RewriteRule ^ %1/blogs? [R=301,L,NE]
+
+
+
+  # -------------------------------------------------------------------------
+  # 3. Universal Trailing Slash Stripping (GET/HEAD requests only)
+  #    All page routes ending in / redirect 301 to slash-free URL.
+  #    Excludes physical directories to prevent mod_dir infinite loops.
+  # -------------------------------------------------------------------------
+  RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$ [NC]
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]+?)/+(?:\?[^\s]*)?[\s] [NC]
+  RewriteCond %1 !^/(?:UGC%20Website)?$ [NC]
+  RewriteCond %1 !^/?$ [NC]
+  RewriteRule ^(.+?)/+$ %1 [R=301,L,NE]
+
+  # -------------------------------------------------------------------------
+  # 4. Centralized Direct Public Markdown Routing (.md -> Raw Markdown Router)
+  #    Serves original plain-text Markdown source exactly like llms.txt.
+  # -------------------------------------------------------------------------
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^((?:blog|blogs|pages|services|case-studies|portfolio|other|docs)/[^/]+\.md)$ markdown-router.php?path=$1 [L,QSA,NC]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^([a-zA-Z0-9_\-]+)\.md$ markdown-router.php?path=$1.md [L,QSA,NC]
+
+  # Legacy viewer path: /markdown/blogs/post-1.md -> markdown/view.php?file=...
+  RewriteRule ^markdown/(.+\.(?:md|txt))$ markdown/view.php?file=$1 [L,QSA]
+
+  # -------------------------------------------------------------------------
+  # 5. Internal Rewriting: Clean Extensionless URLs -> Physical Files
+  # -------------------------------------------------------------------------
+
+  # Homepage Route (Dynamic Server-Side Schema Rendering)
+  RewriteRule ^$ page-router.php?page=homepage [L,QSA]
+
+  # Public Core Routes (Dynamic Server-Side Schema Rendering)
+  RewriteRule ^about$ page-router.php?page=about [L,QSA]
+  RewriteRule ^services$ page-router.php?page=services [L,QSA]
+  RewriteRule ^contact$ page-router.php?page=contact [L,QSA]
+  RewriteRule ^blogs$ blogs.php [L,QSA]
+
+  # Dedicated Service Detail Route: /services/slug -> page-router.php?service=slug
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^services/([^/]+)$ page-router.php?service=$1 [L,QSA]
+
+  # Clean SEO-Friendly Blog Detail Route: /blog/slug -> blog.php?slug=slug
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^blog/([^/]+)$ blog.php?slug=$1 [L,QSA]
+
+  # Admin Clean Routes (supports optional trailing slash smoothly)
+  RewriteRule ^admin/?$ admin/index.php [L,QSA]
+  RewriteRule ^admin/login/?$ admin/login.php [L,QSA]
+  RewriteRule ^admin/dashboard/?$ admin/dashboard.php [L,QSA]
+  RewriteRule ^admin/schema-manager/?$ admin/schema-manager.php [L,QSA]
+  RewriteRule ^admin/logout/?$ admin/logout.php [L,QSA]
+  RewriteRule ^admin/posts/?$ admin/posts/index.php [L,QSA]
+  RewriteRule ^admin/posts/create/?$ admin/posts/create.php [L,QSA]
+  RewriteRule ^admin/posts/edit/?$ admin/posts/edit.php [L,QSA]
+  RewriteRule ^admin/posts/delete/?$ admin/posts/delete.php [L,QSA]
+  RewriteRule ^admin/categories/?$ admin/categories/index.php [L,QSA]
+  RewriteRule ^admin/markdown/?$ admin/markdown/index.php [L,QSA]
+  # Admin Media Decommissioned (Enforce 404 response)
+  RewriteRule ^admin/media(?:/.*)?$ - [R=404,L,NC]
+  RewriteRule ^admin/leads/?$ admin/leads.php [L,QSA]
+  RewriteRule ^admin/announcement/?$ admin/announcement.php [L,QSA]
+  RewriteRule ^admin/setup/?$ admin/setup.php [L,QSA]
+
+  # Public API Endpoints
+  RewriteRule ^api/contact$ api/contact.php [L,QSA]
+  RewriteRule ^api/announcement$ api/announcement.php [L,QSA]
+</IfModule>
+
+# Directory Options
+DirectoryIndex index.html index.php
+Options -Indexes
+DirectorySlash Off
+
+# Custom Error Pages
+ErrorDocument 404 /404.html
+
+# Protect .htaccess and dotfiles
+<FilesMatch "^\.">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>

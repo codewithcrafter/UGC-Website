@@ -63,7 +63,7 @@ function getApprovedPagesRegistry(): array {
             'url' => '/about',
             'canonical' => $canonicalBase . '/about',
             'group' => 'core',
-            'schemas' => ['Organization', 'BreadcrumbList', 'WebPage'],
+            'schemas' => ['AboutPage', 'WebPage', 'Organization', 'BreadcrumbList'],
             'description' => 'Brand background, creator network mission, and agency philosophy.'
         ],
         'contact' => [
@@ -72,15 +72,15 @@ function getApprovedPagesRegistry(): array {
             'url' => '/contact',
             'canonical' => $canonicalBase . '/contact',
             'group' => 'core',
-            'schemas' => ['Organization', 'BreadcrumbList', 'WebPage'],
+            'schemas' => ['AboutPage', 'WebPage', 'Organization', 'BreadcrumbList'],
             'description' => 'Project inquiry form, corporate contact channels, and agency inquiries.'
         ],
         // The 9 Approved Service Pages
-        'service-ugc-video-creation-services-company' => [
-            'key' => 'service-ugc-video-creation-services-company',
+        'service-ugc-video-creation-company' => [
+            'key' => 'service-ugc-video-creation-company',
             'title' => 'UGC Video Creation Company',
-            'url' => '/services/ugc-video-creation-services-company',
-            'canonical' => $canonicalBase . '/services/ugc-video-creation-services-company',
+            'url' => '/services/ugc-video-creation-company',
+            'canonical' => $canonicalBase . '/services/ugc-video-creation-company',
             'group' => 'services',
             'schemas' => ['Organization', 'BreadcrumbList', 'FAQPage', 'Review', 'WebPage'],
             'description' => 'Full-cycle creator sourcing, brief design, production, and video performance delivery.'
@@ -121,11 +121,11 @@ function getApprovedPagesRegistry(): array {
             'schemas' => ['Organization', 'BreadcrumbList', 'FAQPage', 'Review', 'WebPage'],
             'description' => 'Authentic consumer reviews, demonstration videos, and trusted buyer testimonials.'
         ],
-        'service-ugc-video-company-in-delhi-company' => [
-            'key' => 'service-ugc-video-company-in-delhi-company',
+        'service-ugc-video-company-in-delhi' => [
+            'key' => 'service-ugc-video-company-in-delhi',
             'title' => 'UGC Video Service in Delhi',
-            'url' => '/services/ugc-video-company-in-delhi-company',
-            'canonical' => $canonicalBase . '/services/ugc-video-company-in-delhi-company',
+            'url' => '/services/ugc-video-company-in-delhi',
+            'canonical' => $canonicalBase . '/services/ugc-video-company-in-delhi',
             'group' => 'services',
             'schemas' => ['Organization', 'BreadcrumbList', 'FAQPage', 'Review', 'WebPage'],
             'description' => 'Regional creator shoots, localized Indian brand campaigns, and NCR creator studio.'
@@ -148,11 +148,11 @@ function getApprovedPagesRegistry(): array {
             'schemas' => ['Organization', 'BreadcrumbList', 'FAQPage', 'Review', 'WebPage'],
             'description' => 'Real customer stories, social proof videos, and authentic conversion assets.'
         ],
-        'service-ugc-video-editing-service-company' => [
-            'key' => 'service-ugc-video-editing-service-company',
+        'service-ugc-video-editing-company' => [
+            'key' => 'service-ugc-video-editing-company',
             'title' => 'UGC Video Editing Service Company',
-            'url' => '/services/ugc-video-editing-service-company',
-            'canonical' => $canonicalBase . '/services/ugc-video-editing-service-company',
+            'url' => '/services/ugc-video-editing-company',
+            'canonical' => $canonicalBase . '/services/ugc-video-editing-company',
             'group' => 'services',
             'schemas' => ['Organization', 'BreadcrumbList', 'FAQPage', 'Review', 'WebPage'],
             'description' => 'Post-production, native text overlays, viral sound effects, hooks, and aspect ratio adaptation.'

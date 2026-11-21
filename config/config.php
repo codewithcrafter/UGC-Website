@@ -36,23 +36,35 @@ foreach ($envPaths as $envFile) {
     }
 }
 
-// 2. Environment Setup
+// 2. Environment Setup (Strict Explicit Environment Resolution)
 function getAppEnvironment(): string {
     $envVal = $_ENV['APP_ENV'] ?? $_SERVER['APP_ENV'] ?? (function_exists('getenv') ? getenv('APP_ENV') : false);
     if (!empty($envVal)) {
         $e = strtolower(trim((string)$envVal));
-        if (in_array($e, ['prod', 'production'])) return 'production';
-        if (in_array($e, ['local', 'development', 'dev'])) return 'local';
-        return $e;
+        if (in_array($e, ['production', 'prod'])) {
+            return 'production';
+        }
+        if (in_array($e, ['local', 'development', 'dev'])) {
+            return 'local';
+        }
     }
-    $host = $_SERVER['HTTP_HOST'] ?? '';
-    if (str_contains($host, 'myugcvideo.in') || str_contains($host, 'myugcvideo.com')) {
-        return 'production';
-    }
-    return 'local';
+    // Strict requirement: Do not guess or fall back via URL
+    return '';
 }
 
 $env = getAppEnvironment();
+
+if ($env === '') {
+    error_log("CRITICAL: APP_ENV environment variable is missing or invalid in environment configuration. Must be 'local' or 'production'.");
+    http_response_code(500);
+    if (php_sapi_name() === 'cli') {
+        fwrite(STDERR, "Configuration Error: APP_ENV is missing or invalid in .env (Must be 'local' or 'production').\n");
+    } else {
+        echo "<!DOCTYPE html><html><head><title>System Configuration Error</title></head><body><h2>System Configuration Error</h2><p>The application environment is not configured. Please verify server environment settings.</p></body></html>";
+    }
+    exit(1);
+}
+
 define('ENVIRONMENT', $env);
 define('APP_ENV', $env);
 
@@ -111,8 +123,17 @@ function getBaseUrl(): string {
     }
 
     $host = $_SERVER['HTTP_HOST'] ?? '';
-    if (getAppEnvironment() === 'production' || str_contains($host, 'myugcvideo.in') || str_contains($host, 'myugcvideo.com')) {
-        return 'https://myugcvideo.in';
+    if (!empty($host)) {
+        if (str_contains($host, 'demo.myugcvideo.in')) {
+            return 'https://demo.myugcvideo.in';
+        }
+        if (str_contains($host, 'myugcvideo.in') || str_contains($host, 'myugcvideo.com')) {
+            return 'https://myugcvideo.in';
+        }
+    }
+
+    if (getAppEnvironment() === 'production') {
+        return 'https://demo.myugcvideo.in';
     }
 
     $protocol = isHttps() ? 'https://' : 'http://';
@@ -182,7 +203,9 @@ function cleanPublicPath(string $path): string {
     if ($p === 'admin/markdown' || $p === 'admin/markdown/index.php') return 'admin/markdown' . ($query ?: '') . $fragment;
     if ($p === 'admin/media' || $p === 'admin/media/index.php') return 'admin/media' . $fragment;
     if ($p === 'admin/leads' || $p === 'admin/leads.php') return 'admin/leads' . ($query ?: '') . $fragment;
+    if ($p === 'admin/announcement' || $p === 'admin/announcement.php') return 'admin/announcement' . ($query ?: '') . $fragment;
     if ($p === 'api/contact' || $p === 'api/contact.php') return 'api/contact' . ($query ?: '') . $fragment;
+    if ($p === 'api/announcement' || $p === 'api/announcement.php') return 'api/announcement' . ($query ?: '') . $fragment;
 
     // Dedicated services: services/{slug}.html -> services/{slug}
     if (preg_match('#^services/([^/]+)\.html$#i', $p, $m)) {

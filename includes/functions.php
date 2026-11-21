@@ -123,6 +123,7 @@ function getPosts(array $options = []): array {
     $db = getDb();
     
     $categorySlug  = $options['category'] ?? null;
+    $tag           = !empty($options['tag']) ? trim($options['tag']) : null;
     $search        = $options['search'] ?? null;
     $status        = $options['status'] ?? 'published'; // 'published', 'draft', or null for all
     $excludeId     = $options['exclude_id'] ?? null;
@@ -134,6 +135,14 @@ function getPosts(array $options = []): array {
 
     $where = [];
     $params = [];
+    $joins = "LEFT JOIN categories c ON p.category_id = c.id";
+
+    if ($tag !== null && $tag !== '') {
+        $joins .= " INNER JOIN blog_post_tags bpt ON p.id = bpt.post_id INNER JOIN tags t ON bpt.tag_id = t.id";
+        $where[] = "(t.slug = :tag_slug OR t.name = :tag_name)";
+        $params[':tag_slug'] = slugify(ltrim($tag, '#'));
+        $params[':tag_name'] = ltrim($tag, '#');
+    }
 
     if ($status !== null) {
         $where[] = "p.status = :status";
@@ -174,16 +183,16 @@ function getPosts(array $options = []): array {
 
     $whereSql = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
-    // Get total count
-    $countSql = "SELECT COUNT(*) FROM blog_posts p LEFT JOIN categories c ON p.category_id = c.id {$whereSql}";
+    // Get total count (using DISTINCT p.id for tag joins)
+    $countSql = "SELECT COUNT(DISTINCT p.id) FROM blog_posts p {$joins} {$whereSql}";
     $countStmt = $db->prepare($countSql);
     $countStmt->execute($params);
     $total = (int) $countStmt->fetchColumn();
 
     // Get rows sorted strictly by published date descending (newest first)
-    $sql = "SELECT p.*, c.name AS category_name, c.slug AS category_slug 
+    $sql = "SELECT DISTINCT p.*, c.name AS category_name, c.slug AS category_slug 
             FROM blog_posts p 
-            LEFT JOIN categories c ON p.category_id = c.id 
+            {$joins} 
             {$whereSql} 
             ORDER BY p.published_at DESC, p.id DESC 
             LIMIT {$perPage} OFFSET {$offset}";
@@ -413,17 +422,16 @@ function generateBlogSchema(array $post, array $faqs = []): array {
         "image"            => $featuredImgUrl,
         "datePublished"    => !empty($post['published_at']) ? date('c', strtotime($post['published_at'])) : date('c'),
         "dateModified"     => !empty($post['updated_at']) ? date('c', strtotime($post['updated_at'])) : (!empty($post['published_at']) ? date('c', strtotime($post['published_at'])) : date('c')),
-        "mainEntityOfPage" => [
-            "@type" => "WebPage",
-            "@id"   => $canonicalUrl
-        ],
+        "mainEntityOfPage" => $canonicalUrl,
         "author"           => [
             "@type"    => "Person",
             "name"     => $post['author_name'] ?? 'MY UGC VIDEO Editorial Team',
             "jobTitle" => $post['author_role'] ?? 'UGC Creative Studio'
         ],
         "publisher"        => [
-            "@id" => $baseUrl . "/#organization"
+            "@type" => "Organization",
+            "name"  => "MY UGC VIDEO",
+            "url"   => $baseUrl . "/"
         ]
     ];
 
@@ -1386,6 +1394,259 @@ function reconcileAllBlogsToMarkdown(): array {
 
 function reconcileAllBlogArtifacts(): array {
     return reconcileAllBlogsToMarkdown();
+}
+
+/**
+ * =========================================================================
+ * BLOG TAGS, TAXONOMY & TABLE OF CONTENTS HELPERS
+ * =========================================================================
+ */
+
+/**
+ * Retrieve all tags assigned to a specific blog post
+ */
+function getPostTags(int $postId): array {
+    $db = getDb();
+    $stmt = $db->prepare("
+        SELECT t.id, t.name, t.slug 
+        FROM tags t 
+        INNER JOIN blog_post_tags bpt ON t.id = bpt.tag_id 
+        WHERE bpt.post_id = :post_id 
+        ORDER BY t.name ASC
+    ");
+    $stmt->execute([':post_id' => $postId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
+ * Retrieve single tag by slug or name
+ */
+function getTagBySlug(string $slugOrName): ?array {
+    $db = getDb();
+    $clean = trim(ltrim($slugOrName, '#'));
+    $slug = slugify($clean);
+
+    $stmt = $db->prepare("SELECT * FROM tags WHERE slug = :slug OR name = :name LIMIT 1");
+    $stmt->execute([':slug' => $slug, ':name' => $clean]);
+    $tag = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $tag ?: null;
+}
+
+/**
+ * Retrieve all tags with published post counts
+ */
+function getAllTags(): array {
+    $db = getDb();
+    $sql = "
+        SELECT t.*, COUNT(DISTINCT p.id) AS post_count 
+        FROM tags t 
+        LEFT JOIN blog_post_tags bpt ON t.id = bpt.tag_id 
+        LEFT JOIN blog_posts p ON bpt.post_id = p.id AND p.status = 'published' AND p.published_at <= NOW() 
+        GROUP BY t.id 
+        HAVING post_count > 0 
+        ORDER BY t.name ASC
+    ";
+    return $db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
+ * Synchronize tags for a blog post
+ * Safely creates missing tags, removes unassigned pivot rows, and keeps keywords column in sync
+ */
+function syncPostTags(int $postId, $tagsInput): array {
+    $db = getDb();
+
+    if (is_string($tagsInput)) {
+        $rawTags = array_map('trim', explode(',', $tagsInput));
+    } elseif (is_array($tagsInput)) {
+        $rawTags = array_map('trim', $tagsInput);
+    } else {
+        $rawTags = [];
+    }
+
+    $cleanTags = [];
+    foreach ($rawTags as $t) {
+        $clean = trim(ltrim($t, '#'));
+        if ($clean !== '' && mb_strlen($clean) <= 100) {
+            $cleanTags[$clean] = slugify($clean);
+        }
+    }
+
+    if (empty($cleanTags)) {
+        $stmtDel = $db->prepare("DELETE FROM blog_post_tags WHERE post_id = :post_id");
+        $stmtDel->execute([':post_id' => $postId]);
+        
+        $stmtKw = $db->prepare("UPDATE blog_posts SET keywords = '' WHERE id = :post_id");
+        $stmtKw->execute([':post_id' => $postId]);
+        return [];
+    }
+
+    $assignedTags = [];
+    $tagIds = [];
+
+    foreach ($cleanTags as $tagName => $tagSlug) {
+        // Find existing tag by slug
+        $stmtFind = $db->prepare("SELECT id, name, slug FROM tags WHERE slug = :slug LIMIT 1");
+        $stmtFind->execute([':slug' => $tagSlug]);
+        $existing = $stmtFind->fetch(PDO::FETCH_ASSOC);
+
+        if ($existing) {
+            $tagId = (int)$existing['id'];
+            $assignedTags[] = $existing;
+        } else {
+            $stmtIns = $db->prepare("INSERT INTO tags (name, slug) VALUES (:name, :slug)");
+            $stmtIns->execute([':name' => $tagName, ':slug' => $tagSlug]);
+            $tagId = (int)$db->lastInsertId();
+            $assignedTags[] = ['id' => $tagId, 'name' => $tagName, 'slug' => $tagSlug];
+        }
+        $tagIds[] = $tagId;
+    }
+
+    // Sync pivot table: delete removed tags, insert new
+    if (!empty($tagIds)) {
+        $inClause = implode(',', array_fill(0, count($tagIds), '?'));
+        $stmtDel = $db->prepare("DELETE FROM blog_post_tags WHERE post_id = ? AND tag_id NOT IN ($inClause)");
+        $stmtDel->execute(array_merge([$postId], $tagIds));
+
+        $stmtInsPivot = $db->prepare("INSERT IGNORE INTO blog_post_tags (post_id, tag_id) VALUES (:post_id, :tag_id)");
+        foreach ($tagIds as $tid) {
+            $stmtInsPivot->execute([':post_id' => $postId, ':tag_id' => $tid]);
+        }
+    }
+
+    // Backwards compatibility with blog_posts.keywords
+    $keywordStr = implode(', ', array_column($assignedTags, 'name'));
+    $stmtKw = $db->prepare("UPDATE blog_posts SET keywords = :kw WHERE id = :post_id");
+    $stmtKw->execute([':kw' => $keywordStr, ':post_id' => $postId]);
+
+    return $assignedTags;
+}
+
+/**
+ * Dynamic Table of Contents Parser & Heading ID Injector
+ * 
+ * Inspects the rendered HTML for non-empty <h2> and <h3> tags.
+ * Preserves existing valid unique IDs, generates slugified unique IDs for missing ones,
+ * and nests <h3> children hierarchically under their preceding <h2>.
+ */
+function parseAndInjectTableOfContents(string $htmlContent): array {
+    if (empty(trim($htmlContent))) {
+        return ['html' => $htmlContent, 'toc' => [], 'count' => 0];
+    }
+
+    $dom = new DOMDocument();
+    libxml_use_internal_errors(true);
+    // Load as UTF-8 XML/HTML snippet
+    $dom->loadHTML('<?xml encoding="utf-8" ?><div>' . $htmlContent . '</div>', LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+    libxml_clear_errors();
+
+    $xpath = new DOMXPath($dom);
+    $nodes = $xpath->query('//h2 | //h3');
+
+    $toc = [];
+    $usedIds = [];
+    $currentH2Index = null;
+    $count = 0;
+
+    foreach ($nodes as $node) {
+        $text = trim($node->textContent);
+        if ($text === '') {
+            continue; // Exclude empty headings
+        }
+
+        $tagName = strtolower($node->nodeName);
+        $existingId = trim($node->getAttribute('id'));
+
+        if (!empty($existingId)) {
+            $id = $existingId;
+        } else {
+            $id = slugify($text);
+        }
+
+        // Guarantee ID uniqueness
+        $baseId = $id;
+        $suffix = 1;
+        while (isset($usedIds[$id])) {
+            $id = $baseId . '-' . $suffix;
+            $suffix++;
+        }
+        $usedIds[$id] = true;
+        $node->setAttribute('id', $id);
+        $count++;
+
+        $item = [
+            'id'       => $id,
+            'title'    => $text,
+            'level'    => ($tagName === 'h2' ? 2 : 3),
+            'children' => []
+        ];
+
+        if ($tagName === 'h2') {
+            $toc[] = $item;
+            $currentH2Index = count($toc) - 1;
+        } else { // h3
+            if ($currentH2Index !== null) {
+                $toc[$currentH2Index]['children'][] = $item;
+            } else {
+                // If an H3 appears before any H2, attach as top-level item
+                $toc[] = $item;
+            }
+        }
+    }
+
+    // Extract updated inner HTML from the wrapper div
+    $container = $dom->getElementsByTagName('div')->item(0);
+    $updatedHtml = '';
+    if ($container) {
+        foreach ($container->childNodes as $child) {
+            $updatedHtml .= $dom->saveHTML($child);
+        }
+    } else {
+        $updatedHtml = $htmlContent;
+    }
+
+    return [
+        'html'  => $updatedHtml,
+        'toc'   => $toc,
+        'count' => $count
+    ];
+}
+
+/**
+ * Generate Dynamic Self-Referencing Canonical URL
+ * 
+ * Strips tracking query parameters (utm_*, gclid, fbclid, msclkid, ref, etc.)
+ * Preserves whitelisted semantic parameters (tag, page) with normalized encoding.
+ */
+function generateCleanCanonicalUrl(string $basePath, array $preserveParams = []): string {
+    $canonicalBase = function_exists('getLlmCanonicalBaseUrl') ? getLlmCanonicalBaseUrl() : 'https://myugcvideo.in';
+    $baseUrl = rtrim($canonicalBase, '/') . '/' . ltrim($basePath, '/');
+
+    $trackingParams = [
+        'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 
+        'gclid', 'fbclid', 'msclkid', 'ref', 'source', 'mc_cid', 'mc_eid'
+    ];
+    
+    $cleanQuery = [];
+    foreach ($preserveParams as $key => $val) {
+        if ($val === null || $val === '' || in_array(strtolower($key), $trackingParams, true)) {
+            continue;
+        }
+        if ($key === 'page' && ((int)$val <= 1)) {
+            continue; // Page 1 is default root canonical
+        }
+        $cleanQuery[$key] = $val;
+    }
+
+    if (!empty($cleanQuery)) {
+        $parts = [];
+        foreach ($cleanQuery as $k => $v) {
+            $parts[] = rawurlencode($k) . '=' . rawurlencode($v);
+        }
+        $baseUrl .= '?' . implode('&', $parts);
+    }
+
+    return $baseUrl;
 }
 
 

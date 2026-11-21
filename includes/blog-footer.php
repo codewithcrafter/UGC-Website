@@ -23,7 +23,6 @@ if (!defined('CMS_ROOT')) {
           </p>
           <div class="social-links">
             <a href="https://instagram.com" class="social-link" target="_blank" rel="noopener noreferrer">Instagram</a>
-            <a href="https://tiktok.com" class="social-link" target="_blank" rel="noopener noreferrer">TikTok</a>
             <a href="https://linkedin.com" class="social-link" target="_blank" rel="noopener noreferrer">LinkedIn</a>
           </div>
         </div>
@@ -42,15 +41,15 @@ if (!defined('CMS_ROOT')) {
         <div>
           <h4 class="footer-title">Our Services</h4>
           <ul class="footer-links">
-            <li><a href="<?= SITE_URL ?>/services/ugc-video-creation-services-company" class="footer-link">UGC Video Creation Services</a></li>
+            <li><a href="<?= SITE_URL ?>/services/ugc-video-creation-company" class="footer-link">UGC Video Creation Services</a></li>
             <li><a href="<?= SITE_URL ?>/services/ugc-video-ads-company" class="footer-link">UGC Video Ads</a></li>
             <li><a href="<?= SITE_URL ?>/services/ai-ugc-video-creation-company" class="footer-link">AI UGC Video Creation</a></li>
             <li><a href="<?= SITE_URL ?>/services/ugc-product-video-company" class="footer-link">UGC Product Video</a></li>
             <li><a href="<?= SITE_URL ?>/services/ugc-product-review-videos-company" class="footer-link">UGC Product Reviews Videos</a></li>
-            <li><a href="<?= SITE_URL ?>/services/ugc-video-company-in-delhi-company" class="footer-link">UGC Video Company in Delhi</a></li>
+            <li><a href="<?= SITE_URL ?>/services/ugc-video-company-in-delhi" class="footer-link">UGC Video Company in Delhi</a></li>
             <li><a href="<?= SITE_URL ?>/services/ugc-unboxing-videos-company" class="footer-link">UGC Unboxing Videos</a></li>
             <li><a href="<?= SITE_URL ?>/services/ugc-testimonial-videos-company" class="footer-link">UGC Testimonial Videos</a></li>
-            <li><a href="<?= SITE_URL ?>/services/ugc-video-editing-service-company" class="footer-link">UGC Video Editing Service</a></li>
+            <li><a href="<?= SITE_URL ?>/services/ugc-video-editing-company" class="footer-link">UGC Video Editing Service</a></li>
           </ul>
         </div>
 
@@ -74,12 +73,109 @@ if (!defined('CMS_ROOT')) {
         </div>
         <div class="contact-placeholder-strip">
           <span class="tag-mono" style="background: rgba(0, 34, 30, 0.6); border-color: var(--border-medium); color: var(--text-secondary);">
-            Inquiries: hello@myugcvideo.example.in
+            Inquiries: hello@myugcvideo.in
           </span>
         </div>
       </div>
     </div>
   </footer>
+
+    <!-- =========================================================================
+       FLOATING CTA BUTTONS (WHATSAPP & DIRECT CALL)
+       ========================================================================= -->
+  <aside class="floating-ctas-left" id="floatingCtasLeft" aria-label="Quick Communication Options">
+    <a href="https://wa.me/919876543210?text=Hi%20MY%20UGC%20VIDEO%2C%20I%20am%20interested%20in%20scaling%20our%20brand%20with%20UGC%20videos."
+       target="_blank"
+       rel="noopener noreferrer"
+       class="floating-cta-btn floating-btn-whatsapp"
+       id="floatingWhatsAppBtn"
+       aria-label="Chat on WhatsApp">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 17.06c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.106 8.106 0 0 1-1.25-4.29c0-4.5 3.66-8.16 8.16-8.16 2.18 0 4.23.85 5.77 2.39a8.107 8.107 0 0 1 2.39 5.77c0 4.5-3.66 8.15-8.08 8.15zm4.47-6.11c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43s-.56-1.34-.76-1.84c-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1s.9 2.44 1.02 2.6c.12.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.44.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.17-.48-.29z"/>
+      </svg>
+    </a>
+    <a href="tel:+919876543210"
+       class="floating-cta-btn floating-btn-call"
+       id="floatingCallBtn"
+       aria-label="Call MY UGC VIDEO Team">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+      </svg>
+    </a>
+  </aside>
+
+  <!-- =========================================================================
+       FLOATING CHATBOT WIDGET & DRAWER
+       ========================================================================= -->
+  <aside class="floating-chat-widget" id="floatingChatWidget" aria-label="Customer Support Chat">
+    <div class="chat-speech-bubble" id="chatSpeechBubble" role="status" aria-live="polite">
+      <span class="chat-bubble-text">Chat with us! 👋</span>
+      <button type="button" class="chat-bubble-close" id="chatBubbleClose" aria-label="Dismiss chat prompt">&times;</button>
+    </div>
+    <button type="button" class="floating-chatbot-btn" id="floatingChatbotBtn" aria-label="Open Live Chat" aria-expanded="false" aria-controls="siteChatDrawer">
+      <svg class="chat-icon-open" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+      <svg class="chat-icon-close" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </aside>
+
+  <!-- Chat Drawer Popup -->
+  <div class="site-chat-drawer" id="siteChatDrawer" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="chatDrawerTitle" aria-hidden="true">
+    <div class="chat-drawer-header">
+      <div class="chat-drawer-title-wrap">
+        <div class="chat-drawer-avatar">
+          <span>UGC</span>
+          <span class="chat-online-dot" aria-hidden="true"></span>
+        </div>
+        <div>
+          <h3 class="chat-drawer-title" id="chatDrawerTitle">MY UGC VIDEO</h3>
+          <span class="chat-drawer-status">Online &bull; Replies within minutes</span>
+        </div>
+      </div>
+      <button type="button" class="chat-drawer-close-btn" id="chatDrawerCloseBtn" aria-label="Close Chat">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="chat-drawer-body" id="chatDrawerBody">
+      <div class="chat-msg chat-msg-bot">
+        <div class="chat-bubble">
+          Hey there! 👋 Welcome to MY UGC VIDEO. How can we help scale your performance creative today?
+        </div>
+        <span class="chat-timestamp">Just now</span>
+      </div>
+
+      <div class="chat-quick-actions">
+        <a href="https://wa.me/919876543210?text=Hi%20MY%20UGC%20VIDEO%2C%20I%20am%20interested%20in%20scaling%20our%20brand%20with%20UGC%20videos."
+           target="_blank"
+           rel="noopener noreferrer"
+           class="chat-action-chip"
+           style="color:#25D366;border-color:rgba(37,211,102,0.4);">
+          💬 Chat on WhatsApp (+91 98765 43210)
+        </a>
+        <button type="button" class="chat-action-chip" data-chat-action="inquiry">
+          📋 Submit Project Brief / Get Quote
+        </button>
+      </div>
+    </div>
+
+    <form class="chat-drawer-footer" id="chatMessageForm">
+      <input type="text" class="chat-input" id="chatMessageInput" placeholder="Type your message..." autocomplete="off" aria-label="Type message">
+      <button type="submit" class="chat-send-btn" aria-label="Send message">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </form>
+  </div>
 
   <script src="<?= SITE_URL ?>/js/main.js"></script>
 </body>

@@ -93,6 +93,10 @@ AddType text/markdown; charset=UTF-8 .md
   RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/admin/leads\.php [NC]
   RewriteRule ^ %1/admin/leads? [R=301,L,NE]
 
+  RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$ [NC]
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/admin/announcement\.php [NC]
+  RewriteRule ^ %1/admin/announcement? [R=301,L,NE]
+
   # A. Redirect /index.html, /index.php, /index -> /
   RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/index(?:\.(?:html|php))?[\s?] [NC]
   RewriteCond %1 !^.*/admin.* [NC]
@@ -115,8 +119,8 @@ AddType text/markdown; charset=UTF-8 .md
   RewriteRule ^ %1/blogs? [R=301,L,NE]
 
   # F. 301 Permanent Redirects: Old Service Page Slugs -> Standardized Service Page Slugs
-  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/ugc-video-creation(?:-company)?(?:\.html)?[\s?] [NC]
-  RewriteRule ^ %1/services/ugc-video-creation-services-company? [R=301,L,NE]
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/(?:ugc-video-creation-services-company|ugc-video-creation)(?:\.html)?[\s?] [NC]
+  RewriteRule ^ %1/services/ugc-video-creation-company? [R=301,L,NE]
 
   RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/ugc-video-ads(?:\.html)?[\s?] [NC]
   RewriteRule ^ %1/services/ugc-video-ads-company? [R=301,L,NE]
@@ -136,11 +140,8 @@ AddType text/markdown; charset=UTF-8 .md
   RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/ugc-product-reviews-videos(?:-company)?(?:\.html)?[\s?] [NC]
   RewriteRule ^ %1/services/ugc-product-review-videos-company? [R=301,L,NE]
 
-  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/ugc-video-company-in-delhi(?:\.html)?[\s?] [NC]
-  RewriteRule ^ %1/services/ugc-video-company-in-delhi-company? [R=301,L,NE]
-
-  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/ugc-video-service-in-delhi(?:-company)?(?:\.html)?[\s?] [NC]
-  RewriteRule ^ %1/services/ugc-video-company-in-delhi-company? [R=301,L,NE]
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/(?:ugc-video-company-in-delhi-company|ugc-video-service-in-delhi(?:-company)?)(?:\.html)?[\s?] [NC]
+  RewriteRule ^ %1/services/ugc-video-company-in-delhi? [R=301,L,NE]
 
   RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/ugc-unboxing-videos(?:\.html)?[\s?] [NC]
   RewriteRule ^ %1/services/ugc-unboxing-videos-company? [R=301,L,NE]
@@ -148,11 +149,8 @@ AddType text/markdown; charset=UTF-8 .md
   RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/ugc-testimonial-videos(?:\.html)?[\s?] [NC]
   RewriteRule ^ %1/services/ugc-testimonial-videos-company? [R=301,L,NE]
 
-  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/ugc-video-editing(?:\.html)?[\s?] [NC]
-  RewriteRule ^ %1/services/ugc-video-editing-service-company? [R=301,L,NE]
-
-  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/ugc-video-editing-company(?:\.html)?[\s?] [NC]
-  RewriteRule ^ %1/services/ugc-video-editing-service-company? [R=301,L,NE]
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/(?:ugc-video-editing-service-company|ugc-video-editing)(?:\.html)?[\s?] [NC]
+  RewriteRule ^ %1/services/ugc-video-editing-company? [R=301,L,NE]
 
   # G. Redirect /services/xxx.html -> /services/xxx
   RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/services/([^/\s?]+)\.html [NC]
@@ -189,7 +187,7 @@ AddType text/markdown; charset=UTF-8 .md
   #    Serves original plain-text Markdown source exactly like llms.txt.
   # -------------------------------------------------------------------------
   RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule ^((?:blog|blogs|pages|services|case-studies|portfolio|other|docs)/[^/]+\.md)$ markdown-router.php?path=$1 [L,QSA,NC]
+  RewriteRule ^((?:blog|blogs|pages|services|other|docs)/[^/]+\.md)$ markdown-router.php?path=$1 [L,QSA,NC]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteRule ^([a-zA-Z0-9_\-]+)\.md$ markdown-router.php?path=$1.md [L,QSA,NC]
 
@@ -200,20 +198,19 @@ AddType text/markdown; charset=UTF-8 .md
   # 5. Internal Rewriting: Clean Extensionless URLs -> Physical Files
   # -------------------------------------------------------------------------
 
-  # Homepage Route
-  RewriteRule ^$ index.html [L]
+  # Homepage Route (Dynamic Server-Side Schema Rendering)
+  RewriteRule ^$ page-router.php?page=homepage [L,QSA]
 
-  # Public Core Routes
-  RewriteRule ^about$ about.html [L]
-  RewriteRule ^services$ services.html [L]
-  RewriteRule ^contact$ contact.html [L]
+  # Public Core Routes (Dynamic Server-Side Schema Rendering)
+  RewriteRule ^about$ page-router.php?page=about [L,QSA]
+  RewriteRule ^services$ page-router.php?page=services [L,QSA]
+  RewriteRule ^contact$ page-router.php?page=contact [L,QSA]
   RewriteRule ^blogs$ blogs.php [L,QSA]
 
-  # Dedicated Service Detail Route: /services/slug -> services/slug.html (if file exists)
+  # Dedicated Service Detail Route: /services/slug -> page-router.php?service=slug
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_FILENAME}.html -f
-  RewriteRule ^services/([^/]+)$ services/$1.html [L]
+  RewriteRule ^services/([^/]+)$ page-router.php?service=$1 [L,QSA]
 
   # Clean SEO-Friendly Blog Detail Route: /blog/slug -> blog.php?slug=slug
   RewriteCond %{REQUEST_FILENAME} !-f
@@ -235,10 +232,12 @@ AddType text/markdown; charset=UTF-8 .md
   # Admin Media Decommissioned (Enforce 404 response)
   RewriteRule ^admin/media(?:/.*)?$ - [R=404,L,NC]
   RewriteRule ^admin/leads/?$ admin/leads.php [L,QSA]
+  RewriteRule ^admin/announcement/?$ admin/announcement.php [L,QSA]
   RewriteRule ^admin/setup/?$ admin/setup.php [L,QSA]
 
   # Public API Endpoints
   RewriteRule ^api/contact$ api/contact.php [L,QSA]
+  RewriteRule ^api/announcement$ api/announcement.php [L,QSA]
 </IfModule>
 
 # Directory Options

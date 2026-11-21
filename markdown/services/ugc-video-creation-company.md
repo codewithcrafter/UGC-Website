@@ -1,7 +1,7 @@
 ---
 title: "UGC Video Creation Services for Brands | MY UGC VIDEO"
 description: "Get UGC video creation services from MY UGC VIDEO: vetted creators, scripts, editing and commercial usage rights for D2C and e-commerce brands."
-canonical_url: "https://myugcvideo.in/services/ugc-video-creation-services-company"
+canonical_url: "https://myugcvideo.in/services/ugc-video-creation-company"
 page_type: "service"
 primary_keyword: "UGC video creation services"
 last_updated: "2026-11-13"
@@ -275,8 +275,8 @@ Complement your campaign with our other specialized services:
 - [UGC testimonial videos](https://myugcvideo.in/services/ugc-testimonial-videos-company)
 - [UGC unboxing videos](https://myugcvideo.in/services/ugc-unboxing-videos-company)
 - [UGC video ads](https://myugcvideo.in/services/ugc-video-ads-company)
-- [UGC video company in Delhi](https://myugcvideo.in/services/ugc-video-company-in-delhi-company)
-- [UGC video editing service](https://myugcvideo.in/services/ugc-video-editing-service-company)
+- [UGC video company in Delhi](https://myugcvideo.in/services/ugc-video-company-in-delhi)
+- [UGC video editing service](https://myugcvideo.in/services/ugc-video-editing-company)
 
 ## Ready to Scale Your Video Content?
 

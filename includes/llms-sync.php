@@ -204,7 +204,7 @@ function validatePublicSeoUrl(string $url, string $expectedType = 'any'): array 
     }
 
     // Check Direct Markdown URLs: /blog/{slug}.md, /pages/{slug}.md, etc.
-    if (preg_match('#^/(blog|blogs|pages|services|case-studies|portfolio|other|docs)/([a-z0-9\-_\.]+)\.md$#i', $cleanPath, $mdm)) {
+    if (preg_match('#^/(blog|blogs|pages|services|other|docs)/([a-z0-9\-_\.]+)\.md$#i', $cleanPath, $mdm)) {
         if ($expectedType !== 'any' && $expectedType !== 'markdown') {
             return ['valid' => false, 'clean_url' => $trimmed, 'error' => "URL type mismatch: expected {$expectedType}, got markdown.", 'type' => 'markdown'];
         }
@@ -224,8 +224,6 @@ function validatePublicSeoUrl(string $url, string $expectedType = 'any'): array 
             $folderMap = [
                 'pages' => 'pages',
                 'services' => 'services',
-                'case-studies' => 'case-studies',
-                'portfolio' => 'case-studies',
                 'other' => 'other',
                 'docs' => 'other'
             ];
@@ -436,7 +434,7 @@ function getPublicCorePages(): array {
         ],
         [
             'title'       => 'Editorial & Insights / Blogs',
-            'description' => 'Performance marketing analyses, creative testing breakdowns, UGC case studies, and ad spend benchmarks.',
+            'description' => 'Performance marketing analyses, creative testing breakdowns, direct-response strategies, and ad spend benchmarks.',
             'url'         => $baseUrl . '/blogs',
             'file'        => 'blogs.php',
             'category'    => 'Core Page'
@@ -469,8 +467,8 @@ function getPublicServicePages(): array {
         [
             'title'       => 'UGC Video Creation Services',
             'description' => 'Bespoke UGC video creation services engineered for direct-to-consumer brands. Authentic storytelling, demographic casting, and direct-response performance.',
-            'url'         => $baseUrl . '/services/ugc-video-creation-services-company',
-            'file'        => 'services/ugc-video-creation-services-company.html',
+            'url'         => $baseUrl . '/services/ugc-video-creation-company',
+            'file'        => 'services/ugc-video-creation-company.html',
             'category'    => 'Service'
         ],
         [
@@ -504,8 +502,8 @@ function getPublicServicePages(): array {
         [
             'title'       => 'UGC Video Company in Delhi',
             'description' => 'Leading UGC video company in Delhi NCR. Local creator talent network, studio facilities in Gurgaon & Noida, and dedicated creative direction for D2C brands.',
-            'url'         => $baseUrl . '/services/ugc-video-company-in-delhi-company',
-            'file'        => 'services/ugc-video-company-in-delhi-company.html',
+            'url'         => $baseUrl . '/services/ugc-video-company-in-delhi',
+            'file'        => 'services/ugc-video-company-in-delhi.html',
             'category'    => 'Service'
         ],
         [
@@ -525,8 +523,8 @@ function getPublicServicePages(): array {
         [
             'title'       => 'UGC Video Editing Service',
             'description' => 'Professional UGC video editing service for direct-to-consumer brands. Kinetic subtitles, hook variations, sound design, and ad formatting.',
-            'url'         => $baseUrl . '/services/ugc-video-editing-service-company',
-            'file'        => 'services/ugc-video-editing-service-company.html',
+            'url'         => $baseUrl . '/services/ugc-video-editing-company',
+            'file'        => 'services/ugc-video-editing-company.html',
             'category'    => 'Service'
         ]
     ];
@@ -631,7 +629,6 @@ function discoverPublicMarkdownFiles(): array {
     $categories = [
         'pages'        => 'Website Pages',
         'services'     => 'Service Specifications',
-        'case-studies' => 'Case Studies',
         'blogs'        => 'Editorial Articles',
         'other'        => 'Documentation & Guides'
     ];
@@ -736,8 +733,6 @@ function discoverPublicMarkdownFiles(): array {
                 $publicUrl = $baseUrl . '/pages/' . $item;
             } elseif ($dirName === 'services') {
                 $publicUrl = $baseUrl . '/services/' . $item;
-            } elseif ($dirName === 'case-studies') {
-                $publicUrl = $baseUrl . '/case-studies/' . $item;
             } elseif ($dirName === 'other') {
                 $publicUrl = $baseUrl . '/other/' . $item;
             } else {

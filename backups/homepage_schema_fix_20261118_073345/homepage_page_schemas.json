@@ -1,0 +1,46 @@
+[
+    {
+        "id": 150,
+        "page_key": "homepage",
+        "page_title": "Homepage",
+        "schema_name": "Homepage ProfessionalService",
+        "schema_type": "ProfessionalService",
+        "schema_data": "{\n    \"@type\": \"ProfessionalService\",\n    \"@id\": \"https:\/\/myugcvideo.in\/#professionalservice\",\n    \"name\": \"MY UGC VIDEO\",\n    \"url\": \"https:\/\/myugcvideo.in\/\",\n    \"image\": \"https:\/\/myugcvideo.in\/images\/hero\/hero-ugc-production.jpg\",\n    \"description\": \"Premium UGC video production agency specializing in creator-led video advertising, product demonstrations, unboxings, and direct-response social media video production.\",\n    \"parentOrganization\": {\n        \"@id\": \"https:\/\/myugcvideo.in\/#organization\"\n    },\n    \"address\": {\n        \"@type\": \"PostalAddress\",\n        \"addressLocality\": \"Delhi\",\n        \"addressRegion\": \"DL\",\n        \"addressCountry\": \"IN\"\n    },\n    \"priceRange\": \"$$\"\n}",
+        "status": "published",
+        "created_at": "2026-11-18 11:38:40",
+        "updated_at": "2026-11-18 11:38:40"
+    },
+    {
+        "id": 151,
+        "page_key": "homepage",
+        "page_title": "Homepage",
+        "schema_name": "Homepage Organization",
+        "schema_type": "Organization",
+        "schema_data": "{\n    \"@context\": \"https:\/\/schema.org\",\n    \"@type\": \"Organization\",\n    \"@id\": \"https:\/\/myugcvideo.in\/#organization\",\n    \"name\": \"MY UGC VIDEO\",\n    \"url\": \"https:\/\/myugcvideo.in\",\n    \"image\": \"https:\/\/myugcvideo.in\/images\/hero\/hero-ugc-production.jpg\",\n    \"description\": \"Premier performance-driven UGC video production studio and creator network connecting brands with authentic creator-led video content.\",\n    \"email\": \"hello@myugcvideo.in\",\n    \"sameAs\": [\n        \"https:\/\/instagram.com\",\n        \"https:\/\/linkedin.com\"\n    ],\n    \"contactPoint\": [\n        {\n            \"@type\": \"ContactPoint\",\n            \"contactType\": \"customer service\",\n            \"email\": \"hello@myugcvideo.in\",\n            \"availableLanguage\": [\n                \"English\",\n                \"Hindi\"\n            ]\n        }\n    ],\n    \"areaServed\": [\n        {\n            \"@type\": \"Country\",\n            \"name\": \"India\"\n        }\n    ]\n}",
+        "status": "published",
+        "created_at": "2026-11-18 11:38:40",
+        "updated_at": "2026-11-18 11:38:40"
+    },
+    {
+        "id": 152,
+        "page_key": "homepage",
+        "page_title": "Homepage",
+        "schema_name": "Homepage WebPage",
+        "schema_type": "WebPage",
+        "schema_data": "{\n    \"@type\": \"WebPage\",\n    \"@id\": \"https:\/\/myugcvideo.in\/#webpage\",\n    \"url\": \"https:\/\/myugcvideo.in\/\",\n    \"name\": \"MY UGC VIDEO \\u2014 Premier UGC Video Production Agency\",\n    \"description\": \"High-performing user-generated content video ads, product demonstrations, and creator-led marketing campaigns.\",\n    \"publisher\": {\n        \"@id\": \"https:\/\/myugcvideo.in\/#organization\"\n    },\n    \"about\": {\n        \"@id\": \"https:\/\/myugcvideo.in\/#professionalservice\"\n    }\n}",
+        "status": "published",
+        "created_at": "2026-11-18 11:38:40",
+        "updated_at": "2026-11-18 11:38:40"
+    },
+    {
+        "id": 153,
+        "page_key": "homepage",
+        "page_title": "Homepage",
+        "schema_name": "Homepage VideoObject",
+        "schema_type": "VideoObject",
+        "schema_data": "{\n    \"@type\": \"VideoObject\",\n    \"@id\": \"https:\/\/myugcvideo.in\/#video-showcase\",\n    \"name\": \"Creator-Led Video Production \\u2014 UGC Video Showcase\",\n    \"description\": \"Watch our creator-led video production preview showcasing authentic 9:16 vertical UGC video content crafted for direct-to-consumer brand campaigns.\",\n    \"thumbnailUrl\": [\n        \"https:\/\/myugcvideo.in\/images\/hero\/hero-ugc-production.jpg\"\n    ],\n    \"uploadDate\": \"2026-01-01T00:00:00+05:30\",\n    \"contentUrl\": \"https:\/\/myugcvideo.in\/images\/hero\/hero-ugc-production.jpg\",\n    \"embedUrl\": \"https:\/\/myugcvideo.in\/#video-showcase\"\n}",
+        "status": "published",
+        "created_at": "2026-11-18 11:38:40",
+        "updated_at": "2026-11-18 11:38:40"
+    }
+]

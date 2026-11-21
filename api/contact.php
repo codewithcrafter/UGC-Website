@@ -102,14 +102,14 @@ $message = trim(strip_tags($_POST['message'] ?? $_POST['details'] ?? $_POST['mes
 $source = trim(strip_tags($_POST['source'] ?? ''));
 
 // Validate and normalize Source
-$allowedSources = ['Homepage Inquiry Form', 'Contact Page Form'];
+$allowedSources = ['Homepage Hero Form', 'Homepage Inquiry Form', 'Contact Page Form'];
 if (!in_array($source, $allowedSources)) {
     // Auto-detect based on referer if not explicitly set
     $referer = $_SERVER['HTTP_REFERER'] ?? '';
     if (str_contains($referer, 'contact')) {
         $source = 'Contact Page Form';
     } else {
-        $source = 'Homepage Inquiry Form';
+        $source = 'Homepage Hero Form';
     }
 }
 
@@ -124,8 +124,8 @@ if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($em
     $errors['email'] = 'Please provide a valid business email address.';
 }
 
-if (mb_strlen($message) < 15 || mb_strlen($message) > 5000) {
-    $errors['message'] = 'Please provide at least 15 characters of project context.';
+if (mb_strlen($message) < 10 || mb_strlen($message) > 5000) {
+    $errors['message'] = 'Please provide at least 10 characters of project context.';
 }
 
 if (!empty($phone) && mb_strlen($phone) > 50) {
@@ -134,6 +134,16 @@ if (!empty($phone) && mb_strlen($phone) > 50) {
 
 if (!empty($brand) && mb_strlen($brand) > 150) {
     $errors['brand'] = 'Brand name is too long (maximum 150 characters).';
+}
+
+// Additional validations for Homepage forms
+if ($source === 'Homepage Hero Form' || $source === 'Homepage Inquiry Form') {
+    if (empty($brand) || mb_strlen($brand) < 2) {
+        $errors['brand'] = 'Please provide your brand name or website.';
+    }
+    if (empty($service)) {
+        $errors['service'] = 'Please select your primary content need.';
+    }
 }
 
 if (!empty($errors)) {

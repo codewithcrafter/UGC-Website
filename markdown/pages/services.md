@@ -17,7 +17,7 @@ MY UGC VIDEO provides comprehensive, performance-focused User Generated Content 
 
 Explore our nine specialized UGC production services:
 
-### 1. [UGC Video Creation Services](https://myugcvideo.in/services/ugc-video-creation-services-company)
+### 1. [UGC Video Creation Services](https://myugcvideo.in/services/ugc-video-creation-company)
 End-to-end bespoke UGC video production tailored for growing direct-to-consumer brands. We match your product with authentic creators, develop creative angles, direct shoots, and deliver ready-to-run vertical video assets.
 
 ### 2. [UGC Video Ads](https://myugcvideo.in/services/ugc-video-ads-company)
@@ -32,7 +32,7 @@ Tactile, close-up product demonstrations that give online shoppers a tangible fe
 ### 5. [UGC Product Review Videos](https://myugcvideo.in/services/ugc-product-review-videos-company)
 Honest, relatable customer review videos that dismantle buyer skepticism, validate product claims, and guide hesitant shoppers through completed checkout.
 
-### 6. [UGC Video Company in Delhi](https://myugcvideo.in/services/ugc-video-company-in-delhi-company)
+### 6. [UGC Video Company in Delhi](https://myugcvideo.in/services/ugc-video-company-in-delhi)
 Localized video production studio serving brands across Delhi, Gurgaon, Noida, and Faridabad with regional creator talent, in-house studio facilities, and 48-hour turnarounds.
 
 ### 7. [UGC Unboxing Videos](https://myugcvideo.in/services/ugc-unboxing-videos-company)
@@ -41,7 +41,7 @@ Sensory unboxing experiences capturing parcel arrival anticipation, packaging ae
 ### 8. [UGC Testimonial Videos](https://myugcvideo.in/services/ugc-testimonial-videos-company)
 Relatable customer stories highlighting the initial problem, hesitation, and positive transformation experienced after using the product.
 
-### 9. [UGC Video Editing Service](https://myugcvideo.in/services/ugc-video-editing-service-company)
+### 9. [UGC Video Editing Service](https://myugcvideo.in/services/ugc-video-editing-company)
 Professional post-production editing for brands with existing raw creator footage. Includes kinetic subtitles, multiple hook iterations, audio mixing, and 48-hour delivery.
 
 ---
@@ -112,7 +112,7 @@ Yes. We draft creative angles, 3-second hooks, and full scripts for your review 
 We match creators based on your customer persona, target demographic, age group, aesthetic style, and content niche from our pre-vetted roster across India.
 
 ### What if we already have raw footage?
-Our [UGC Video Editing Service](https://myugcvideo.in/services/ugc-video-editing-service-company) can transform your existing raw footage into polished, scroll-stopping ad creatives with multiple hook variations and kinetic subtitles within 48 hours.
+Our [UGC Video Editing Service](https://myugcvideo.in/services/ugc-video-editing-company) can transform your existing raw footage into polished, scroll-stopping ad creatives with multiple hook variations and kinetic subtitles within 48 hours.
 
 ---
 

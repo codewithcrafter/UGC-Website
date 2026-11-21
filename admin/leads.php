@@ -525,6 +525,9 @@ include CMS_ROOT . '/admin/includes/header.php';
       <div class="lead-toolbar-item" style="min-width: 170px;">
         <select name="source" class="form-control" style="width: 100%;">
           <option value="">All Sources</option>
+          <option value="Homepage Hero Form" <?= $sourceFilter === 'Homepage Hero Form' ? 'selected' : '' ?>>Homepage Hero Form</option>
+          <option value="website_enquiry_form" <?= $sourceFilter === 'website_enquiry_form' ? 'selected' : '' ?>>Website Enquiry Form</option>
+          <option value="blog_strategy_call" <?= $sourceFilter === 'blog_strategy_call' ? 'selected' : '' ?>>Blog Strategy Call</option>
           <option value="Homepage Inquiry Form" <?= $sourceFilter === 'Homepage Inquiry Form' ? 'selected' : '' ?>>Homepage Inquiry Form</option>
           <option value="Contact Page Form" <?= $sourceFilter === 'Contact Page Form' ? 'selected' : '' ?>>Contact Page Form</option>
         </select>
@@ -637,7 +640,13 @@ include CMS_ROOT . '/admin/includes/header.php';
 
               <!-- Source Column -->
               <td class="col-source">
-                <?php if ($lead['source'] === 'Contact Page Form'): ?>
+                <?php if ($lead['source'] === 'blog_strategy_call'): ?>
+                  <span class="badge" style="background: rgba(54, 217, 176, 0.2); color: #36d9b0; border: 1px solid rgba(54, 217, 176, 0.5); display: inline-block; white-space: nowrap; font-weight: 700;">Blog Strategy Call</span>
+                <?php elseif ($lead['source'] === 'website_enquiry_form' || $lead['source'] === 'Website Enquiry Form'): ?>
+                  <span class="badge" style="background: rgba(54, 217, 176, 0.15); color: #36d9b0; border: 1px solid rgba(54, 217, 176, 0.4); display: inline-block; white-space: nowrap; font-weight: 600;">Website Enquiry Form</span>
+                <?php elseif ($lead['source'] === 'Homepage Hero Form'): ?>
+                  <span class="badge" style="background: rgba(0, 191, 165, 0.18); color: #36d9b0; border: 1px solid rgba(54, 217, 176, 0.4); display: inline-block; white-space: nowrap; font-weight: 600;">Homepage Hero Form</span>
+                <?php elseif ($lead['source'] === 'Contact Page Form'): ?>
                   <span class="badge" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); display: inline-block; white-space: nowrap;">Contact Page</span>
                 <?php else: ?>
                   <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); display: inline-block; white-space: nowrap;">Homepage</span>
@@ -841,9 +850,11 @@ function openLeadModal(lead) {
   document.getElementById('modalLeadBrand').textContent = lead.brand || 'N/A';
   document.getElementById('modalLeadService').textContent = lead.service || 'General Creative Discussion';
   document.getElementById('modalLeadBudget').textContent = lead.budget || 'Not specified';
-  document.getElementById('modalLeadSource').textContent = lead.source || 'Website Form';
+  const displaySource = (lead.source === 'website_enquiry_form' || lead.source === 'Website Enquiry Form') ? 'Website Enquiry Form' : (lead.source || 'Website Form');
+  document.getElementById('modalLeadSource').textContent = displaySource;
   document.getElementById('modalLeadDate').textContent = lead.created_at || 'N/A';
-  document.getElementById('modalLeadMessage').textContent = lead.message || 'No message provided.';
+  const displayMsg = (lead.message && lead.message.trim() !== '') ? lead.message : 'No message provided';
+  document.getElementById('modalLeadMessage').textContent = displayMsg;
   document.getElementById('modalInternalNotes').value = lead.internal_notes || '';
 
   // Email status badge

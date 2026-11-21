@@ -17,7 +17,12 @@ require_once CMS_ROOT . '/config/config.php';
 function getSupportedSchemaTypes(): array {
     return [
         'Organization'        => 'Organization (Corporate & Brand Identity)',
+        'ProfessionalService' => 'ProfessionalService (Agency / Local Service)',
         'WebPage'             => 'WebPage (Standard Webpage)',
+        'AboutPage'           => 'AboutPage (About Us Page)',
+        'ContactPage'         => 'ContactPage (Contact Us Page)',
+        'CollectionPage'      => 'CollectionPage (Blog / Content Directory)',
+        'Service'             => 'Service (Individual Service Offering)',
         'VideoObject'         => 'VideoObject (Hero / Showcase Video)',
         'BreadcrumbList'      => 'BreadcrumbList (Hierarchical Navigation)',
         'FAQPage'             => 'FAQPage (Frequently Asked Questions)',
@@ -113,9 +118,10 @@ function getDefaultSchemaTemplate(string $type): string {
         'AboutPage' => [
             '@context' => 'https://schema.org',
             '@type' => 'AboutPage',
+            '@id' => $baseUrl . '/about#aboutpage',
             'name' => 'About MY UGC VIDEO',
-            'url' => $baseUrl . '/about.html',
-            'description' => 'Learn about our creator network and data-driven UGC video production philosophy.'
+            'url' => $baseUrl . '/about',
+            'description' => 'Discover MY UGC VIDEO — a premier platform bridging ambitious brands and authentic content creators to craft engaging, high-performing creator-led video content.'
         ],
         'ContactPage' => [
             '@context' => 'https://schema.org',
@@ -665,23 +671,191 @@ function renderCentralizedBlogSchema(array $post, array $faqs = []): ?array {
 }
 
 /**
- * Render all published schemas for a static page into HTML <script> tags
+ * Render all published schemas for a page as individual <script type="application/ld+json"> blocks.
+ * Supports Homepage, About, Contact, Services, Service Detail pages, Blog Listing, and Blog Detail pages.
+ *
+ * @param string $pageKey The unique page key (e.g. 'homepage', 'about', 'service-ugc-video-ads-company', 'blog-listing', 'blog-xyz')
+ * @return string HTML containing separate <script type="application/ld+json"> blocks
  */
-function renderStaticPageSchemas(string $pageKey): string {
+function renderDynamicPageSchemas(string $pageKey): string {
     $schemas = getPublishedPageSchemas($pageKey);
+    
+    // Fallback for blog detail pages if no direct page_schemas records exist yet
+    if (empty($schemas) && str_starts_with($pageKey, 'blog-') && $pageKey !== 'blog-listing') {
+        $blogSlug = substr($pageKey, 5);
+        try {
+            $db = getDb();
+            $bStmt = $db->prepare("SELECT * FROM `blog_posts` WHERE `slug` = :slug AND `status` = 'published' LIMIT 1");
+            $bStmt->execute([':slug' => $blogSlug]);
+            $post = $bStmt->fetch(PDO::FETCH_ASSOC);
+            if ($post) {
+                $faqs = !empty($post['faqs_json']) ? json_decode($post['faqs_json'], true) : [];
+                $centralized = renderCentralizedBlogSchema($post, is_array($faqs) ? $faqs : []);
+                if ($centralized && !empty($centralized['@graph'])) {
+                    $output = "\n  <!-- Dynamic Schema Manager JSON-LD (Blog Fallback) -->\n";
+                    foreach ($centralized['@graph'] as $node) {
+                        $nodeWithContext = array_merge(['@context' => 'https://schema.org'], $node);
+                        $cleanJson = json_encode($nodeWithContext, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+                        $cleanJson = str_replace('</script>', '<\/script>', $cleanJson);
+                        $output .= "  <script type=\"application/ld+json\">\n  " . $cleanJson . "\n  </script>\n";
+                    }
+                    return $output;
+                }
+            }
+        } catch (Throwable $e) {
+            error_log("Schema Manager: Error generating blog fallback: " . $e->getMessage());
+        }
+        return '';
+    }
+
     if (empty($schemas)) {
         return '';
     }
 
-    $html = "\n  <!-- Centralized Schema Manager JSON-LD -->\n";
+    $output = "\n  <!-- Centralized Dynamic Schema Manager JSON-LD -->\n";
+    $seenIds = [];
+
     foreach ($schemas as $s) {
-        $cleanJson = trim($s['schema_data']);
-        if ($cleanJson !== '') {
-            $html .= "  <script type=\"application/ld+json\">\n  " . $cleanJson . "\n  </script>\n";
+        $rawJson = trim($s['schema_data'] ?? '');
+        if ($rawJson === '') {
+            continue;
+        }
+
+        // Validate JSON syntax
+        $decoded = json_decode($rawJson, true);
+        if (json_last_error() !== JSON_ERROR_NONE || !is_array($decoded)) {
+            error_log("Schema Manager: Skipping corrupted JSON-LD on page_key '{$pageKey}', schema ID {$s['id']}");
+            continue;
+        }
+
+        // Handle either single entity or @graph array
+        $itemsToRender = [];
+        if (isset($decoded['@graph']) && is_array($decoded['@graph'])) {
+            foreach ($decoded['@graph'] as $gItem) {
+                if (is_array($gItem)) {
+                    $itemsToRender[] = $gItem;
+                }
+            }
+        } else {
+            $itemsToRender[] = $decoded;
+        }
+
+        foreach ($itemsToRender as $item) {
+            // Duplicate protection on @type and @id to ensure different schema types (e.g. AboutPage and WebPage) both render independently
+            $type = $item['@type'] ?? '';
+            $id = $item['@id'] ?? '';
+            $entityKey = $type . '::' . $id;
+
+            if ($entityKey !== '::' && isset($seenIds[$entityKey])) {
+                continue;
+            }
+            if ($entityKey !== '::') {
+                $seenIds[$entityKey] = true;
+            }
+
+            // Ensure top-level @context is present
+            if (!isset($item['@context'])) {
+                $item = array_merge(['@context' => 'https://schema.org'], $item);
+            }
+
+            $cleanJson = json_encode($item, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            // Script-closing protection
+            $cleanJson = str_replace('</script>', '<\/script>', $cleanJson);
+
+            $output .= "  <script type=\"application/ld+json\">\n  " . $cleanJson . "\n  </script>\n";
         }
     }
 
+    return $output;
+}
+
+/**
+ * Resolves the canonical page_key from any requested URL or path string
+ * Handles local XAMPP subdirectories, clean URLs, and production domains.
+ *
+ * @param string $urlOrPath
+ * @return string|null
+ */
+function resolvePageKeyFromUrl(string $urlOrPath): ?string {
+    $path = parse_url($urlOrPath, PHP_URL_PATH) ?? $urlOrPath;
+    
+    // Normalize path separators and decode
+    $path = rawurldecode(str_replace('\\', '/', $path));
+    
+    // Strip query string and fragments if present
+    $path = explode('?', $path)[0];
+    $path = explode('#', $path)[0];
+    
+    // Strip local subdirectory (e.g. /UGC Website or /UGC%20Website)
+    $path = preg_replace('#^/+(?:UGC[\s%20]+Website)?/*#i', '/', $path);
+    $path = trim($path, '/');
+    
+    // Normalize root
+    if ($path === '' || $path === 'index' || $path === 'index.html' || $path === 'index.php') {
+        return 'homepage';
+    }
+    
+    // Core pages
+    if (in_array(strtolower($path), ['about', 'about.html', 'about.php'], true)) {
+        return 'about';
+    }
+    if (in_array(strtolower($path), ['contact', 'contact.html', 'contact.php'], true)) {
+        return 'contact';
+    }
+    if (in_array(strtolower($path), ['services', 'services.html', 'services.php'], true)) {
+        return 'services';
+    }
+    if (in_array(strtolower($path), ['blogs', 'blogs.html', 'blogs.php'], true)) {
+        return 'blog-listing';
+    }
+    
+    // Service detail pages
+    if (preg_match('#^services/([a-zA-Z0-9_\-]+)(?:\.html)?$#i', $path, $m)) {
+        return 'service-' . strtolower($m[1]);
+    }
+    
+    // Blog detail pages
+    if (preg_match('#^blog/([a-zA-Z0-9_\-]+)(?:\.html|\.php)?$#i', $path, $m)) {
+        return 'blog-' . strtolower($m[1]);
+    }
+    
+    return null;
+}
+
+/**
+ * Injects dynamic schema script blocks into an HTML string, replacing any existing
+ * schema blocks in <head> to prevent duplicate schema rendering.
+ *
+ * @param string $html Original HTML page content
+ * @param string $dynamicSchemasHtml Rendered <script type="application/ld+json"> blocks
+ * @return string Modified HTML content
+ */
+function injectDynamicSchemasIntoHtml(string $html, string $dynamicSchemasHtml): string {
+    // 1. Remove existing Centralized Schema block comment and any enclosed scripts
+    $html = preg_replace('/<!-- Centralized (?:Dynamic )?Schema Manager JSON-LD -->\s*(?:<script type=[\'"]application\/ld\+json[\'"][^>]*>.*?<\/script>\s*)*/is', '', $html);
+
+    // 2. Remove any legacy/static application/ld+json scripts inside <head> to avoid duplicates
+    if (preg_match('/<head\b[^>]*>(.*?)<\/head>/is', $html, $matches)) {
+        $headContent = $matches[1];
+        // Strip out existing JSON-LD scripts from <head>
+        $cleanedHead = preg_replace('/<script\s+type=[\'"]application\/ld\+json[\'"][^>]*>.*?<\/script>\s*/is', '', $headContent);
+        
+        // Append our dynamic schemas right before </head>
+        $dynamicInsertion = (!empty($dynamicSchemasHtml)) ? "\n  " . trim($dynamicSchemasHtml) . "\n" : "";
+        $replacementHead = $cleanedHead . $dynamicInsertion;
+
+        // Reconstruct HTML head
+        $html = substr_replace($html, "<head>" . $replacementHead . "</head>", strpos($html, $matches[0]), strlen($matches[0]));
+    }
+
     return $html;
+}
+
+/**
+ * Render all published schemas for a static page into HTML <script> tags
+ */
+function renderStaticPageSchemas(string $pageKey): string {
+    return renderDynamicPageSchemas($pageKey);
 }
 
 /**
@@ -701,44 +875,7 @@ function syncPublishedSchemasToStaticFile(string $pageKey): bool {
         $filesToSync[] = CMS_ROOT . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $relFile);
     }
 
-    $schemas = getPublishedPageSchemas($pageKey);
-    $newSchemaBlock = '';
-    if (!empty($schemas)) {
-        $graphItems = [];
-        $seenIds = [];
-
-        foreach ($schemas as $s) {
-            $parsed = json_decode(trim($s['schema_data']), true);
-            if (!$parsed || !is_array($parsed)) continue;
-
-            if (isset($parsed['@graph']) && is_array($parsed['@graph'])) {
-                foreach ($parsed['@graph'] as $item) {
-                    if (is_array($item)) {
-                        $id = $item['@id'] ?? null;
-                        if ($id && isset($seenIds[$id])) continue;
-                        if ($id) $seenIds[$id] = true;
-                        unset($item['@context']);
-                        $graphItems[] = $item;
-                    }
-                }
-            } else {
-                $id = $parsed['@id'] ?? null;
-                if ($id && isset($seenIds[$id])) continue;
-                if ($id) $seenIds[$id] = true;
-                unset($parsed['@context']);
-                $graphItems[] = $parsed;
-            }
-        }
-
-        if (!empty($graphItems)) {
-            $compiledGraph = [
-                "@context" => "https://schema.org",
-                "@graph" => $graphItems
-            ];
-            $jsonFormatted = json_encode($compiledGraph, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-            $newSchemaBlock = "  <!-- Centralized Schema Manager JSON-LD -->\n  <script type=\"application/ld+json\">\n" . $jsonFormatted . "\n  </script>\n";
-        }
-    }
+    $newSchemaBlock = renderDynamicPageSchemas($pageKey);
 
     $allSuccess = true;
     foreach ($filesToSync as $absPath) {
@@ -752,18 +889,9 @@ function syncPublishedSchemasToStaticFile(string $pageKey): bool {
             continue;
         }
 
-        // 1. Remove any existing Centralized Schema block
-        $content = preg_replace('/<!-- Centralized Schema Manager JSON-LD -->\s*(?:<script type="application\/ld\+json">.*?<\/script>\s*)*/s', '', $content);
+        $updatedContent = injectDynamicSchemasIntoHtml($content, $newSchemaBlock);
 
-        // 2. Remove any legacy standalone JSON-LD scripts to avoid duplicates
-        $content = preg_replace('/<script\s+type=[\'"]application\/ld\+json[\'"][^>]*>.*?<\/script>\s*/is', '', $content);
-
-        // 3. Insert newly compiled clean schema block before </head>
-        if (!empty($newSchemaBlock) && stripos($content, '</head>') !== false) {
-            $content = str_ireplace('</head>', $newSchemaBlock . "</head>", $content);
-        }
-
-        if (file_put_contents($absPath, $content) === false) {
+        if (file_put_contents($absPath, $updatedContent) === false) {
             $allSuccess = false;
         }
     }
@@ -790,25 +918,25 @@ function syncPublishedSchemasToStaticFile(string $pageKey): bool {
  */
 function getPageRecommendedSchemaTypes(string $pageKey): array {
     if ($pageKey === 'homepage') {
-        return ['Organization', 'WebPage', 'VideoObject'];
+        return ['ProfessionalService', 'Organization', 'WebPage'];
     }
     if ($pageKey === 'about') {
-        return ['Organization', 'BreadcrumbList', 'WebPage'];
+        return ['AboutPage', 'WebPage', 'Organization', 'BreadcrumbList'];
     }
     if ($pageKey === 'services') {
-        return ['Organization', 'BreadcrumbList', 'WebPage', 'FAQPage'];
-    }
-    if (str_starts_with($pageKey, 'service-')) {
         return ['Organization', 'BreadcrumbList', 'FAQPage', 'WebPage'];
     }
+    if (str_starts_with($pageKey, 'service-')) {
+        return ['Service', 'Organization', 'BreadcrumbList', 'FAQPage', 'WebPage'];
+    }
     if ($pageKey === 'blog-listing') {
-        return ['BreadcrumbList', 'WebPage'];
+        return ['CollectionPage', 'WebPage', 'BreadcrumbList', 'Organization'];
     }
     if ($pageKey === 'contact') {
-        return ['BreadcrumbList', 'WebPage', 'Organization'];
+        return ['ContactPage', 'WebPage', 'Organization', 'BreadcrumbList'];
     }
     if (str_starts_with($pageKey, 'blog-') || str_starts_with($pageKey, 'blog:')) {
-        return ['Organization', 'BreadcrumbList', 'BlogPosting'];
+        return ['BlogPosting', 'Organization', 'BreadcrumbList'];
     }
     return ['WebPage'];
 }
@@ -826,19 +954,9 @@ function getCentralizedOrganizationSchema(): array {
         "@id" => $homeUrl . "/#organization",
         "name" => "MY UGC VIDEO",
         "url" => $homeUrl,
-        "logo" => [
-            "@type" => "ImageObject",
-            "@id" => $homeUrl . "/#logo",
-            "url" => $homeUrl . "/images/hero/hero-creator.jpg",
-            "caption" => "MY UGC VIDEO Studio Logo"
-        ],
         "image" => $homeUrl . "/images/hero/hero-ugc-production.jpg",
         "description" => "Premier performance-driven UGC video production studio and creator network connecting brands with authentic creator-led video content.",
         "email" => "hello@myugcvideo.in",
-        "sameAs" => [
-            "https://instagram.com",
-            "https://linkedin.com"
-        ],
         "contactPoint" => [
             [
                 "@type" => "ContactPoint",
@@ -904,6 +1022,102 @@ function buildAutomaticPageSchema(string $pageKey, string $schemaType): ?array {
             "name" => $pageMeta['title'] . " Custom Schema",
             "url" => $pageMeta['canonical_url'] ?? ($canonicalBase . '/' . ltrim($pageMeta['url'] ?? '', '/'))
         ];
+    }
+
+    // ProfessionalService (Agency Local / Professional Service)
+    if ($schemaType === 'ProfessionalService') {
+        if ($pageKey === 'homepage') {
+            $homeUrl = rtrim($canonicalBase, '/');
+            return [
+                "@context" => "https://schema.org",
+                "@type" => "ProfessionalService",
+                "@id" => $homeUrl . "/#professionalservice",
+                "name" => "MY UGC VIDEO",
+                "url" => $homeUrl . "/",
+                "image" => $homeUrl . "/images/hero/hero-ugc-production.jpg",
+                "description" => "Premium UGC video production agency specializing in creator-led video advertising, product demonstrations, unboxings, and direct-response social media video production.",
+                "parentOrganization" => ["@id" => $homeUrl . "/#organization"],
+                "address" => [
+                    "@type" => "PostalAddress",
+                    "addressLocality" => "Delhi",
+                    "addressRegion" => "DL",
+                    "addressCountry" => "IN"
+                ]
+            ];
+        }
+        return null;
+    }
+
+    // AboutPage
+    if ($schemaType === 'AboutPage') {
+        if ($pageKey === 'about') {
+            $homeUrl = rtrim($canonicalBase, '/');
+            return [
+                "@context" => "https://schema.org",
+                "@type" => "AboutPage",
+                "@id" => $canonicalBase . "/about#aboutpage",
+                "url" => $canonicalBase . "/about",
+                "name" => "About MY UGC VIDEO",
+                "description" => "Discover MY UGC VIDEO — a premier platform bridging ambitious brands and authentic content creators to craft engaging, high-performing creator-led video content.",
+                "mainEntityOfPage" => $canonicalBase . "/about",
+                "isPartOf" => ["@id" => $homeUrl . "/#website"],
+                "publisher" => ["@id" => $homeUrl . "/#organization"]
+            ];
+        }
+        return null;
+    }
+
+    // ContactPage
+    if ($schemaType === 'ContactPage') {
+        if ($pageKey === 'contact') {
+            return [
+                "@context" => "https://schema.org",
+                "@type" => "ContactPage",
+                "@id" => $canonicalBase . "/contact#contactpage",
+                "url" => $canonicalBase . "/contact",
+                "name" => "Contact MY UGC VIDEO",
+                "description" => "Contact channels and project inquiry form for MY UGC VIDEO production agency."
+            ];
+        }
+        return null;
+    }
+
+    // CollectionPage
+    if ($schemaType === 'CollectionPage') {
+        if ($pageKey === 'blog-listing') {
+            return [
+                "@context" => "https://schema.org",
+                "@type" => "CollectionPage",
+                "@id" => $canonicalBase . "/blogs#collection",
+                "url" => $canonicalBase . "/blogs",
+                "name" => "The Creator Journal — UGC Insights, Trends & Strategy",
+                "description" => "Explore in-depth articles on UGC video strategy, creator management, paid social performance, and e-commerce content marketing from MY UGC VIDEO."
+            ];
+        }
+        return null;
+    }
+
+    // Service
+    if ($schemaType === 'Service') {
+        if (str_starts_with($pageKey, 'service-')) {
+            $slug = $pageMeta['service_slug'] ?? str_replace('service-', '', $pageKey);
+            $pageUrl = $canonicalBase . '/services/' . $slug;
+            $homeUrl = rtrim($canonicalBase, '/');
+            return [
+                "@context" => "https://schema.org",
+                "@type" => "Service",
+                "@id" => $pageUrl . "#service",
+                "name" => $pageMeta['title'],
+                "url" => $pageUrl,
+                "description" => "End-to-end " . $pageMeta['title'] . " delivered with high-converting creator-led content.",
+                "provider" => ["@id" => $homeUrl . "/#organization"],
+                "areaServed" => [
+                    "@type" => "Country",
+                    "name" => "India"
+                ]
+            ];
+        }
+        return null;
     }
 
     // 1. Organization
@@ -1051,10 +1265,7 @@ function buildAutomaticPageSchema(string $pageKey, string $schemaType): ?array {
                 "description" => "Watch our creator-led video production preview showcasing authentic 9:16 vertical UGC video content crafted for direct-to-consumer brand campaigns.",
                 "thumbnailUrl" => [
                     $homeUrl . "/images/hero/hero-ugc-production.jpg"
-                ],
-                "uploadDate" => "2026-01-01T00:00:00+05:30",
-                "contentUrl" => $homeUrl . "/images/hero/hero-ugc-production.jpg",
-                "embedUrl" => $homeUrl . "/#video-showcase"
+                ]
             ];
         }
         return null;

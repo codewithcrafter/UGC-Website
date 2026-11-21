@@ -57,6 +57,10 @@ $metaTitle = $post['meta_title'];
 $metaDescription = $post['meta_description'];
 $canonicalUrl = $post['canonical_url'];
 $keywords = $post['keywords'];
+$postTags = getPostTags((int)$post['id']);
+if (empty($keywords) && !empty($postTags)) {
+    $keywords = implode(', ', array_column($postTags, 'name'));
+}
 
 $rawSchemaType = $post['schema_type'] ?? 'recommended';
 $schemaType = ($rawSchemaType === 'upload' || $rawSchemaType === 'custom') ? 'upload' : 'recommended';
@@ -229,6 +233,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':keywords'           => $keywords,
             ':id'                 => $postId
         ]);
+
+        // Synchronize blog-specific SEO hashtags to tags and blog_post_tags tables
+        syncPostTags((int)$postId, $keywords);
 
         // Automatically synchronize to Markdown & BlogPosting Schema
         $oldSlug = $post['slug'];

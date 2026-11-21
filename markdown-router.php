@@ -15,8 +15,6 @@
  *     /blog/{slug}.md (or /blogs/{slug}.md)
  *     /services/{slug}.md (or /service/{slug}.md)
  *     /pages/{slug}.md (or /page/{slug}.md)
- *     /case-studies/{slug}.md
- *     /portfolio/{slug}.md
  *     /other/{slug}.md
  */
 
@@ -46,11 +44,11 @@ if (!str_ends_with(strtolower($normalizedPath), '.md')) {
 }
 
 // Parse prefix and filename slug
-// Supported sections: blog, blogs, pages, page, services, service, case-studies, portfolio, other, docs, or root
+// Supported sections: blog, blogs, pages, page, services, service, other, docs, or root
 $prefix = null;
 $slug = null;
 
-if (preg_match('#^(blog|blogs|pages|page|services|service|case-studies|portfolio|other|docs)/([a-zA-Z0-9_\-\.]+)\.md$#i', $normalizedPath, $matches)) {
+if (preg_match('#^(blog|blogs|pages|page|services|service|other|docs)/([a-zA-Z0-9_\-\.]+)\.md$#i', $normalizedPath, $matches)) {
     $prefix = strtolower($matches[1]);
     $slug = $matches[2];
 } elseif (preg_match('#^([a-zA-Z0-9_\-\.]+)\.md$#i', $normalizedPath, $matches)) {
@@ -171,15 +169,6 @@ if ($prefix === 'root') {
         if (file_exists($candidate)) {
             $targetFile = $candidate;
         }
-    }
-
-} elseif ($prefix === 'case-studies' || $prefix === 'portfolio') {
-    $candidate1 = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'case-studies' . DIRECTORY_SEPARATOR . $slug . '.md';
-    $candidate2 = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'portfolio' . DIRECTORY_SEPARATOR . $slug . '.md';
-    if (file_exists($candidate1)) {
-        $targetFile = $candidate1;
-    } elseif (file_exists($candidate2)) {
-        $targetFile = $candidate2;
     }
 
 } elseif ($prefix === 'other' || $prefix === 'docs') {

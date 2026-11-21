@@ -1,0 +1,3244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UGC Video Services | Ads, Reviews & Unboxing – MY UGC VIDEO</title>
+  <meta name="description"
+    content="Explore UGC video services from MY UGC VIDEO: UGC video ads, product reviews, unboxing, testimonials and editing by vetted creators for brands.">
+  <link rel="canonical" href="https://myugcvideo.in/services">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://myugcvideo.in/services">
+  <meta property="og:title" content="MY UGC VIDEO — Premium UGC Video Production Agency Services">
+  <meta property="og:description"
+    content="Creator-led content. Made for brands. Authentic UGC videos, product demonstrations, unboxings, and paid social video ads that drive conversions.">
+  <meta property="og:image" content="https://myugcvideo.in/images/services/service-ugc-creation.jpg">
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="MY UGC VIDEO — Premium UGC Video Production Agency Services">
+  <meta name="twitter:description"
+    content="Creator-led content. Made for brands. Authentic UGC videos, product demonstrations, unboxings, and paid social video ads that drive conversions.">
+  <meta name="twitter:image" content="https://myugcvideo.in/images/services/service-ugc-creation.jpg">
+
+  <!-- Fonts & Stylesheet -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- DEDICATED SERVICES PAGE PREMIUM STYLES -->
+  <style>
+    /* ==========================================================================
+       MY UGC VIDEO — DEDICATED SERVICES PAGE DESIGN SYSTEM
+       Official Brand Tokens:
+       --color-almost-black: #001713;
+       --color-deep-forest:  #00221E;
+       --color-emerald-teal: #00BFA5;
+       --color-mint-green:   #36D9B0;
+       --color-soft-white:   #D9E5DF;
+       --color-muted-sage:   #31534D;
+       ========================================================================== */
+
+    /* Scope overrides strictly to services-page */
+    body.services-page {
+      background-color: var(--color-almost-black);
+      color: var(--color-soft-white);
+      overflow-x: clip;
+    }
+
+    /* Base Section Cadence */
+    .services-page .services-section {
+      padding: clamp(4.5rem, 8vw, 7.5rem) 0;
+      position: relative;
+    }
+
+    .services-page .services-section-alt {
+      background-color: var(--color-deep-forest);
+      border-top: 1px solid rgba(49, 83, 77, 0.4);
+      border-bottom: 1px solid rgba(49, 83, 77, 0.4);
+    }
+
+    .services-page .section-header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 2rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .services-page .section-header.text-center {
+      text-align: center;
+      max-width: 820px;
+      margin: 0 auto 3.5rem;
+    }
+
+    /* =========================================================================
+       SECTION 1: SERVICES HERO — EDITORIAL TYPOGRAPHY & ASYMMETRIC COLLAGE
+       Left (55-60%): Clean, uninterrupted typography and CTAs
+       Right (40-45%): Unique asymmetric rectangular UGC photography collage
+       ========================================================================= */
+    .services-hero-section.editorial-hero {
+      position: relative;
+      background-color: var(--color-almost-black, #001713);
+      padding: clamp(6.5rem, 11vw, 9.5rem) 0 clamp(4.5rem, 7vw, 6.5rem);
+      overflow: hidden;
+      border-bottom: 1px solid rgba(49, 83, 77, 0.45);
+    }
+
+    /* Ambient lighting */
+    .editorial-hero-ambient {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .editorial-glow-1 {
+      position: absolute;
+      top: -15%;
+      left: 20%;
+      width: clamp(380px, 55vw, 750px);
+      height: clamp(280px, 40vw, 550px);
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(0, 191, 165, 0.1) 0%, transparent 70%);
+      filter: blur(80px);
+    }
+
+    .editorial-glow-2 {
+      position: absolute;
+      right: -5%;
+      top: 30%;
+      width: clamp(300px, 45vw, 600px);
+      height: clamp(300px, 45vw, 600px);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(54, 217, 176, 0.07) 0%, transparent 65%);
+      filter: blur(90px);
+    }
+
+    .editorial-grid-mesh {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, rgba(49, 83, 77, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(49, 83, 77, 0.06) 1px, transparent 1px);
+      background-size: 56px 56px;
+      opacity: 0.65;
+    }
+
+    /* Two-Column Asymmetric Agency Grid */
+    .editorial-hero-grid {
+      display: grid;
+      grid-template-columns: 1.18fr 0.82fr;
+      gap: clamp(2.5rem, 5vw, 5rem);
+      align-items: center;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Left Column: Clean Uninterrupted Typography */
+    .editorial-hero-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .services-hero-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: rgba(217, 229, 223, 0.65);
+      margin-bottom: 1.5rem;
+    }
+
+    .services-hero-breadcrumb a {
+      color: rgba(217, 229, 223, 0.65);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .services-hero-breadcrumb a:hover {
+      color: var(--color-mint-green, #36D9B0);
+    }
+
+    .services-hero-breadcrumb .bc-sep {
+      color: rgba(49, 83, 77, 0.8);
+      font-size: 0.75rem;
+    }
+
+    .services-hero-breadcrumb .bc-current {
+      color: var(--color-soft-white, #D9E5DF);
+      font-weight: 600;
+    }
+
+    .services-hero-eyebrow-wrap {
+      margin-bottom: 1.5rem;
+    }
+
+    .services-hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--color-mint-green, #36D9B0);
+      background: rgba(0, 191, 165, 0.1);
+      border: 1px solid rgba(0, 191, 165, 0.35);
+      padding: 0.4rem 0.95rem;
+      border-radius: 999px;
+    }
+
+    .services-hero-eyebrow .eyebrow-circle-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--color-mint-green, #36D9B0);
+      box-shadow: 0 0 8px rgba(54, 217, 176, 0.8);
+    }
+
+    /* Clean Uninterrupted Headline */
+    .services-hero-headline {
+      font-family: var(--font-heading, 'Sora', sans-serif);
+      font-size: clamp(2.65rem, 5vw, 4.65rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.035em;
+      color: var(--color-soft-white, #D9E5DF);
+      text-transform: uppercase;
+      margin: 0 0 1.65rem 0;
+    }
+
+    .services-hero-headline .highlight-mint {
+      color: var(--color-mint-green, #36D9B0);
+      background: linear-gradient(135deg, #00BFA5 0%, #36D9B0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+
+    .services-hero-desc {
+      font-family: var(--font-body, 'Manrope', sans-serif);
+      font-size: clamp(1.05rem, 1.35vw, 1.2rem);
+      line-height: 1.7;
+      color: rgba(217, 229, 223, 0.85);
+      max-width: 580px;
+      margin: 0 0 2.35rem 0;
+    }
+
+    .services-hero-cta-group {
+      display: flex;
+      align-items: center;
+      gap: 1.125rem;
+      flex-wrap: wrap;
+      margin-bottom: 2.75rem;
+    }
+
+    .services-hero-btn-primary {
+      background-color: var(--color-mint-green, #36D9B0);
+      color: var(--color-almost-black, #001713);
+      font-family: var(--font-body, 'Manrope', sans-serif);
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 0.95rem 2rem;
+      border-radius: 6px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      border: 1px solid var(--color-mint-green, #36D9B0);
+      box-shadow: 0 4px 18px rgba(54, 217, 176, 0.28);
+      transition: all 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .services-hero-btn-primary:hover {
+      background-color: #2EC49E;
+      border-color: #2EC49E;
+      color: var(--color-almost-black, #001713);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(54, 217, 176, 0.42);
+    }
+
+    .services-hero-btn-secondary {
+      border: 1px solid rgba(49, 83, 77, 0.85);
+      color: var(--color-soft-white, #D9E5DF);
+      background: rgba(0, 34, 30, 0.6);
+      font-family: var(--font-body, 'Manrope', sans-serif);
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 0.95rem 2rem;
+      border-radius: 6px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      backdrop-filter: blur(8px);
+      transition: all 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .services-hero-btn-secondary:hover {
+      border-color: var(--color-mint-green, #36D9B0);
+      color: var(--color-mint-green, #36D9B0);
+      background: rgba(0, 191, 165, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .cta-icon-down,
+    .cta-icon-right {
+      transition: transform 0.25s ease;
+    }
+
+    .services-hero-btn-primary:hover .cta-icon-down {
+      transform: translateY(3px);
+    }
+
+    .services-hero-btn-secondary:hover .cta-icon-right {
+      transform: translateX(4px);
+    }
+
+    /* Studio Trust Strip */
+    .services-hero-trust-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      align-items: center;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(49, 83, 77, 0.4);
+    }
+
+    .trust-strip-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.45rem 0.95rem;
+      background: rgba(0, 34, 30, 0.65);
+      border: 1px solid rgba(49, 83, 77, 0.6);
+      border-radius: 999px;
+      color: rgba(217, 229, 223, 0.8);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      font-family: var(--font-body, 'Manrope', sans-serif);
+      backdrop-filter: blur(6px);
+      transition: border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .trust-strip-pill:hover {
+      border-color: rgba(54, 217, 176, 0.5);
+      color: var(--color-soft-white, #D9E5DF);
+    }
+
+    .trust-strip-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--color-mint-green, #36D9B0);
+      flex-shrink: 0;
+    }
+
+    /* Right Column: Unique Asymmetric Photography Collage */
+    .editorial-hero-visual {
+      position: relative;
+      width: 100%;
+      height: 530px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .editorial-collage-stage {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      height: 100%;
+    }
+
+    .collage-card {
+      position: absolute;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(54, 217, 176, 0.35);
+      background-color: var(--color-deep-forest, #00221E);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 191, 165, 0.12);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 0.3s ease;
+    }
+
+    .collage-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease;
+    }
+
+    .collage-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--color-mint-green, #36D9B0);
+      box-shadow: 0 26px 56px rgba(0, 0, 0, 0.75), 0 0 25px rgba(54, 217, 176, 0.25);
+    }
+
+    .collage-card:hover img {
+      transform: scale(1.04);
+    }
+
+    /* 1. Large Portrait Main Anchor */
+    .collage-card-anchor {
+      left: 10%;
+      top: 5%;
+      width: 250px;
+      height: 375px;
+      z-index: 2;
+    }
+
+    /* 2. Medium Landscape Upper Right */
+    .collage-card-landscape {
+      right: 0;
+      top: 0;
+      width: 215px;
+      height: 145px;
+      z-index: 3;
+    }
+
+    /* 3. Smaller Portrait Lower Left */
+    .collage-card-lower-left {
+      left: 0;
+      bottom: 4%;
+      width: 175px;
+      height: 195px;
+      z-index: 4;
+    }
+
+    /* 4. Small Rectangular Balance Lower Right */
+    .collage-card-balance {
+      right: 6%;
+      bottom: 8%;
+      width: 165px;
+      height: 125px;
+      z-index: 3;
+    }
+
+    /* Smooth anchor scroll clearance */
+    #what-we-create {
+      scroll-margin-top: 90px;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 991px) {
+      .services-hero-section.editorial-hero {
+        padding: clamp(5.5rem, 9vw, 7.5rem) 0 clamp(3.5rem, 5vw, 4.5rem);
+      }
+
+      .editorial-hero-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+
+      .services-hero-headline {
+        font-size: clamp(2.2rem, 4.5vw, 3.4rem);
+      }
+
+      .editorial-hero-visual {
+        height: 440px;
+      }
+
+      .collage-card-anchor {
+        width: 200px;
+        height: 300px;
+      }
+
+      .collage-card-landscape {
+        width: 175px;
+        height: 120px;
+      }
+
+      .collage-card-lower-left {
+        width: 145px;
+        height: 165px;
+      }
+
+      .collage-card-balance {
+        width: 135px;
+        height: 105px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .services-hero-section.editorial-hero {
+        padding: 5rem 0 3.5rem;
+      }
+
+      .editorial-hero-grid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+
+      .services-hero-headline {
+        font-size: clamp(2rem, 8.5vw, 2.75rem);
+        margin-bottom: 1.25rem;
+      }
+
+      .services-hero-cta-group {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        gap: 0.85rem;
+        margin-bottom: 2rem;
+      }
+
+      .services-hero-btn-primary,
+      .services-hero-btn-secondary {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+        padding: 0.9rem 1.5rem;
+      }
+
+      .editorial-hero-visual {
+        height: auto;
+        margin-top: 0.5rem;
+      }
+
+      .editorial-collage-stage {
+        position: static;
+        max-width: 100%;
+        height: auto;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.85rem;
+      }
+
+      .collage-card {
+        position: static;
+        width: 100%;
+      }
+
+      .collage-card-anchor {
+        aspect-ratio: 3 / 4;
+        height: auto;
+      }
+
+      .collage-card-landscape {
+        aspect-ratio: 4 / 3;
+        height: auto;
+      }
+
+      .collage-card-lower-left {
+        aspect-ratio: 1 / 1;
+        height: auto;
+      }
+
+      .collage-card-balance {
+        aspect-ratio: 4 / 3;
+        height: auto;
+      }
+
+      .services-hero-trust-strip {
+        gap: 0.5rem;
+      }
+
+      .trust-strip-pill {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.8rem;
+      }
+    }
+
+    /* SECTION 2: WHAT WE CREATE (8 COMPACT SERVICE CARDS) */
+    .services-grid-8 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+
+    .service-card-8 {
+      background: var(--color-deep-forest);
+      border: 1px solid var(--color-muted-sage);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+    }
+
+    .service-card-8:hover {
+      transform: translateY(-6px);
+      border-color: var(--color-emerald-teal);
+      box-shadow: 0 16px 36px rgba(0, 23, 19, 0.6), 0 0 0 1px rgba(0, 191, 165, 0.2);
+    }
+
+    .service-card-8-thumb {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: var(--color-almost-black);
+    }
+
+    .service-card-8-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+
+    .service-card-8:hover .service-card-8-thumb img {
+      transform: scale(1.05);
+    }
+
+    .service-card-8-badge {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.75rem;
+      background: rgba(0, 23, 19, 0.88);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(49, 83, 77, 0.6);
+      color: var(--color-mint-green);
+      font-size: 0.685rem;
+      font-weight: 700;
+      padding: 0.25rem 0.55rem;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+    }
+
+    .service-card-8-body {
+      padding: 1.35rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .service-card-8-title {
+      font-family: var(--font-heading);
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: var(--color-soft-white);
+      margin-bottom: 0.55rem;
+    }
+
+    .service-card-8-desc {
+      font-size: 0.875rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      margin-bottom: 1.25rem;
+      flex-grow: 1;
+    }
+
+    .service-card-8-link {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--color-mint-green);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: gap var(--transition-fast), color var(--transition-fast);
+    }
+
+    .service-card-8-link:hover {
+      color: var(--color-soft-white);
+      gap: 0.6rem;
+    }
+
+    /* SECTION 3: CREATIVE FRAMEWORK (3 CONNECTED PILLARS) */
+    .framework-pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      position: relative;
+    }
+
+    .framework-pillar-card {
+      background: var(--color-almost-black);
+      border: 1px solid var(--color-muted-sage);
+      border-radius: var(--radius-lg);
+      padding: 2.25rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+    }
+
+    .framework-pillar-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--color-mint-green);
+      box-shadow: 0 20px 40px rgba(0, 23, 19, 0.7);
+    }
+
+    .framework-pillar-num {
+      font-family: var(--font-heading);
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--color-mint-green);
+      opacity: 0.85;
+      margin-bottom: 1.25rem;
+    }
+
+    .framework-pillar-subtitle {
+      font-size: 0.785rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-emerald-teal);
+      margin-bottom: 0.35rem;
+    }
+
+    .framework-pillar-title {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--color-soft-white);
+      margin-bottom: 0.95rem;
+    }
+
+    .framework-pillar-desc {
+      font-size: 0.925rem;
+      line-height: 1.65;
+      color: var(--text-secondary);
+      margin-bottom: 1.75rem;
+    }
+
+    .framework-tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(49, 83, 77, 0.4);
+    }
+
+    .framework-tag-pill {
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(0, 34, 30, 0.8);
+      border: 1px solid var(--color-muted-sage);
+      color: var(--color-soft-white);
+      padding: 0.3rem 0.65rem;
+      border-radius: 4px;
+    }
+
+    /* SECTION 4: FEATURED UGC VIDEO FORMATS (6 PORTFOLIO 9:16 CARDS) */
+    .formats-portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .format-portfolio-card {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--color-deep-forest);
+      border: 1px solid var(--color-muted-sage);
+      box-shadow: 0 16px 40px rgba(0, 23, 19, 0.7);
+      aspect-ratio: 9 / 14;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+    }
+
+    .format-portfolio-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--color-mint-green);
+      box-shadow: 0 24px 50px rgba(0, 191, 165, 0.25);
+    }
+
+    .format-portfolio-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      z-index: 1;
+      transition: transform 0.4s ease;
+    }
+
+    .format-portfolio-card:hover .format-portfolio-bg {
+      transform: scale(1.05);
+    }
+
+    .format-portfolio-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0, 23, 19, 0.7) 0%, rgba(0, 23, 19, 0.2) 35%, rgba(0, 23, 19, 0.92) 80%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1.35rem;
+    }
+
+    .format-top-tags {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .format-tag-badge {
+      background: rgba(0, 23, 19, 0.85);
+      border: 1px solid rgba(49, 83, 77, 0.6);
+      color: var(--color-mint-green);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.25rem 0.65rem;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+    }
+
+    .format-center-trigger {
+      align-self: center;
+      margin: auto 0;
+    }
+
+    .format-bottom-caption {
+      background: rgba(0, 23, 19, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(49, 83, 77, 0.5);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.15rem;
+    }
+
+    .format-caption-title {
+      font-family: var(--font-heading);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--color-soft-white);
+      margin-bottom: 0.35rem;
+    }
+
+    .format-caption-desc {
+      font-size: 0.825rem;
+      line-height: 1.5;
+      color: var(--text-secondary);
+    }
+
+    /* SECTION 5: FULL-FUNNEL CREATIVE ARCHITECTURE */
+    .funnel-architecture-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .funnel-stage-card {
+      background: var(--color-almost-black);
+      border: 1px solid var(--color-muted-sage);
+      border-radius: var(--radius-lg);
+      padding: 2.25rem 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      transition: transform var(--transition-normal), border-color var(--transition-normal);
+    }
+
+    .funnel-stage-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--color-emerald-teal);
+    }
+
+    .funnel-stage-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-mint-green);
+      background: rgba(0, 191, 165, 0.12);
+      border: 1px solid rgba(0, 191, 165, 0.3);
+      padding: 0.35rem 0.75rem;
+      border-radius: 4px;
+      margin-bottom: 1.25rem;
+    }
+
+    .funnel-stage-title {
+      font-family: var(--font-heading);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--color-soft-white);
+      margin-bottom: 0.75rem;
+    }
+
+    .funnel-stage-desc {
+      font-size: 0.925rem;
+      line-height: 1.65;
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .funnel-examples-wrap {
+      padding-top: 1.25rem;
+      border-top: 1px solid rgba(49, 83, 77, 0.4);
+    }
+
+    .funnel-examples-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .funnel-examples-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .funnel-examples-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--color-soft-white);
+    }
+
+    .funnel-examples-item::before {
+      content: "•";
+      color: var(--color-mint-green);
+      font-weight: bold;
+    }
+
+    /* SECTION 6: TECHNICAL DELIVERABLES */
+    .specs-ratio-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .spec-ratio-card {
+      background: var(--color-deep-forest);
+      border: 1px solid var(--color-muted-sage);
+      border-radius: var(--radius-md);
+      padding: 1.75rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: transform var(--transition-normal), border-color var(--transition-normal);
+    }
+
+    .spec-ratio-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--color-mint-green);
+    }
+
+    .spec-frame-box {
+      background: rgba(0, 23, 19, 0.8);
+      border: 2px dashed rgba(54, 217, 176, 0.5);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: var(--color-mint-green);
+      margin-bottom: 1.25rem;
+    }
+
+    .spec-frame-9-16 {
+      width: 70px;
+      height: 124px;
+    }
+
+    .spec-frame-4-5 {
+      width: 88px;
+      height: 110px;
+    }
+
+    .spec-frame-1-1 {
+      width: 95px;
+      height: 95px;
+    }
+
+    .spec-frame-16-9 {
+      width: 130px;
+      height: 73px;
+    }
+
+    .spec-ratio-title {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--color-soft-white);
+      margin-bottom: 0.35rem;
+    }
+
+    .spec-ratio-res {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--color-emerald-teal);
+      margin-bottom: 0.65rem;
+    }
+
+    .spec-ratio-use {
+      font-size: 0.825rem;
+      line-height: 1.5;
+      color: var(--text-secondary);
+    }
+
+    .specs-additional-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 1rem;
+      background: var(--color-almost-black);
+      border: 1px solid var(--color-muted-sage);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+    }
+
+    .spec-addon-item {
+      text-align: center;
+      padding: 0.5rem;
+    }
+
+    .spec-addon-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .spec-addon-val {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--color-soft-white);
+      line-height: 1.4;
+    }
+
+    /* SECTION 7: INDUSTRIES WE SERVE */
+    .industries-gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .industry-gallery-card {
+      background: var(--color-almost-black);
+      border: 1px solid var(--color-muted-sage);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+    }
+
+    .industry-gallery-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--color-emerald-teal);
+      box-shadow: 0 16px 36px rgba(0, 23, 19, 0.6);
+    }
+
+    .industry-card-media {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: var(--color-deep-forest);
+    }
+
+    .industry-card-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+
+    .industry-gallery-card:hover .industry-card-media img {
+      transform: scale(1.05);
+    }
+
+    .industry-card-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .industry-card-title {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--color-soft-white);
+      margin-bottom: 0.55rem;
+    }
+
+    .industry-card-desc {
+      font-size: 0.885rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+
+    /* SECTION 8: OUR PRODUCTION PROCESS */
+    .process-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .process-step-box {
+      background: var(--color-deep-forest);
+      border: 1px solid var(--color-muted-sage);
+      border-radius: var(--radius-md);
+      padding: 1.5rem 1.15rem;
+      position: relative;
+      transition: transform var(--transition-normal), border-color var(--transition-normal);
+    }
+
+    .process-step-box:hover {
+      transform: translateY(-4px);
+      border-color: var(--color-mint-green);
+    }
+
+    .process-step-num-badge {
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--color-mint-green);
+      background: rgba(0, 191, 165, 0.15);
+      border: 1px solid rgba(0, 191, 165, 0.35);
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 0.85rem;
+    }
+
+    .process-step-name {
+      font-family: var(--font-heading);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--color-soft-white);
+      margin-bottom: 0.45rem;
+    }
+
+    .process-step-detail {
+      font-size: 0.825rem;
+      line-height: 1.55;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+
+    .process-timeline-highlight {
+      background: rgba(0, 34, 30, 0.8);
+      border: 1px solid rgba(0, 191, 165, 0.4);
+      border-radius: var(--radius-md);
+      padding: 1.75rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .timeline-highlight-left h3 {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--color-mint-green);
+      margin-bottom: 0.35rem;
+      letter-spacing: -0.01em;
+    }
+
+    .timeline-highlight-left p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    /* SECTION 9: WHY BRANDS CHOOSE MY UGC VIDEO */
+    .advantages-split-layout {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: clamp(2.5rem, 5vw, 4.5rem);
+      align-items: center;
+    }
+
+    .advantages-visual-wrap {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--color-muted-sage);
+      background: var(--color-almost-black);
+      box-shadow: 0 24px 60px rgba(0, 23, 19, 0.8);
+    }
+
+    .advantages-visual-wrap img {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      display: block;
+    }
+
+    .advantages-visual-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(180deg, transparent 0%, rgba(0, 23, 19, 0.95) 75%);
+      padding: 2rem 1.75rem 1.5rem;
+    }
+
+    .advantages-cards-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1.35rem;
+    }
+
+    .advantage-item-card {
+      background: var(--color-almost-black);
+      border: 1px solid rgba(49, 83, 77, 0.45);
+      border-radius: var(--radius-md);
+      padding: 1.35rem 1.5rem;
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+      transition: transform var(--transition-normal), border-color var(--transition-normal);
+    }
+
+    .advantage-item-card:hover {
+      transform: translateX(6px);
+      border-color: var(--color-mint-green);
+    }
+
+    .advantage-item-num {
+      font-family: var(--font-heading);
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--color-mint-green);
+      background: rgba(0, 191, 165, 0.12);
+      border: 1px solid rgba(0, 191, 165, 0.3);
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .advantage-item-title {
+      font-family: var(--font-heading);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--color-soft-white);
+      margin-bottom: 0.35rem;
+    }
+
+    .advantage-item-desc {
+      font-size: 0.885rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+
+    /* SECTION 10: FAQ ACCORDION */
+    .services-faq-accordion {
+      max-width: 840px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* SECTION 11: FINAL CTA */
+    .services-cta-box {
+      background: radial-gradient(circle at 50% 0%, rgba(0, 191, 165, 0.15) 0%, rgba(0, 34, 30, 0.95) 75%);
+      border: 1px solid rgba(0, 191, 165, 0.35);
+      border-radius: var(--radius-lg);
+      padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 4vw, 3.5rem);
+      text-align: center;
+      box-shadow: 0 24px 60px rgba(0, 23, 19, 0.8);
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .services-cta-title {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 3.8vw, 3rem);
+      font-weight: 800;
+      color: var(--color-soft-white);
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .services-cta-desc {
+      font-size: clamp(1rem, 1.8vw, 1.15rem);
+      line-height: 1.65;
+      color: var(--text-secondary);
+      max-width: 620px;
+      margin: 0 auto 2.25rem;
+    }
+
+    .services-cta-btns {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    /* SECTION 12: ADDITIONAL SUPPORTING SERVICE (PHOTOGRAPHY) */
+    .supporting-services-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .supporting-service-card {
+      background: var(--color-almost-black);
+      border: 1px solid var(--color-muted-sage);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform var(--transition-normal), border-color var(--transition-normal);
+    }
+
+    .supporting-service-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--color-emerald-teal);
+    }
+
+    .supporting-card-thumb {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: var(--color-deep-forest);
+    }
+
+    .supporting-card-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+
+    .supporting-service-card:hover .supporting-card-thumb img {
+      transform: scale(1.04);
+    }
+
+    .supporting-card-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .supporting-card-badge {
+      display: inline-block;
+      font-size: 0.725rem;
+      font-weight: 700;
+      color: var(--color-emerald-teal);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.45rem;
+    }
+
+    .supporting-card-title {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--color-soft-white);
+      margin-bottom: 0.55rem;
+    }
+
+    .supporting-card-desc {
+      font-size: 0.885rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      margin-bottom: 1.25rem;
+      flex-grow: 1;
+    }
+
+    /* RESPONSIVE MEDIA QUERIES */
+    @media (max-width: 1100px) {
+      .services-hero-grid {
+        grid-template-columns: 1fr;
+        gap: 3.5rem;
+      }
+
+      .services-hero-collage {
+        min-height: 480px;
+      }
+
+      .services-grid-8 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .formats-portfolio-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .specs-ratio-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .specs-additional-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .process-steps-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .advantages-split-layout {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+    }
+
+    @media (max-width: 992px) {
+      .framework-pillars-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .funnel-architecture-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .industries-gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .process-timeline-highlight {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .section-header-flex {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .services-grid-8 {
+        grid-template-columns: 1fr;
+      }
+
+      .formats-portfolio-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .specs-ratio-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .specs-additional-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .industries-gallery-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .process-steps-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .supporting-services-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-collage-secondary {
+        display: none;
+      }
+
+      .hero-floating-studio-badge {
+        position: static;
+        margin-top: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .services-hero-cta-group {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .services-hero-cta-group .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .services-cta-btns {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .services-cta-btns .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .specs-additional-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <!-- Structured Data: CollectionPage & Service -->
+                <!-- Centralized Schema Manager JSON-LD -->
+  <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "Organization",
+            "@id": "https://myugcvideo.in/#organization",
+            "name": "MY UGC VIDEO",
+            "url": "https://myugcvideo.in",
+            "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
+            "description": "Premier performance-driven UGC video production studio and creator network connecting brands with authentic creator-led video content.",
+            "email": "hello@myugcvideo.in",
+            "sameAs": [
+                "https://instagram.com",
+                "https://linkedin.com"
+            ],
+            "contactPoint": [
+                {
+                    "@type": "ContactPoint",
+                    "contactType": "customer service",
+                    "email": "hello@myugcvideo.in",
+                    "availableLanguage": [
+                        "English",
+                        "Hindi"
+                    ]
+                }
+            ],
+            "areaServed": [
+                {
+                    "@type": "Country",
+                    "name": "India"
+                }
+            ]
+        },
+        {
+            "@type": "BreadcrumbList",
+            "@id": "https://myugcvideo.in/services#breadcrumb",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Home",
+                    "item": "https://myugcvideo.in"
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "Services",
+                    "item": "https://myugcvideo.in/services"
+                }
+            ]
+        },
+        {
+            "@type": "FAQPage",
+            "@id": "https://myugcvideo.in/services#faq",
+            "mainEntity": [
+                {
+                    "@type": "Question",
+                    "name": "What commercial usage rights do you provide?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "You can use the finished videos in paid ads on Meta, TikTok, YouTube and Google. The exact platforms\r\n                and duration are in your project agreement, so read that before signing. [ADD YOUR REAL TERMS]"
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "How long does production take?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Most projects take about 7 to 12 business days, from brief to final video. A big batch or slow feedback\r\n                can add time."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "How do you select creators?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "We look at your product, your audience and the platform. Then we shortlist creators whose style and\r\n                followers suit it, and who are free on your dates."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Do clients approve scripts before filming?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Yes. We send the script and hooks first. Filming starts only after you say yes."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "What aspect ratios are delivered?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "9:16, 4:5, 1:1 and 16:9, as MP4 files. Captions can be burned in, and we can send separate SRT subtitle\r\n                files too."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "How are revisions handled?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Send all your feedback together and we'll make the changes. [ADD YOUR REAL REVISION LIMIT, like 2\r\n                rounds]"
+                    }
+                }
+            ]
+        },
+        {
+            "@type": "WebPage",
+            "@id": "https://myugcvideo.in/services#webpage",
+            "url": "https://myugcvideo.in/services",
+            "name": "UGC Video Production Services Directory",
+            "description": "Explore our comprehensive suite of user-generated content video production services, from performance video ads to unboxings and reviews.",
+            "publisher": {
+                "@id": "https://myugcvideo.in/#organization"
+            },
+            "breadcrumb": {
+                "@id": "https://myugcvideo.in/services#breadcrumb"
+            }
+        }
+    ]
+}
+  </script>
+</head>
+
+<body class="services-page">
+
+  <!-- =========================================================================
+       1. GLOBAL HEADER (CONSISTENT WEBSITE-WIDE HIERARCHY)
+       ========================================================================= -->
+  <div class="site-header-wrapper" id="siteHeaderWrapper">
+    <!-- Combined Top Contact & Dynamic Announcement Bar (Single Horizontal Line on Desktop) -->
+    <div class="site-top-bar" id="siteTopBar">
+      <div class="container site-top-bar-container">
+        <!-- Left: Contact Information -->
+        <div class="top-bar-left">
+          <a href="mailto:hello@myugcvideo.in" class="top-bar-link" aria-label="Email Us">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            <span>hello@myugcvideo.in</span>
+          </a>
+          <span class="top-bar-divider" aria-hidden="true">|</span>
+          <a href="tel:+919876543210" class="top-bar-link" aria-label="Call Us">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            <span>+91 98765 43210</span>
+          </a>
+        </div>
+
+        <!-- Center: Dynamic Announcement -->
+        <div class="top-bar-center" id="dynamicAnnouncementWrap" role="region" aria-label="Announcement">
+          <a href="contact" class="top-bar-announcement-link" id="dynamicAnnouncementLink">
+            <span class="announcement-brand-badge" id="announcementBadge">MY UGC VIDEO</span>
+            <span class="announcement-promo-text" id="announcementPromoText">Let's Create Videos That Make Your Brand Stand Out</span>
+            <span class="announcement-arrow-action" aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
+
+        <!-- Right: Social Links -->
+        <div class="top-bar-right">
+          <div class="top-social-wrap">
+            <span class="top-social-label">Follow Us:</span>
+            <div class="top-social-links">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="top-social-icon" aria-label="Facebook">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+              </a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="top-social-icon" aria-label="Instagram">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+              </a>
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="top-social-icon" aria-label="LinkedIn">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <header class="site-header" role="banner">
+    <div class="container">
+      <div class="nav-wrapper">
+        <a href="./" class="brand-logo" aria-label="MY UGC VIDEO Home">
+          <span class="brand-title">MY UGC VIDEO</span>
+          <span class="brand-subtitle">UGC Creative Agency</span>
+        </a>
+
+        <nav class="nav-menu" role="navigation" aria-label="Primary Navigation">
+          <a href="./" class="nav-link">Home</a>
+          <a href="about" class="nav-link">About</a>
+
+          <!-- Hover-Triggered Services Dropdown -->
+          <div class="nav-item-dropdown">
+            <a href="services" class="nav-link nav-link-dropdown active" aria-haspopup="true" aria-expanded="false">
+              Services
+              <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2.5">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </a>
+            <div class="dropdown-menu" role="menu" aria-label="Services Menu">
+              <a href="services/ugc-video-creation-company" class="dropdown-link" role="menuitem">UGC Video Creation
+                Services</a>
+              <a href="services/ugc-video-ads-company" class="dropdown-link" role="menuitem">UGC Video Ads</a>
+              <a href="services/ai-ugc-video-creation-company" class="dropdown-link" role="menuitem">AI UGC Video Creation</a>
+              <a href="services/ugc-product-video-company" class="dropdown-link" role="menuitem">UGC Product Video</a>
+              <a href="services/ugc-product-review-videos-company" class="dropdown-link" role="menuitem">UGC Product
+                Reviews Videos</a>
+              <a href="services/ugc-video-company-in-delhi" class="dropdown-link" role="menuitem">UGC Video
+                Company in Delhi</a>
+              <a href="services/ugc-unboxing-videos-company" class="dropdown-link" role="menuitem">UGC Unboxing
+                Videos</a>
+              <a href="services/ugc-testimonial-videos-company" class="dropdown-link" role="menuitem">UGC Testimonial
+                Videos</a>
+              <a href="services/ugc-video-editing-company" class="dropdown-link" role="menuitem">UGC Video
+                Editing Service</a>
+            </div>
+          </div>
+
+          <a href="blogs" class="nav-link">Blogs</a>
+          <a href="contact" class="nav-link">Contact</a>
+        </nav>
+
+        <div class="header-cta">
+          <a href="contact" class="btn btn-primary">Start a Project</a>
+          <button class="nav-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+  </div>
+
+  <!-- Mobile Navigation Drawer -->
+  <div class="drawer-overlay" aria-hidden="true"></div>
+  <aside class="mobile-drawer" aria-label="Mobile Navigation Drawer">
+    <div class="mobile-drawer-header">
+      <div class="brand-logo">
+        <span class="brand-title">MY UGC VIDEO</span>
+        <span class="brand-subtitle">UGC Creative Agency</span>
+      </div>
+    </div>
+    <nav class="mobile-nav-links">
+      <a href="./" class="mobile-nav-link">Home <span>&rarr;</span></a>
+      <a href="about" class="mobile-nav-link">About <span>&rarr;</span></a>
+
+      <div class="mobile-dropdown-wrap">
+        <a href="services" class="mobile-nav-link mobile-dropdown-toggle active" aria-expanded="false">
+          Services
+          <svg class="dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </a>
+        <div class="mobile-dropdown-content">
+          <a href="services/ugc-video-creation-company" class="mobile-sub-link">&bull; UGC Video Creation Services</a>
+          <a href="services/ugc-video-ads-company" class="mobile-sub-link">&bull; UGC Video Ads</a>
+          <a href="services/ai-ugc-video-creation-company" class="mobile-sub-link">&bull; AI UGC Video Creation</a>
+          <a href="services/ugc-product-video-company" class="mobile-sub-link">&bull; UGC Product Video</a>
+          <a href="services/ugc-product-review-videos-company" class="mobile-sub-link">&bull; UGC Product Reviews
+            Videos</a>
+          <a href="services/ugc-video-company-in-delhi" class="mobile-sub-link">&bull; UGC Video Company in
+            Delhi</a>
+          <a href="services/ugc-unboxing-videos-company" class="mobile-sub-link">&bull; UGC Unboxing Videos</a>
+          <a href="services/ugc-testimonial-videos-company" class="mobile-sub-link">&bull; UGC Testimonial Videos</a>
+          <a href="services/ugc-video-editing-company" class="mobile-sub-link">&bull; UGC Video Editing
+            Service</a>
+        </div>
+      </div>
+
+      <a href="blogs" class="mobile-nav-link">Blogs <span>&rarr;</span></a>
+      <a href="contact" class="mobile-nav-link">Contact <span>&rarr;</span></a>
+    </nav>
+    <div class="mobile-drawer-footer">
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Creator-led content. Made for
+        brands.</p>
+      <a href="contact" class="btn btn-primary" style="width: 100%; justify-content: center;">Start a Project</a>
+    </div>
+  </aside>
+
+  <main id="main-content">
+
+    <!-- =========================================================================
+         SECTION 1 — SERVICES HERO
+         ========================================================================= -->
+    <!-- =========================================================================
+         HERO — TYPOGRAPHY-FIRST STUDIO OPENER
+         Visual reference: Hotbox editorial layout + creator footage background
+         ========================================================================= -->
+    <!-- =========================================================================
+         SECTION 1: HERO — EDITORIAL TYPOGRAPHY & ASYMMETRIC COLLAGE
+         Left (55-60%): Clean, uninterrupted typography and CTAs
+         Right (40-45%): Unique asymmetric rectangular UGC photography collage
+         ========================================================================= -->
+    <section class="services-hero-section editorial-hero" id="services-hero" aria-labelledby="services-hero-title">
+
+      <!-- Subtle ambient lighting layers -->
+      <div class="editorial-hero-ambient" aria-hidden="true">
+        <div class="editorial-glow-1"></div>
+        <div class="editorial-glow-2"></div>
+        <div class="editorial-grid-mesh"></div>
+      </div>
+
+      <div class="container">
+        <div class="editorial-hero-grid">
+
+          <!-- Left Column (55-60% width on Desktop): Clean, Uninterrupted Editorial Content -->
+          <div class="editorial-hero-content">
+
+            <!-- Breadcrumb Navigation -->
+            <nav class="services-hero-breadcrumb" aria-label="Breadcrumb">
+              <a href="./">Home</a>
+              <span class="bc-sep" aria-hidden="true">/</span>
+              <span class="bc-current">Services</span>
+            </nav>
+
+            <!-- Eyebrow -->
+            <div class="services-hero-eyebrow-wrap">
+              <span class="services-hero-eyebrow">
+                <span class="eyebrow-circle-dot" aria-hidden="true"></span>
+                UGC VIDEO SERVICES • STUDIO IN DELHI NCR
+              </span>
+            </div>
+
+            <!-- Main Headline — Clean, uninterrupted, bold typography -->
+            <h1 id="services-hero-title" class="services-hero-headline font-display">
+              Send us the product.
+              <span class="highlight-mint">We'll send back the video.</span>
+            </h1>
+
+            <!-- Supporting Description -->
+            <p class="services-hero-desc">
+              We run a UGC video studio in Delhi NCR and offer complete UGC video services for brands. Tell us what you
+              sell and who buys it. We find a creator, write the script, shoot it and edit it so it's ready for your
+              ads.
+            </p>
+
+            <!-- Dual Action CTAs -->
+            <div class="services-hero-cta-group">
+              <a href="#what-we-create" class="btn btn-primary services-hero-btn-primary">
+                <span>See Services</span>
+                <svg class="cta-icon-down" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <polyline points="19 12 12 19 5 12"></polyline>
+                </svg>
+              </a>
+              <a href="contact" class="btn btn-secondary services-hero-btn-secondary">
+                <span>Talk to Us</span>
+                <svg class="cta-icon-right" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </a>
+            </div>
+
+            <!-- Studio Trust Strip -->
+            <div class="services-hero-trust-strip" role="list" aria-label="Studio Capabilities">
+              <div class="trust-strip-pill" role="listitem">
+                <span class="trust-strip-dot" aria-hidden="true"></span>
+                <span>Creators we've checked</span>
+              </div>
+              <div class="trust-strip-pill" role="listitem">
+                <span class="trust-strip-dot" aria-hidden="true"></span>
+                <span>We manage the shoot</span>
+              </div>
+              <div class="trust-strip-pill" role="listitem">
+                <span class="trust-strip-dot" aria-hidden="true"></span>
+                <span>Made for paid ads</span>
+              </div>
+              <div class="trust-strip-pill" role="listitem">
+                <span class="trust-strip-dot" aria-hidden="true"></span>
+                <span>Ad rights included</span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right Column: Quick Enquiry Form -->
+          <div class="services-hero-enquiry-col" id="serviceEnquiryColumn">
+            <!-- Compact Floating Quick Enquiry Form -->
+            <div class="quick-enquiry-card" id="quickEnquiryCard">
+              <div class="quick-enquiry-header">
+                <div class="quick-enquiry-pill font-display">
+                  <span class="pill-dot" aria-hidden="true"></span> QUICK ENQUIRY
+                </div>
+                <h3 class="quick-enquiry-title font-display">Get a Creator Matched in 24h</h3>
+                <p class="quick-enquiry-sub">Tell us your brand & details. We'll send your custom creator shortlist.</p>
+              </div>
+
+              <form id="quickEnquiryForm" class="quick-enquiry-form" method="POST" novalidate autocomplete="on">
+                <input type="hidden" name="csrf_token" id="quickCsrfToken" value="">
+                <input type="hidden" name="source" value="website_enquiry_form">
+                <!-- Anti-spam Honeypot -->
+                <input type="text" name="website_hp" class="quick-hp-field" tabindex="-1" autocomplete="off" style="display:none !important;" aria-hidden="true">
+
+                <!-- Field 1: Name -->
+                <div class="quick-form-group">
+                  <label for="qeName" class="quick-form-label">Name <span class="required">*</span></label>
+                  <div class="quick-input-wrapper">
+                    <input type="text" id="qeName" name="name" class="quick-form-input" placeholder="Your Full Name" required autocomplete="name">
+                    <span class="quick-input-icon" aria-hidden="true">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </span>
+                  </div>
+                  <div class="quick-form-error" id="qeNameError"></div>
+                </div>
+
+                <!-- Field 2: Email -->
+                <div class="quick-form-group">
+                  <label for="qeEmail" class="quick-form-label">Email <span class="required">*</span></label>
+                  <div class="quick-input-wrapper">
+                    <input type="email" id="qeEmail" name="email" class="quick-form-input" placeholder="name@company.com" required autocomplete="email">
+                    <span class="quick-input-icon" aria-hidden="true">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    </span>
+                  </div>
+                  <div class="quick-form-error" id="qeEmailError"></div>
+                </div>
+
+                <!-- Field 3: Phone Number (Indian mobile validation) -->
+                <div class="quick-form-group">
+                  <label for="qePhone" class="quick-form-label">Phone Number <span class="required">*</span></label>
+                  <div class="quick-input-wrapper">
+                    <span class="quick-input-prefix">+91</span>
+                    <input type="tel" id="qePhone" name="phone" class="quick-form-input quick-phone-input" placeholder="98765 43210" required autocomplete="tel" maxlength="15">
+                    <span class="quick-input-icon" aria-hidden="true">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    </span>
+                  </div>
+                  <div class="quick-form-error" id="qePhoneError"></div>
+                </div>
+
+                <!-- Field 4: Message (Optional) -->
+                <div class="quick-form-group">
+                  <label for="qeMessage" class="quick-form-label">Message <span class="optional-tag">(Optional)</span></label>
+                  <textarea id="qeMessage" name="message" class="quick-form-textarea" rows="2" placeholder="Tell us what you sell or your video goals..."></textarea>
+                  <div class="quick-form-error" id="qeMessageError"></div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="quick-form-action">
+                  <button type="submit" id="qeSubmitBtn" class="btn btn-primary quick-submit-btn">
+                    <span class="btn-text">SEND ENQUIRY</span>
+                    <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    <span class="btn-spinner" aria-hidden="true" style="display:none;"></span>
+                  </button>
+                </div>
+
+                <!-- Status Alerts -->
+                <div class="quick-form-alert alert-success" id="qeSuccessAlert" style="display:none;" role="alert">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                  <div class="alert-content">
+                    <strong>Enquiry Received!</strong>
+                    <p>Our team will review your brief and WhatsApp/email you within 24 hours.</p>
+                  </div>
+                </div>
+
+                <div class="quick-form-alert alert-error" id="qeErrorAlert" style="display:none;" role="alert">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                  <div class="alert-content">
+                    <span id="qeErrorMessage">Something went wrong. Please check your inputs.</span>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 2 — WHAT WE CREATE (OUR SERVICES)
+         ========================================================================= -->
+    <section class="services-section" id="what-we-create" aria-labelledby="what-we-create-title">
+      <div class="container">
+
+        <div class="section-header-flex">
+          <div>
+            <span class="eyebrow">OUR SERVICES</span>
+            <h2 id="what-we-create-title" class="font-display">Our UGC Video Services: What We Make</h2>
+          </div>
+          <p style="max-width: 580px; color: var(--text-secondary); line-height: 1.65; margin: 0;">
+            Pick one of these UGC video services, or ask for a mix.
+          </p>
+        </div>
+
+        <div class="services-continuous-grid">
+
+          <!-- 01. UGC Video Creation Services -->
+          <article class="service-grid-card">
+            <div class="service-card-media camera-focus-media">
+              <img src="images/services/service-ugc-creation.jpg" alt="UGC Video Creation Services" width="400"
+                height="250" loading="lazy">
+              <span class="service-card-num-badge font-display">01</span>
+            </div>
+            <div class="service-card-content">
+              <h3 class="service-grid-title font-display">UGC Video Creation Services</h3>
+              <p class="service-grid-desc">
+                A creator talks about your product on camera, like they would to a friend. Use it on your site, your
+                social pages or your ads.
+              </p>
+              <a href="services/ugc-video-creation-company" class="service-grid-link">
+                <span>Details →</span>
+                <span class="arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- 02. UGC Video Ads -->
+          <article class="service-grid-card">
+            <div class="service-card-media camera-focus-media">
+              <img src="images/services/service-ads.jpg" alt="UGC Video Ads" width="400" height="250" loading="lazy">
+              <span class="service-card-num-badge font-display">02</span>
+            </div>
+            <div class="service-card-content">
+              <h3 class="service-grid-title font-display"> UGC Video Ads</h3>
+              <p class="service-grid-desc">
+                Short vertical UGC ad creatives for Meta and TikTok, plus YouTube. The first three seconds are written
+                to make people stay, and the end tells them what to do.
+              </p>
+              <a href="services/ugc-video-ads-company" class="service-grid-link">
+                <span>Details →</span>
+                <span class="arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- 03. AI UGC Video Creation -->
+          <article class="service-grid-card">
+            <div class="service-card-media camera-focus-media">
+              <img src="images/services/service-ai-ugc.jpg" alt="AI UGC Video Creation" width="400" height="250"
+                loading="lazy">
+              <span class="service-card-num-badge font-display">03</span>
+            </div>
+            <div class="service-card-content">
+              <h3 class="service-grid-title font-display">AI UGC Video Creation</h3>
+              <p class="service-grid-desc">
+                AI presenters and voices, for when you want to test lots of openings fast. We'd suggest running them
+                next to real creator videos.
+              </p>
+              <a href="services/ai-ugc-video-creation-company" class="service-grid-link">
+                <span>Details →</span>
+                <span class="arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- 04. UGC Product Video -->
+          <article class="service-grid-card">
+            <div class="service-card-media camera-focus-media">
+              <img src="images/services/service-product-videos.jpg" alt="UGC Product Video" width="400" height="250"
+                loading="lazy">
+              <span class="service-card-num-badge font-display">04</span>
+            </div>
+            <div class="service-card-content">
+              <h3 class="service-grid-title font-display">UGC Product Video</h3>
+              <p class="service-grid-desc">
+                Someone picks up your product and shows it. These UGC product videos have close-ups, how it opens and
+                how it feels.
+              </p>
+              <a href="services/ugc-product-video-company" class="service-grid-link">
+                <span>Details →</span>
+                <span class="arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- 05. UGC Product Reviews Videos -->
+          <article class="service-grid-card">
+            <div class="service-card-media camera-focus-media">
+              <img src="images/services/service-review.jpg" alt="UGC Product Reviews Videos" width="400" height="250"
+                loading="lazy">
+              <span class="service-card-num-badge font-display">05</span>
+            </div>
+            <div class="service-card-content">
+              <h3 class="service-grid-title font-display">UGC Product Review Videos</h3>
+              <p class="service-grid-desc">
+                A creator uses your product and says what they actually think. A few honest comments can convince a
+                buyer more than a perfect review.
+              </p>
+              <a href="services/ugc-product-review-videos-company" class="service-grid-link">
+                <span>Details →</span>
+                <span class="arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- 06. UGC Video Company in Delhi -->
+          <article class="service-grid-card">
+            <div class="service-card-media camera-focus-media">
+              <img src="images/services/service-delhi-ugc.jpg" alt="UGC Video Company in Delhi" width="400" height="250"
+                loading="lazy">
+              <span class="service-card-num-badge font-display">06</span>
+            </div>
+            <div class="service-card-content">
+              <h3 class="service-grid-title font-display">UGC Video Company in Delhi</h3>
+              <p class="service-grid-desc">
+                We're in Delhi NCR. Local creators, a place to shoot and scripts that sound right to Indian buyers.
+              </p>
+              <a href="services/ugc-video-company-in-delhi" class="service-grid-link">
+                <span>Details →</span>
+                <span class="arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- 07. UGC Unboxing Videos -->
+          <article class="service-grid-card">
+            <div class="service-card-media camera-focus-media">
+              <img src="images/services/service-unboxing.jpg" alt="UGC Unboxing Videos" width="400" height="250"
+                loading="lazy">
+              <span class="service-card-num-badge font-display">07</span>
+            </div>
+            <div class="service-card-content">
+              <h3 class="service-grid-title font-display">UGC Unboxing Videos</h3>
+              <p class="service-grid-desc">
+                The parcel shows up, gets opened, and the creator reacts. Good for anything with nice packaging.
+              </p>
+              <a href="services/ugc-unboxing-videos-company" class="service-grid-link">
+                <span>Details →</span>
+                <span class="arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- 08. UGC Testimonial Videos -->
+          <article class="service-grid-card">
+            <div class="service-card-media camera-focus-media">
+              <img src="images/services/service-testimonial.jpg" alt="UGC Testimonial Videos" width="400" height="250"
+                loading="lazy">
+              <span class="service-card-num-badge font-display">08</span>
+            </div>
+            <div class="service-card-content">
+              <h3 class="service-grid-title font-display">UGC Testimonial Videos</h3>
+              <p class="service-grid-desc">
+                Real customers saying why they bought. Handy for buyers who are still on the fence.
+              </p>
+              <a href="services/ugc-testimonial-videos-company" class="service-grid-link">
+                <span>Details →</span>
+                <span class="arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
+          </article>
+
+          <!-- 09. UGC Video Editing Service -->
+          <article class="service-grid-card">
+            <div class="service-card-media camera-focus-media">
+              <img src="images/services/service-video.jpg" alt="UGC Video Editing Service" width="400" height="250"
+                loading="lazy">
+              <span class="service-card-num-badge font-display">09</span>
+            </div>
+            <div class="service-card-content">
+              <h3 class="service-grid-title font-display">UGC Video Editing Service</h3>
+              <p class="service-grid-desc">
+                Got raw footage? Send it over. We'll cut it, add captions and sound, and make a few different openings.
+              </p>
+              <a href="services/ugc-video-editing-company" class="service-grid-link">
+                <span>Details →</span>
+                <span class="arrow" aria-hidden="true">&rarr;</span>
+              </a>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 3 — How We Think
+         ========================================================================= -->
+    <section class="services-section services-section-alt" id="creative-philosophy" aria-labelledby="philosophy-title">
+      <div class="container">
+
+        <div class="section-header text-center">
+          <span class="eyebrow">HOW WE THINK</span>
+          <h2 id="philosophy-title" class="font-display">What Each Video Has to Do</h2>
+          <p style="color: var(--text-secondary); line-height: 1.65; font-size: 1.05rem; margin-top: 0.5rem;">
+            Every video in our UGC video services has a few jobs. Here's how we handle them.
+          </p>
+        </div>
+
+        <div class="framework-pillars-grid">
+
+          <!-- Pillar 1: ATTENTION -->
+          <div class="framework-pillar-card">
+            <div>
+              <div class="framework-pillar-num">01</div>
+              <div class="framework-pillar-subtitle">ATTENTION</div>
+              <h3 class="framework-pillar-title">Get Noticed Fast</h3>
+              <p class="framework-pillar-desc">
+                People scroll quickly. So our scroll-stopping hooks show a problem they already know, or something odd
+                to look at in the first few seconds.
+              </p>
+            </div>
+            <div class="framework-tag-list">
+              <span class="framework-tag-pill">First 3 Seconds</span>
+              <span class="framework-tag-pill">Something Unexpected</span>
+              <span class="framework-tag-pill">Everyday Problems</span>
+            </div>
+          </div>
+
+          <!-- Pillar 2: TRUST -->
+          <div class="framework-pillar-card">
+            <div>
+              <div class="framework-pillar-num">02</div>
+              <div class="framework-pillar-subtitle">TRUST</div>
+              <h3 class="framework-pillar-title">Look Real</h3>
+              <p class="framework-pillar-desc">
+                A creator in a normal room, using your product, feels more believable than a studio ad. We keep the
+                lighting and the editing simple.
+              </p>
+            </div>
+            <div class="framework-tag-list">
+              <span class="framework-tag-pill">Home Lighting</span>
+              <span class="framework-tag-pill">Hands-On Demos</span>
+              <span class="framework-tag-pill">Light Editing</span>
+            </div>
+          </div>
+
+          <!-- Pillar 3: CONVERSION -->
+          <div class="framework-pillar-card">
+            <div>
+              <div class="framework-pillar-num">03</div>
+              <div class="framework-pillar-subtitle">ACTION</div>
+              <h3 class="framework-pillar-title">Say What's Next</h3>
+              <p class="framework-pillar-desc">
+                Once someone believes the video, tell them what to do. We handle the doubts they're likely to have and
+                end on one clear step.
+              </p>
+            </div>
+            <div class="framework-tag-list">
+              <span class="framework-tag-pill">Answer Doubts</span>
+              <span class="framework-tag-pill">Show the Value</span>
+              <span class="framework-tag-pill">One Clear Step</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 4 — FEATURED UGC VIDEO FORMATS
+         ========================================================================= -->
+    <section class="services-section" id="featured-work" aria-labelledby="showcase-title">
+      <div class="container">
+
+        <div class="section-header-flex">
+          <div>
+            <span class="eyebrow">VIDEO FORMATS</span>
+            <h2 id="showcase-title" class="font-display">Six Styles We Make Most</h2>
+          </div>
+          <p style="max-width: 520px; color: var(--text-secondary); line-height: 1.65; margin: 0;">
+            These are the styles we shoot most across our UGC video services. All in 9:16 vertical video, made for
+            phones.
+          </p>
+        </div>
+
+        <div class="formats-portfolio-grid">
+
+          <!-- Format 1: Product Demonstrations -->
+          <div class="format-portfolio-card camera-focus-media">
+            <img src="images/services/service-product-videos.jpg"
+              alt="Macro product demonstration showing texture and formula application" class="format-portfolio-bg"
+              width="380" height="590" loading="lazy">
+            <div class="format-portfolio-overlay">
+              <div class="format-top-tags">
+                <span class="format-tag-badge">DEMONSTRATION </span>
+                <span class="video-format-pill" style="font-size: 0.65rem;">9:16 Vertical</span>
+              </div>
+              <div class="format-center-trigger">
+                <button class="video-play-btn-pulse video-play-trigger" aria-label="Play Product Demonstration Example"
+                  data-video-poster="images/services/service-product-videos.jpg"
+                  data-video-title="Macro Texture &amp; Application Demo"
+                  data-video-meta="Format: Product Demonstrations • 9:16 Vertical Video">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                  </svg>
+                </button>
+              </div>
+              <div class="format-bottom-caption">
+                <h3 class="format-caption-title">Product Demonstrations</h3>
+                <p class="format-caption-desc">
+                  Product demonstration videos with close shots of the texture and how it goes on or works.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Format 2: Unboxing & First Impressions -->
+          <div class="format-portfolio-card camera-focus-media">
+            <img src="images/services/service-unboxing.jpg" alt="First-person sensory packaging unboxing reveal"
+              class="format-portfolio-bg" width="380" height="590" loading="lazy">
+            <div class="format-portfolio-overlay">
+              <div class="format-top-tags">
+                <span class="format-tag-badge">UNBOXING </span>
+                <span class="video-format-pill" style="font-size: 0.65rem;">9:16 Vertical</span>
+              </div>
+              <div class="format-center-trigger">
+                <button class="video-play-btn-pulse video-play-trigger" aria-label="Play Unboxing Example"
+                  data-video-poster="images/services/service-unboxing.jpg"
+                  data-video-title="Sensory Tech Unboxing Experience"
+                  data-video-meta="Format: Unboxing &amp; First Impressions • 9:16 Vertical Video">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                  </svg>
+                </button>
+              </div>
+              <div class="format-bottom-caption">
+                <h3 class="format-caption-title">Unboxing and First Impressions</h3>
+                <p class="format-caption-desc">
+                  The parcel arrives, it gets opened, and we catch the first reaction.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Format 3: Problem-Solution Hooks -->
+          <div class="format-portfolio-card camera-focus-media">
+            <img src="images/services/service-problem-solution.jpg"
+              alt="Problem solution direct response hook demonstrating product utility" class="format-portfolio-bg"
+              width="380" height="590" loading="lazy">
+            <div class="format-portfolio-overlay">
+              <div class="format-top-tags">
+                <span class="format-tag-badge">PROBLEM-SOLUTION</span>
+                <span class="video-format-pill" style="font-size: 0.65rem;">9:16 Vertical</span>
+              </div>
+              <div class="format-center-trigger">
+                <button class="video-play-btn-pulse video-play-trigger" aria-label="Play Problem-Solution Example"
+                  data-video-poster="images/services/service-problem-solution.jpg"
+                  data-video-title="Problem-Solution Direct-Response Hook"
+                  data-video-meta="Format: Problem-Solution Hooks • 9:16 Vertical Video">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                  </svg>
+                </button>
+              </div>
+              <div class="format-bottom-caption">
+                <h3 class="format-caption-title">Problem and Solution</h3>
+                <p class="format-caption-desc">
+                  Problem-solution video ads start with a small everyday annoyance. Then the product fixes it.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Format 4: Everyday Lifestyle Integration -->
+          <div class="format-portfolio-card camera-focus-media">
+            <img src="images/services/service-lifestyle.jpg"
+              alt="Lifestyle creator incorporating product into domestic routine" class="format-portfolio-bg"
+              width="380" height="590" loading="lazy">
+            <div class="format-portfolio-overlay">
+              <div class="format-top-tags">
+                <span class="format-tag-badge">LIFESTYLE </span>
+                <span class="video-format-pill" style="font-size: 0.65rem;">9:16 Vertical</span>
+              </div>
+              <div class="format-center-trigger">
+                <button class="video-play-btn-pulse video-play-trigger" aria-label="Play Lifestyle Example"
+                  data-video-poster="images/services/service-lifestyle.jpg"
+                  data-video-title="Daily Living Routine Integration"
+                  data-video-meta="Format: Everyday Lifestyle Integration • 9:16 Vertical Video">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                  </svg>
+                </button>
+              </div>
+              <div class="format-bottom-caption">
+                <h3 class="format-caption-title">Everyday Use</h3>
+                <p class="format-caption-desc">
+                  The product in a normal day, at home or out.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Format 5: Authentic Creator Testimonials -->
+          <div class="format-portfolio-card camera-focus-media">
+            <img src="images/services/service-testimonial.jpg"
+              alt="Creator sharing honest conversational review in domestic interior" class="format-portfolio-bg"
+              width="380" height="590" loading="lazy">
+            <div class="format-portfolio-overlay">
+              <div class="format-top-tags">
+                <span class="format-tag-badge">TESTIMONIAL </span>
+                <span class="video-format-pill" style="font-size: 0.65rem;">9:16 Vertical</span>
+              </div>
+              <div class="format-center-trigger">
+                <button class="video-play-btn-pulse video-play-trigger" aria-label="Play Testimonial Example"
+                  data-video-poster="images/services/service-testimonial.jpg"
+                  data-video-title="Authentic Peer-to-Peer Review"
+                  data-video-meta="Format: Authentic Creator Testimonials • 9:16 Vertical Video">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                  </svg>
+                </button>
+              </div>
+              <div class="format-bottom-caption">
+                <h3 class="format-caption-title">Creator Testimonials</h3>
+                <p class="format-caption-desc">
+                  A person talking straight to camera. What they doubted before buying, and what changed.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Format 6: AI-Assisted Creative Variants -->
+          <div class="format-portfolio-card camera-focus-media">
+            <img src="images/services/service-ai-ugc.jpg" alt="AI virtual presenter testing dynamic regional hooks"
+              class="format-portfolio-bg" width="380" height="590" loading="lazy">
+            <div class="format-portfolio-overlay">
+              <div class="format-top-tags">
+                <span class="format-tag-badge">AI UGC</span>
+                <span class="video-format-pill" style="font-size: 0.65rem;">9:16 Vertical</span>
+              </div>
+              <div class="format-center-trigger">
+                <button class="video-play-btn-pulse video-play-trigger" aria-label="Play AI Creative Example"
+                  data-video-poster="images/services/service-ai-ugc.jpg"
+                  data-video-title="AI Assisted Regional Testing Asset"
+                  data-video-meta="Format: AI-Assisted Creative Variants • 9:16 Vertical Video">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                  </svg>
+                </button>
+              </div>
+              <div class="format-bottom-caption">
+                <h3 class="format-caption-title">AI Video Variations</h3>
+                <p class="format-caption-desc">
+                  Virtual presenters and different voices, for quickly trying out new openings.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 5 — FULL-FUNNEL CREATIVE ARCHITECTURE
+         ========================================================================= -->
+    <section class="services-section services-section-alt" id="marketing-funnel" aria-labelledby="funnel-title">
+      <div class="container">
+
+        <div class="section-header text-center">
+          <span class="eyebrow">THE BUYING JOURNEY</span>
+          <h2 id="funnel-title" class="font-display">The Right Video for Where Your Buyer Is</h2>
+          <p style="color: var(--text-secondary); line-height: 1.65; font-size: 1.05rem; margin-top: 0.5rem;">
+            Our UGC video services cover the full funnel. Someone who's never heard of you needs a different video from
+            someone about to buy.
+          </p>
+        </div>
+
+        <div class="funnel-architecture-grid">
+
+          <!-- Stage 1: TOP OF FUNNEL -->
+          <div class="funnel-stage-card">
+            <div>
+              <span class="funnel-stage-badge">Top</span>
+              <h3 class="funnel-stage-title">Haven't Heard of You Yet</h3>
+              <p class="funnel-stage-desc">
+                Easy, quick videos that show who you are and what you sell.
+              </p>
+            </div>
+            <div class="funnel-examples-wrap">
+              <div class="funnel-examples-title">Strategic Formats</div>
+              <ul class="funnel-examples-list">
+                <li class="funnel-examples-item">Attention Hooks</li>
+                <li class="funnel-examples-item">Lifestyle Videos</li>
+                <li class="funnel-examples-item">Product Discovery</li>
+                <li class="funnel-examples-item">Creator Introductions</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Stage 2: MIDDLE OF FUNNEL -->
+          <div class="funnel-stage-card">
+            <div>
+              <span class="funnel-stage-badge">Middle</span>
+              <h3 class="funnel-stage-title">Thinking About It</h3>
+              <p class="funnel-stage-desc">
+                Videos that answer “is this any good?” with demos, comparisons and honest use.
+              </p>
+            </div>
+            <div class="funnel-examples-wrap">
+              <div class="funnel-examples-title">Strategic Formats</div>
+              <ul class="funnel-examples-list">
+                <li class="funnel-examples-item">Product Demonstrations</li>
+                <li class="funnel-examples-item">Unboxings</li>
+                <li class="funnel-examples-item">Creator Reviews</li>
+                <li class="funnel-examples-item">Problem and Solution</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Stage 3: BOTTOM OF FUNNEL -->
+          <div class="funnel-stage-card">
+            <div>
+              <span class="funnel-stage-badge">Bottom</span>
+              <h3 class="funnel-stage-title">Ready to Buy</h3>
+              <p class="funnel-stage-desc">
+                Videos that clear the last doubts, mention the offer and say where to click.
+              </p>
+            </div>
+            <div class="funnel-examples-wrap">
+              <div class="funnel-examples-title">Strategic Formats</div>
+              <ul class="funnel-examples-list">
+                <li class="funnel-examples-item">Buy-Now Ads</li>
+                <li class="funnel-examples-item">What the Product Does</li>
+                <li class="funnel-examples-item">Offer Videos</li>
+                <li class="funnel-examples-item">Different Endings</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 6 — TECHNICAL DELIVERABLES
+         ========================================================================= -->
+    <section class="services-section" id="technical-specs" aria-labelledby="specs-title">
+      <div class="container">
+
+        <div class="section-header text-center">
+          <span class="eyebrow">DELIVERABLES</span>
+          <h2 id="specs-title" class="font-display">Files Ready for Every Platform</h2>
+          <p style="color: var(--text-secondary); line-height: 1.65; font-size: 1.05rem; margin-top: 0.5rem;">
+            Every video from our UGC video services is exported in the sizes ad platforms ask for, with color and sound
+            already fixed.
+          </p>
+        </div>
+
+        <!-- 4 Aspect Ratio Cards -->
+        <div class="specs-ratio-grid">
+
+          <!-- 9:16 Vertical Master -->
+          <div class="spec-ratio-card">
+            <div class="spec-frame-box spec-frame-9-16">9:16</div>
+            <h3 class="spec-ratio-title">Vertical</h3>
+            <div class="spec-ratio-res">1080 &times; 1920 px</div>
+            <p class="spec-ratio-use">
+              Reels, Stories, TikTok, YouTube Shorts
+            </p>
+          </div>
+
+          <!-- 4:5 Portrait Feed -->
+          <div class="spec-ratio-card">
+            <div class="spec-frame-box spec-frame-4-5">4:5</div>
+            <h3 class="spec-ratio-title">Portrait</h3>
+            <div class="spec-ratio-res">1080 &times; 1350 px</div>
+            <p class="spec-ratio-use">
+              Instagram and Facebook feed
+            </p>
+          </div>
+
+          <!-- 1:1 Square Feed -->
+          <div class="spec-ratio-card">
+            <div class="spec-frame-box spec-frame-1-1">1:1</div>
+            <h3 class="spec-ratio-title">Square</h3>
+            <div class="spec-ratio-res">1080 &times; 1080 px</div>
+            <p class="spec-ratio-use">
+              Square feed and carousel ads
+            </p>
+          </div>
+
+          <!-- 16:9 Landscape -->
+          <div class="spec-ratio-card">
+            <div class="spec-frame-box spec-frame-16-9">16:9</div>
+            <h3 class="spec-ratio-title">Landscape</h3>
+            <div class="spec-ratio-res">1920 &times; 1080 px</div>
+            <p class="spec-ratio-use">
+              YouTube ads, website, desktop
+            </p>
+          </div>
+
+        </div>
+
+        <!-- Additional Deliverables Strip -->
+        <div class="specs-additional-grid">
+          <div class="spec-addon-item">
+            <div class="spec-addon-label">Format</div>
+            <div class="spec-addon-val">MP4</div>
+          </div>
+          <div class="spec-addon-item">
+            <div class="spec-addon-label">Captions</div>
+            <div class="spec-addon-val">Burned into the video</div>
+          </div>
+          <div class="spec-addon-item">
+            <div class="spec-addon-label">Subtitles</div>
+            <div class="spec-addon-val">Separate SRT files</div>
+          </div>
+          <div class="spec-addon-item">
+            <div class="spec-addon-label">Hooks</div>
+            <div class="spec-addon-val">A few different openings</div>
+          </div>
+          <div class="spec-addon-item">
+            <div class="spec-addon-label">Endings</div>
+            <div class="spec-addon-val">Different call-to-action versions</div>
+          </div>
+          <div class="spec-addon-item">
+            <div class="spec-addon-label">Licensing</div>
+            <div class="spec-addon-val">Ad usage rights (commercial usage rights)</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 7 — INDUSTRIES WE SERVE
+         ========================================================================= -->
+    <section class="services-section services-section-alt" id="industries-grid" aria-labelledby="industries-title">
+      <div class="container">
+
+        <div class="section-header text-center">
+          <span class="eyebrow">INDUSTRIES</span>
+          <h2 id="industries-title" class="font-display">Brands We Make Videos For</h2>
+          <p style="color: var(--text-secondary); line-height: 1.65; font-size: 1.05rem; margin-top: 0.5rem;">
+            People shop for face cream differently from headphones. So we pick a different creator, script and setting
+            for each product, and our UGC video services fit your category.
+          </p>
+        </div>
+
+        <div class="industries-gallery-grid">
+
+          <!-- 1. Beauty & Skincare -->
+          <div class="industry-gallery-card">
+            <div class="industry-card-media camera-focus-media">
+              <img src="images/portfolio/portfolio-skincare.jpg"
+                alt="Female skincare creator reviewing cosmetic formula in natural domestic daylight" width="400"
+                height="250" loading="lazy">
+            </div>
+            <div class="industry-card-body">
+              <h3 class="industry-card-title">Beauty &amp; Skincare</h3>
+              <p class="industry-card-desc">
+                UGC for beauty and skincare brands: close-ups of texture, how it goes on, what's in it, and honest
+                before and after clips.
+              </p>
+            </div>
+          </div>
+
+          <!-- 2. Fashion & Apparel -->
+          <div class="industry-gallery-card">
+            <div class="industry-card-media camera-focus-media">
+              <img src="images/portfolio/portfolio-fashion.jpg"
+                alt="Fashion creator styling clothes and showcasing fabric drape and movement" width="400" height="250"
+                loading="lazy">
+            </div>
+            <div class="industry-card-body">
+              <h3 class="industry-card-title">Fashion &amp; Apparel</h3>
+              <p class="industry-card-desc">
+                UGC for fashion brands: try-ons, how the fabric moves, and a straight look at the fit so buyers worry
+                less about sizing.
+              </p>
+            </div>
+          </div>
+
+          <!-- 3. Health & Wellness -->
+          <div class="industry-gallery-card">
+            <div class="industry-card-media camera-focus-media">
+              <img src="images/portfolio/portfolio-wellness.jpg"
+                alt="Wellness creator demonstrating workout and active lifestyle routine" width="400" height="250"
+                loading="lazy">
+            </div>
+            <div class="industry-card-body">
+              <h3 class="industry-card-title">Health &amp; Wellness</h3>
+              <p class="industry-card-desc">
+                Real workouts, daily supplement routines and fitness gear in use.
+              </p>
+            </div>
+          </div>
+
+          <!-- 4. Food & Beverage -->
+          <div class="industry-gallery-card">
+            <div class="industry-card-media camera-focus-media">
+              <img src="images/portfolio/portfolio-beverage.jpg"
+                alt="Artisanal beverage preparation and taste test demonstration" width="400" height="250"
+                loading="lazy">
+            </div>
+            <div class="industry-card-body">
+              <h3 class="industry-card-title">Food &amp; Beverage</h3>
+              <p class="industry-card-desc">
+                UGC for food and beverage brands: the snack pack opening, the pour, the recipe and the first taste.
+              </p>
+            </div>
+          </div>
+
+          <!-- 5. Consumer Tech & Gadgets -->
+          <div class="industry-gallery-card">
+            <div class="industry-card-media camera-focus-media">
+              <img src="images/portfolio/portfolio-tech.jpg"
+                alt="Tech creator unboxing hardware device with macro desk focus" width="400" height="250"
+                loading="lazy">
+            </div>
+            <div class="industry-card-body">
+              <h3 class="industry-card-title">Consumer Tech &amp; Gadgets</h3>
+              <p class="industry-card-desc">
+                UGC for tech and gadget brands: opening the box, pressing the buttons, setting up the desk and walking
+                through the app.
+              </p>
+            </div>
+          </div>
+
+          <!-- 6. Modern Home & Living -->
+          <div class="industry-gallery-card">
+            <div class="industry-card-media camera-focus-media">
+              <img src="images/hero/hero-lifestyle.jpg"
+                alt="Lifestyle creator incorporating product into modern living room routine" width="400" height="250"
+                loading="lazy">
+            </div>
+            <div class="industry-card-body">
+              <h3 class="industry-card-title">Home &amp; Living</h3>
+              <p class="industry-card-desc">
+                Styled rooms, kitchen tools in use and how a product fits into a real home.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 8 — OUR PRODUCTION PROCESS
+         ========================================================================= -->
+    <section class="services-section" id="production-process" aria-labelledby="process-title">
+      <div class="container">
+
+        <div class="section-header-flex">
+          <div>
+            <span class="eyebrow">OUR PROCESS</span>
+            <h2 id="process-title" class="font-display">From Brief to Final Video</h2>
+          </div>
+          <p style="max-width: 480px; color: var(--text-secondary); line-height: 1.65; margin: 0;">
+            Six steps, the same every time for all our UGC video services. You know what's coming next, and we do the
+            chasing of creators.
+          </p>
+        </div>
+
+        <!-- Connected 6-Step Timeline Grid -->
+        <div class="process-steps-grid">
+
+          <!-- Step 1 -->
+          <div class="process-step-box">
+            <span class="process-step-num-badge">01</span>
+            <h3 class="process-step-name">Briefing</h3>
+            <p class="process-step-detail">
+              You tell us about the brand, the buyers, the product and what the campaign is for.
+            </p>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="process-step-box">
+            <span class="process-step-num-badge">02</span>
+            <h3 class="process-step-name">Creator Matching</h3>
+            <p class="process-step-detail">
+              We shortlist UGC creators for hire who fit your brand and are free to shoot.
+            </p>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="process-step-box">
+            <span class="process-step-num-badge">03</span>
+            <h3 class="process-step-name">Scripting</h3>
+            <p class="process-step-detail">
+              We write the ideas, hooks and scripts. You approve them before anyone films.
+            </p>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="process-step-box">
+            <span class="process-step-num-badge">04</span>
+            <h3 class="process-step-name">Filming</h3>
+            <p class="process-step-detail">
+              The creator shoots what you agreed on.
+            </p>
+          </div>
+
+          <!-- Step 5 -->
+          <div class="process-step-box">
+            <span class="process-step-num-badge">05</span>
+            <h3 class="process-step-name">Editing</h3>
+            <p class="process-step-detail">
+              We cut it, add captions, fix the pacing and make any extra versions you asked for.
+            </p>
+          </div>
+
+          <!-- Step 6 -->
+          <div class="process-step-box">
+            <span class="process-step-num-badge">06</span>
+            <h3 class="process-step-name">Delivery</h3>
+            <p class="process-step-detail">
+              You get the approved videos in the sizes you agreed.
+            </p>
+          </div>
+
+        </div>
+
+        <!-- Timeline Highlight Card -->
+        <div class="process-timeline-highlight">
+          <div class="timeline-highlight-left">
+            <h3>UGC video turnaround is usually 7 to 12 business days.</h3>
+            <p>It depends on how big the project is, how fast feedback comes back and when creators are free.</p>
+          </div>
+          <a href="contact" class="btn btn-primary" style="flex-shrink: 0;">Start Briefing &rarr;</a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 9 — WHY BRANDS CHOOSE MY UGC VIDEO
+         ========================================================================= -->
+    <section class="services-section services-section-alt" id="why-choose-us" aria-labelledby="benefits-title">
+      <div class="container">
+
+        <div class="section-header text-center">
+          <span class="eyebrow">WHY MY UGC VIDEO</span>
+          <h2 id="benefits-title" class="font-display">Why Brands Pick Us</h2>
+          <p style="color: var(--text-secondary); line-height: 1.65; font-size: 1.05rem; margin-top: 0.5rem;">
+            Most of our clients are online stores and marketing teams who need a lot of videos, and need them to be
+            good. Our UGC video services are built for exactly that, from UGC content for e-commerce brands to full
+            campaigns.
+        </div>
+
+        <div class="advantages-split-layout">
+
+          <!-- Left Column: Studio Production Planning Visual -->
+          <div class="advantages-visual-wrap camera-focus-media">
+            <img src="images/about/about-creative.jpg"
+              alt="Creative directors reviewing UGC script storyboards and video variations" width="560" height="420"
+              loading="lazy">
+            <div class="advantages-visual-overlay">
+              <div
+                style="display: inline-flex; align-items: center; gap: 0.45rem; background: rgba(0, 191, 165, 0.2); border: 1px solid rgba(0, 191, 165, 0.4); color: var(--color-mint-green); padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.75rem;">
+                <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--color-mint-green);"></span>
+                Our Own UGC Studio
+              </div>
+              <div
+                style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem;">
+                Our Own UGC Studio
+              </div>
+              <div style="font-size: 0.825rem; color: var(--text-secondary); line-height: 1.5;">
+                Our creative directors run everything, from choosing the creator to exporting the last file.
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: 4 Key Advantages -->
+          <div class="advantages-cards-col">
+
+            <!-- Advantage 1 -->
+            <div class="advantage-item-card">
+              <div class="advantage-item-num">01</div>
+              <div>
+                <h3 class="advantage-item-title">It Feels Like a Friend's Tip</h3>
+                <p class="advantage-item-desc">
+                  A creator telling a story about a product doesn't sound like an ad, so people don't scroll past it.
+                </p>
+              </div>
+            </div>
+
+            <!-- Advantage 2 -->
+            <div class="advantage-item-card">
+              <div class="advantage-item-num">02</div>
+              <div>
+                <h3 class="advantage-item-title">Fewer Reshoots</h3>
+                <p class="advantage-item-desc">
+                  We make different openings, creators and versions of the same idea. Your media buyer can swap in fresh
+                  videos without another shoot.
+                </p>
+              </div>
+            </div>
+
+            <!-- Advantage 3 -->
+            <div class="advantage-item-card">
+              <div class="advantage-item-num">03</div>
+              <div>
+                <h3 class="advantage-item-title">Ad Rights Included</h3>
+                <p class="advantage-item-desc">
+                  Your agreement spells out where you can run the videos, like Meta, TikTok, YouTube and Google.
+                  [CONFIRM: no royalty later?]
+                </p>
+              </div>
+            </div>
+
+            <!-- Advantage 4 -->
+            <div class="advantage-item-card">
+              <div class="advantage-item-num">04</div>
+              <div>
+                <h3 class="advantage-item-title">One Person to Talk To</h3>
+                <p class="advantage-item-desc">
+                  A project manager stays with you from brief to delivery. No more messaging creators on Instagram
+                  yourself.
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 10 — FAQ
+         ========================================================================= -->
+    <section class="services-section" id="faq" aria-labelledby="faq-title">
+      <div class="container">
+
+        <div class="section-header text-center">
+          <span class="eyebrow">FAQS</span>
+          <h2 id="faq-title" class="font-display">Common Questions</h2>
+          <p style="color: var(--text-secondary); line-height: 1.65; font-size: 1.05rem; margin-top: 0.5rem;">
+            Short answers on rights, creators, timelines and files.
+          </p>
+        </div>
+
+        <div class="services-faq-accordion faq-accordion">
+
+          <!-- Question 1 -->
+          <div class="faq-item">
+            <button class="faq-question" id="services-faq-q1" aria-expanded="false" aria-controls="services-faq-a1">
+              <span>What commercial usage rights do you provide?</span>
+              <div class="faq-icon-indicator" aria-hidden="true">+</div>
+            </button>
+            <div class="faq-answer" id="services-faq-a1" role="region" aria-labelledby="services-faq-q1">
+              <p>You can use the finished videos in paid ads on Meta, TikTok, YouTube and Google. The exact platforms
+                and duration are in your project agreement, so read that before signing. [ADD YOUR REAL TERMS]</p>
+            </div>
+          </div>
+
+          <!-- Question 2 -->
+          <div class="faq-item">
+            <button class="faq-question" id="services-faq-q2" aria-expanded="false" aria-controls="services-faq-a2">
+              <span>How long does production take?</span>
+              <div class="faq-icon-indicator" aria-hidden="true">+</div>
+            </button>
+            <div class="faq-answer" id="services-faq-a2" role="region" aria-labelledby="services-faq-q2">
+              <p>Most projects take about 7 to 12 business days, from brief to final video. A big batch or slow feedback
+                can add time.</p>
+            </div>
+          </div>
+
+          <!-- Question 3 -->
+          <div class="faq-item">
+            <button class="faq-question" id="services-faq-q3" aria-expanded="false" aria-controls="services-faq-a3">
+              <span>How do you select creators?</span>
+              <div class="faq-icon-indicator" aria-hidden="true">+</div>
+            </button>
+            <div class="faq-answer" id="services-faq-a3" role="region" aria-labelledby="services-faq-q3">
+              <p>We look at your product, your audience and the platform. Then we shortlist creators whose style and
+                followers suit it, and who are free on your dates.</p>
+            </div>
+          </div>
+
+          <!-- Question 4 -->
+          <div class="faq-item">
+            <button class="faq-question" id="services-faq-q4" aria-expanded="false" aria-controls="services-faq-a4">
+              <span>Do clients approve scripts before filming?</span>
+              <div class="faq-icon-indicator" aria-hidden="true">+</div>
+            </button>
+            <div class="faq-answer" id="services-faq-a4" role="region" aria-labelledby="services-faq-q4">
+              <p>Yes. We send the script and hooks first. Filming starts only after you say yes.</p>
+            </div>
+          </div>
+
+          <!-- Question 5 -->
+          <div class="faq-item">
+            <button class="faq-question" id="services-faq-q5" aria-expanded="false" aria-controls="services-faq-a5">
+              <span>What aspect ratios are delivered?</span>
+              <div class="faq-icon-indicator" aria-hidden="true">+</div>
+            </button>
+            <div class="faq-answer" id="services-faq-a5" role="region" aria-labelledby="services-faq-q5">
+              <p>9:16, 4:5, 1:1 and 16:9, as MP4 files. Captions can be burned in, and we can send separate SRT subtitle
+                files too.</p>
+            </div>
+          </div>
+
+          <!-- Question 6 -->
+          <div class="faq-item">
+            <button class="faq-question" id="services-faq-q6" aria-expanded="false" aria-controls="services-faq-a6">
+              <span>How are revisions handled?</span>
+              <div class="faq-icon-indicator" aria-hidden="true">+</div>
+            </button>
+            <div class="faq-answer" id="services-faq-a6" role="region" aria-labelledby="services-faq-q6">
+              <p>Send all your feedback together and we'll make the changes. [ADD YOUR REAL REVISION LIMIT, like 2
+                rounds]</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         SECTION 11 — FINAL CTA
+         ========================================================================= -->
+    <section class="services-section services-section-alt" id="services-cta" aria-labelledby="services-cta-title">
+      <div class="container">
+        <div class="services-cta-box">
+          <span class="eyebrow"
+            style="color: var(--color-mint-green); background: rgba(0, 191, 165, 0.15); border-color: rgba(0, 191, 165, 0.35);">START
+            A PROJECT</span>
+          <h2 id="services-cta-title" class="services-cta-title font-display">Got a Product? Let's turn it into a video.
+          </h2>
+          <p class="services-cta-desc">
+            Tell us what you sell. Our UGC video services start with a few ideas and a rough plan from us.
+          </p>
+          <div class="services-cta-btns">
+            <a href="contact" class="btn btn-primary">Start Your UGC Project</a>
+            <a href="./" class="btn btn-secondary">Back to Homepage</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================================
+       GLOBAL VIDEO PREVIEW MODAL PLAYER
+       ========================================================================= -->
+  <div class="video-modal-backdrop" id="videoModal" role="dialog" aria-modal="true" aria-label="Video Showcase Player">
+    <div class="video-modal-dialog">
+      <button class="video-modal-close-btn" aria-label="Close Video Preview">&times;</button>
+      <div class="video-modal-media-wrap">
+        <img id="videoModalImg" src="images/services/service-ugc-creation.jpg" alt="Video Preview Reel"
+          class="video-modal-poster">
+        <div class="video-modal-badge-overlay">
+          <span class="creator-rec-tag"><span class="creator-rec-dot"></span> 9:16 VERTICAL MASTER</span>
+        </div>
+      </div>
+      <div class="video-modal-caption-bar">
+        <div id="videoModalTitle"
+          style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">
+          Featured UGC Video Showcase</div>
+        <div id="videoModalSub"
+          style="font-family: var(--font-body); font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;">
+          Direct-Response Vertical Video Format</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       GLOBAL FOOTER (PRESERVED ACCORDING TO BRAND NAVIGATION)
+       ========================================================================= -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="./" class="brand-logo" aria-label="MY UGC VIDEO Home">
+            <span class="brand-title">MY UGC VIDEO</span>
+            <span class="brand-subtitle">UGC Creative Agency</span>
+          </a>
+          <p>
+            A modern creative agency engineering authentic, scroll-stopping UGC video production, creator-led content,
+            and performance marketing video ads for ambitious brands.
+          </p>
+          <div class="social-links">
+            <a href="https://instagram.com" class="social-link" target="_blank" rel="noopener noreferrer">Instagram</a>
+            <a href="https://tiktok.com" class="social-link" target="_blank" rel="noopener noreferrer">TikTok</a>
+            <a href="https://linkedin.com" class="social-link" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="footer-title">Navigation</h4>
+          <ul class="footer-links">
+            <li><a href="./" class="footer-link">Home</a></li>
+            <li><a href="about" class="footer-link">About Studio</a></li>
+            <li><a href="services" class="footer-link">Services</a></li>
+            <li><a href="blogs" class="footer-link">Blogs</a></li>
+            <li><a href="contact" class="footer-link">Contact Us</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-title">Our Services</h4>
+          <ul class="footer-links">
+            <li><a href="services/ugc-video-creation-company" class="footer-link">UGC Video Creation Services</a></li>
+            <li><a href="services/ugc-video-ads-company" class="footer-link">UGC Video Ads</a></li>
+            <li><a href="services/ai-ugc-video-creation-company" class="footer-link">AI UGC Video Creation</a></li>
+            <li><a href="services/ugc-product-video-company" class="footer-link">UGC Product Video</a></li>
+            <li><a href="services/ugc-product-review-videos-company" class="footer-link">UGC Product Reviews Videos</a>
+            </li>
+            <li><a href="services/ugc-video-company-in-delhi" class="footer-link">UGC Video Company in Delhi</a>
+            </li>
+            <li><a href="services/ugc-unboxing-videos-company" class="footer-link">UGC Unboxing Videos</a></li>
+            <li><a href="services/ugc-testimonial-videos-company" class="footer-link">UGC Testimonial Videos</a></li>
+            <li><a href="services/ugc-video-editing-company" class="footer-link">UGC Video Editing Service</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="footer-newsletter">
+          <h4 class="footer-title">Studio Dispatches</h4>
+          <p>Join brand marketing leaders receiving our bi-weekly breakdown on UGC video performance, creative
+            frameworks, and algorithmic updates.</p>
+          <form class="newsletter-form" action="#" method="POST" novalidate>
+            <div class="newsletter-input-wrap">
+              <label for="newsletterEmailFooter" class="sr-only">Email address</label>
+              <input type="email" id="newsletterEmailFooter" class="newsletter-input" placeholder="Your work email"
+                required>
+            </div>
+            <button type="submit" class="newsletter-submit">Subscribe</button>
+            <div class="newsletter-feedback" aria-live="polite"></div>
+          </form>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="copyright">
+          &copy; 2026 MY UGC VIDEO Creative Agency. All rights reserved.
+        </div>
+        <div class="contact-placeholder-strip">
+          <span class="tag-mono"
+            style="background: rgba(0, 34, 30, 0.6); border-color: var(--border-medium); color: var(--text-secondary);">
+            Inquiries: hello@myugcvideo.in
+          </span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/quick-enquiry.js"></script>
+    <!-- =========================================================================
+       FLOATING CTA BUTTONS (WHATSAPP & DIRECT CALL)
+       ========================================================================= -->
+  <aside class="floating-ctas-left" id="floatingCtasLeft" aria-label="Quick Communication Options">
+    <a href="https://wa.me/919876543210?text=Hi%20MY%20UGC%20VIDEO%2C%20I%20am%20interested%20in%20scaling%20our%20brand%20with%20UGC%20videos."
+       target="_blank"
+       rel="noopener noreferrer"
+       class="floating-cta-btn floating-btn-whatsapp"
+       id="floatingWhatsAppBtn"
+       aria-label="Chat on WhatsApp">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 17.06c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.106 8.106 0 0 1-1.25-4.29c0-4.5 3.66-8.16 8.16-8.16 2.18 0 4.23.85 5.77 2.39a8.107 8.107 0 0 1 2.39 5.77c0 4.5-3.66 8.15-8.08 8.15zm4.47-6.11c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43s-.56-1.34-.76-1.84c-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1s.9 2.44 1.02 2.6c.12.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.44.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.17-.48-.29z"/>
+      </svg>
+    </a>
+    <a href="tel:+919876543210"
+       class="floating-cta-btn floating-btn-call"
+       id="floatingCallBtn"
+       aria-label="Call MY UGC VIDEO Team">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+      </svg>
+    </a>
+  </aside>
+
+  <!-- =========================================================================
+       FLOATING CHATBOT WIDGET & DRAWER
+       ========================================================================= -->
+  <aside class="floating-chat-widget" id="floatingChatWidget" aria-label="Customer Support Chat">
+    <div class="chat-speech-bubble" id="chatSpeechBubble" role="status" aria-live="polite">
+      <span class="chat-bubble-text">Chat with us! 👋</span>
+      <button type="button" class="chat-bubble-close" id="chatBubbleClose" aria-label="Dismiss chat prompt">&times;</button>
+    </div>
+    <button type="button" class="floating-chatbot-btn" id="floatingChatbotBtn" aria-label="Open Live Chat" aria-expanded="false" aria-controls="siteChatDrawer">
+      <svg class="chat-icon-open" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+      <svg class="chat-icon-close" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </aside>
+
+  <!-- Chat Drawer Popup -->
+  <div class="site-chat-drawer" id="siteChatDrawer" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="chatDrawerTitle" aria-hidden="true">
+    <div class="chat-drawer-header">
+      <div class="chat-drawer-title-wrap">
+        <div class="chat-drawer-avatar">
+          <span>UGC</span>
+          <span class="chat-online-dot" aria-hidden="true"></span>
+        </div>
+        <div>
+          <h3 class="chat-drawer-title" id="chatDrawerTitle">MY UGC VIDEO</h3>
+          <span class="chat-drawer-status">Online &bull; Replies within minutes</span>
+        </div>
+      </div>
+      <button type="button" class="chat-drawer-close-btn" id="chatDrawerCloseBtn" aria-label="Close Chat">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="chat-drawer-body" id="chatDrawerBody">
+      <div class="chat-msg chat-msg-bot">
+        <div class="chat-bubble">
+          Hey there! 👋 Welcome to MY UGC VIDEO. How can we help scale your performance creative today?
+        </div>
+        <span class="chat-timestamp">Just now</span>
+      </div>
+
+      <div class="chat-quick-actions">
+        <a href="https://wa.me/919876543210?text=Hi%20MY%20UGC%20VIDEO%2C%20I%20am%20interested%20in%20scaling%20our%20brand%20with%20UGC%20videos."
+           target="_blank"
+           rel="noopener noreferrer"
+           class="chat-action-chip"
+           style="color:#25D366;border-color:rgba(37,211,102,0.4);">
+          💬 Chat on WhatsApp (+91 98765 43210)
+        </a>
+        <button type="button" class="chat-action-chip" data-chat-action="inquiry">
+          📋 Submit Project Brief / Get Quote
+        </button>
+      </div>
+    </div>
+
+    <form class="chat-drawer-footer" id="chatMessageForm">
+      <input type="text" class="chat-input" id="chatMessageInput" placeholder="Type your message..." autocomplete="off" aria-label="Type message">
+      <button type="submit" class="chat-send-btn" aria-label="Send message">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </form>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+
+</html>

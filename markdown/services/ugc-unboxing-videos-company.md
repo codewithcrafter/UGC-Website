@@ -272,9 +272,9 @@ Complement your campaign with our other specialized services:
 - [UGC product video agency](https://myugcvideo.in/services/ugc-product-video-company)
 - [UGC testimonial videos](https://myugcvideo.in/services/ugc-testimonial-videos-company)
 - [UGC video ads](https://myugcvideo.in/services/ugc-video-ads-company)
-- [UGC video company in Delhi](https://myugcvideo.in/services/ugc-video-company-in-delhi-company)
-- [UGC video creation services](https://myugcvideo.in/services/ugc-video-creation-services-company)
-- [UGC video editing service](https://myugcvideo.in/services/ugc-video-editing-service-company)
+- [UGC video company in Delhi](https://myugcvideo.in/services/ugc-video-company-in-delhi)
+- [UGC video creation services](https://myugcvideo.in/services/ugc-video-creation-company)
+- [UGC video editing service](https://myugcvideo.in/services/ugc-video-editing-company)
 
 ## Ready to Scale Your Video Content?
 

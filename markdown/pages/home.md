@@ -70,15 +70,15 @@ Why high-growth e-commerce and D2C brands partner with MY UGC VIDEO:
 
 Explore our nine specialized UGC video disciplines:
 
-1. [UGC Video Creation Services](https://myugcvideo.in/services/ugc-video-creation-services-company): End-to-end bespoke creator video production for growing D2C brands.
+1. [UGC Video Creation Services](https://myugcvideo.in/services/ugc-video-creation-company): End-to-end bespoke creator video production for growing D2C brands.
 2. [UGC Video Ads](https://myugcvideo.in/services/ugc-video-ads-company): Direct-response ad creatives engineered to stop feeds and increase ROAS on Meta and TikTok.
 3. [AI UGC Video Creation](https://myugcvideo.in/services/ai-ugc-video-creation-company): Scalable AI avatars, multilingual voiceovers, and high-velocity hook testing.
 4. [UGC Product Videos](https://myugcvideo.in/services/ugc-product-video-company): Tactile demonstrations illustrating real product utility, texture, and size.
 5. [UGC Product Review Videos](https://myugcvideo.in/services/ugc-product-review-videos-company): Honest, relatable first-hand reviews that dismantle buyer hesitation.
-6. [UGC Video Company in Delhi](https://myugcvideo.in/services/ugc-video-company-in-delhi-company): Delhi NCR creator talent, dedicated studio space, and rapid 48-hour turnarounds.
+6. [UGC Video Company in Delhi](https://myugcvideo.in/services/ugc-video-company-in-delhi): Delhi NCR creator talent, dedicated studio space, and rapid 48-hour turnarounds.
 7. [UGC Unboxing Videos](https://myugcvideo.in/services/ugc-unboxing-videos-company): Sensory arrival anticipation, premium packaging details, and genuine reveals.
 8. [UGC Testimonial Videos](https://myugcvideo.in/services/ugc-testimonial-videos-company): Relatable customer stories that validate product claims and guide checkout.
-9. [UGC Video Editing Service](https://myugcvideo.in/services/ugc-video-editing-service-company): Kinetic typography, multiple hook variations, sound design, and 48-hour delivery.
+9. [UGC Video Editing Service](https://myugcvideo.in/services/ugc-video-editing-company): Kinetic typography, multiple hook variations, sound design, and 48-hour delivery.
 
 ---
 

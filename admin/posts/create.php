@@ -181,6 +181,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $newId = (int) $db->lastInsertId();
 
+        // Synchronize blog-specific SEO hashtags to tags and blog_post_tags tables
+        syncPostTags($newId, $keywords);
+
         // Automatically synchronize to Markdown & BlogPosting Schema
         $syncRes = syncBlogPostArtifacts($newId);
         $syncNote = $syncRes['success'] ? ' & Markdown/Schema generated' : '';

@@ -9,33 +9,80 @@
 define('CMS_ROOT', __DIR__);
 require_once CMS_ROOT . '/config/config.php';
 
-// 1. Fetch Featured Post (Only explicitly marked is_featured = 1)
-$featuredPost = getFeaturedPost();
+// Tag and pagination parameter handling
+$tagParam = !empty($_GET['tag']) ? trim($_GET['tag']) : null;
+$page = max(1, (int)($_GET['page'] ?? 1));
+
+// 1. Fetch Featured Post (Only explicitly marked is_featured = 1, hidden when tag filter is active)
+$featuredPost = empty($tagParam) ? getFeaturedPost() : null;
 
 // 2. Fetch Categories
 $categories = getAllCategories();
 
-// 3. Fetch The Latest Posts (Exclusively non-featured published posts: is_featured = 0)
-$gridResult = getPosts([
+// 3. Fetch Posts (Supporting tag filter, category filter, and pagination)
+$gridArgs = [
     'status'      => 'published',
     'is_featured' => 0,
+    'page'        => $page,
     'per_page'    => 50 // Load published non-featured posts for client-side filtering via main.js
-]);
-$gridPosts = $gridResult['posts'];
+];
 
-// Metadata
-$pageTitle = 'The Creator Journal — UGC Insights, Trends & Strategy | MY UGC VIDEO';
-$metaDescription = 'Explore in-depth articles on UGC video strategy, creator management, paid social performance, and e-commerce content marketing from MY UGC VIDEO.';
+if ($tagParam !== null && $tagParam !== '') {
+    $gridArgs['tag'] = $tagParam;
+}
+
+$gridResult = getPosts($gridArgs);
+$gridPosts = $gridResult['posts'];
+$totalPosts = $gridResult['total'];
+
+// Dynamic SEO & Metadata
+if ($tagParam !== null && $tagParam !== '') {
+    $cleanTagName = ltrim($tagParam, '#');
+    $pageTitle = '#' . $cleanTagName . ' Articles & Trends | MY UGC VIDEO';
+    $metaDescription = 'Explore in-depth articles, insights and creator strategies tagged #' . $cleanTagName . ' from MY UGC VIDEO.';
+} else {
+    $pageTitle = 'The Creator Journal — UGC Insights, Trends & Strategy | MY UGC VIDEO';
+    $metaDescription = 'Explore in-depth articles on UGC video strategy, creator management, paid social performance, and e-commerce content marketing from MY UGC VIDEO.';
+}
+
+// Canonical URL generation (Preserves valid tag and page params, strips all tracking query params)
+$canonicalUrl = generateCleanCanonicalUrl('/blogs', ['tag' => $tagParam, 'page' => $page]);
+
+// Dynamic Robots Indexing Strategy:
+// Paginated pages (> 1) and empty tag filter results get 'noindex, follow' to protect crawl budget
+if ($page > 1 || ($tagParam !== null && $totalPosts === 0)) {
+    $robotsDirective = 'noindex, follow';
+} else {
+    $robotsDirective = 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
+}
+
 $canonicalBase = function_exists('getLlmCanonicalBaseUrl') ? getLlmCanonicalBaseUrl() : 'https://myugcvideo.in';
-$canonicalUrl = $canonicalBase . '/blogs';
 $ogImage = $featuredPost && !empty($featuredPost['featured_image']) 
     ? (str_starts_with($featuredPost['featured_image'], 'http') ? $featuredPost['featured_image'] : $canonicalBase . '/' . ltrim($featuredPost['featured_image'], '/'))
     : $canonicalBase . '/images/blogs/blog-1.jpg';
 
-// Structured Data (Managed via Centralized Schema Manager with fallback)
-$structuredData = [
+// Structured Data (Centralized Schema Manager with dynamic rendering)
+$structuredData = null;
+if (function_exists('renderDynamicPageSchemas')) {
+    $dynamicSchemas = renderDynamicPageSchemas('blog-listing');
+    if (!empty($dynamicSchemas)) {
+        $structuredData = $dynamicSchemas;
+    }
+}
+
+if (empty($structuredData)) {
+    $structuredData = [
     "@context" => "https://schema.org",
     "@graph" => [
+        [
+            "@type" => "Organization",
+            "@id" => rtrim($canonicalBase, '/') . "/#organization",
+            "name" => "MY UGC VIDEO",
+            "url" => rtrim($canonicalBase, '/'),
+            "image" => rtrim($canonicalBase, '/') . "/images/hero/hero-ugc-production.jpg",
+            "description" => "Premier performance-driven UGC video production studio and creator network connecting brands with authentic creator-led video content.",
+            "email" => "hello@myugcvideo.in"
+        ],
         [
             "@type" => "BreadcrumbList",
             "@id" => $canonicalUrl . "#breadcrumb",
@@ -55,40 +102,28 @@ $structuredData = [
             ]
         ],
         [
+            "@type" => "CollectionPage",
+            "@id" => $canonicalUrl . "#collection",
+            "url" => $canonicalUrl,
+            "name" => $pageTitle,
+            "description" => $metaDescription,
+            "mainEntityOfPage" => $canonicalUrl
+        ],
+        [
             "@type" => "WebPage",
             "@id" => $canonicalUrl . "#webpage",
             "url" => $canonicalUrl,
             "name" => $pageTitle,
             "description" => $metaDescription,
-            "isPartOf" => [
-                "@id" => rtrim($canonicalBase, '/') . "/#organization"
+            "isPartOf" => rtrim($canonicalBase, '/') . "/",
+            "publisher" => [
+                "@type" => "Organization",
+                "name" => "MY UGC VIDEO",
+                "url" => rtrim($canonicalBase, '/')
             ]
         ]
     ]
 ];
-if (function_exists('getPublishedPageSchemas')) {
-    $mgSchemas = getPublishedPageSchemas('blog-listing');
-    if (!empty($mgSchemas)) {
-        $graphNodes = [];
-        foreach ($mgSchemas as $sRow) {
-            $parsed = json_decode($sRow['schema_data'], true);
-            if ($parsed) {
-                if (isset($parsed['@graph']) && is_array($parsed['@graph'])) {
-                    foreach ($parsed['@graph'] as $gn) {
-                        $graphNodes[] = $gn;
-                    }
-                } else {
-                    $graphNodes[] = $parsed;
-                }
-            }
-        }
-        if (!empty($graphNodes)) {
-            $structuredData = [
-                "@context" => "https://schema.org",
-                "@graph"   => $graphNodes
-            ];
-        }
-    }
 }
 
 include CMS_ROOT . '/includes/blog-header.php';
@@ -106,7 +141,13 @@ include CMS_ROOT . '/includes/blog-header.php';
         <nav class="breadcrumbs" aria-label="Breadcrumb">
           <a href="<?= SITE_URL ?>/">Home</a>
           <span class="separator" aria-hidden="true">/</span>
-          <span class="current-page">Blogs</span>
+          <?php if (!empty($tagParam)): ?>
+            <a href="<?= SITE_URL ?>/blogs">Blogs</a>
+            <span class="separator" aria-hidden="true">/</span>
+            <span class="current-page">#<?= e(ltrim($tagParam, '#')) ?></span>
+          <?php else: ?>
+            <span class="current-page">Blogs</span>
+          <?php endif; ?>
         </nav>
 
         <div class="blog-hero-inner">
@@ -115,18 +156,26 @@ include CMS_ROOT . '/includes/blog-header.php';
           </div>
 
           <h1 id="blog-hero-title" class="blog-hero-title font-display">
-            UGC Marketing Tips and Creator Trends
+            <?php if (!empty($tagParam)): ?>
+              Articles Tagged #<?= e(ltrim($tagParam, '#')) ?>
+            <?php else: ?>
+              UGC Marketing Tips and Creator Trends
+            <?php endif; ?>
           </h1>
 
           <p class="blog-hero-desc">
-            Fresh ideas on UGC video, creator culture and the way brands tell their stories today. Our team shares practical UGC marketing tips, video ad trends and creator content strategies you can put to work right away.
+            <?php if (!empty($tagParam)): ?>
+              Curated perspectives and tactical deep dives on #<?= e(ltrim($tagParam, '#')) ?>. Explore creator frameworks, production workflows, and real performance data.
+            <?php else: ?>
+              Fresh ideas on UGC video, creator culture and the way brands tell their stories today. Our team shares practical UGC marketing tips, video ad trends and creator content strategies you can put to work right away.
+            <?php endif; ?>
           </p>
         </div>
       </div>
     </section>
 
     <!-- =========================================================================
-         SECTION 02 — FEATURED BLOG
+         SECTION 02 — FEATURED BLOG (Shown on general listing, omitted during tag filtering)
          ========================================================================= -->
     <?php if ($featuredPost): 
       $featImg = !empty($featuredPost['featured_image']) ? SITE_URL . '/' . ltrim($featuredPost['featured_image'], '/') : SITE_URL . '/images/blogs/blog-1.jpg';
@@ -157,7 +206,7 @@ include CMS_ROOT . '/includes/blog-header.php';
               <span class="author-name">By <?= e($featuredPost['author_name']) ?></span>
             </div>
             <div class="featured-actions">
-              <a href="<?= e($featUrl) ?>" class="btn btn-primary">Read the product photography guide  &rarr;</a>
+              <a href="<?= e($featUrl) ?>" class="btn btn-primary">Read the product photography guide &rarr;</a>
             </div>
           </div>
         </div>
@@ -166,7 +215,7 @@ include CMS_ROOT . '/includes/blog-header.php';
     <?php endif; ?>
 
     <!-- =========================================================================
-         SECTION 03 — THE LATEST (SEARCH, CATEGORY FILTERS, GRID & LOAD MORE)
+         SECTION 03 — THE LATEST (SEARCH, CATEGORY FILTERS, HASHTAG BANNER, GRID)
          ========================================================================= -->
     <section class="latest-blogs-section" id="latest-articles" aria-labelledby="latest-heading">
       <div class="container">
@@ -207,6 +256,20 @@ include CMS_ROOT . '/includes/blog-header.php';
 
         </div>
 
+        <!-- Active Hashtag Filter Banner (Displayed when ?tag=... is present) -->
+        <?php if (!empty($tagParam)): ?>
+          <div class="active-tag-banner" role="status">
+            <div class="active-tag-info">
+              <span>Showing articles tagged:</span>
+              <span class="active-tag-badge">#<?= e(ltrim($tagParam, '#')) ?></span>
+              <span style="color: var(--text-muted); font-size: 0.85rem;">(<?= count($gridPosts) ?> article<?= count($gridPosts) === 1 ? '' : 's' ?>)</span>
+            </div>
+            <a href="<?= SITE_URL ?>/blogs" class="clear-tag-btn" title="View all articles">
+              <span>&times; Clear Filter</span>
+            </a>
+          </div>
+        <?php endif; ?>
+
         <!-- Dynamic Feedback for Filter/Search State -->
         <div id="blogResultsSummary" class="blog-results-summary" aria-live="polite"></div>
 
@@ -217,6 +280,7 @@ include CMS_ROOT . '/includes/blog-header.php';
             $postUrl = SITE_URL . '/blog/' . urlencode($post['slug']);
             $catSlug = $post['category_slug'] ?? 'general';
             $keywords = e($post['keywords'] ?? ($post['title'] . ' ' . $post['category_name']));
+            $cardTags = getPostTags((int)$post['id']);
           ?>
           <article class="blog-card" data-category="<?= e($catSlug) ?>" data-keywords="<?= e($keywords) ?>">
             <div class="blog-card-media">
@@ -235,6 +299,18 @@ include CMS_ROOT . '/includes/blog-header.php';
               <p class="blog-card-excerpt">
                 <?= e($post['excerpt']) ?>
               </p>
+
+              <!-- Clickable Hashtag Chips on Blog Card -->
+              <?php if (!empty($cardTags)): ?>
+                <div class="card-tags-row" style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1rem;">
+                  <?php foreach (array_slice($cardTags, 0, 3) as $ct): ?>
+                    <a href="<?= SITE_URL ?>/blogs?tag=<?= urlencode($ct['name']) ?>" class="blog-hashtag-chip" style="font-size: 0.74rem; padding: 0.2rem 0.55rem;" title="Explore #<?= e($ct['name']) ?>">
+                      #<?= e($ct['name']) ?>
+                    </a>
+                  <?php endforeach; ?>
+                </div>
+              <?php endif; ?>
+
               <div class="blog-card-footer">
                 <span class="blog-card-author">By <?= e($post['author_name']) ?></span>
                 <a href="<?= e($postUrl) ?>" class="slider-link-action">Read Article &rarr;</a>
@@ -245,19 +321,25 @@ include CMS_ROOT . '/includes/blog-header.php';
         </div>
 
         <!-- No Blogs Found Empty State -->
-        <div id="noBlogsFound" class="no-blogs-found" style="display: none;">
+        <div id="noBlogsFound" class="no-blogs-found" style="<?= (count($gridPosts) === 0) ? 'display: block;' : 'display: none;' ?>">
           <div class="no-blogs-icon" aria-hidden="true">&#128269;</div>
-          <h3 class="no-blogs-title font-display">No articles found matching your criteria</h3>
-          <p class="no-blogs-desc">Try adjusting your search terms or selecting another category filter.</p>
-          <button type="button" id="resetBlogFiltersBtn" class="btn btn-secondary">Reset Search &amp; Filters</button>
+          <h3 class="no-blogs-title font-display">
+            <?= !empty($tagParam) ? 'No articles found tagged #' . e(ltrim($tagParam, '#')) : 'No articles found matching your criteria' ?>
+          </h3>
+          <p class="no-blogs-desc">
+            <?= !empty($tagParam) ? 'We couldn\'t find any published articles matching this hashtag filter.' : 'Try adjusting your search terms or selecting another category filter.' ?>
+          </p>
+          <a href="<?= SITE_URL ?>/blogs" class="btn btn-secondary">Reset All Filters &rarr;</a>
         </div>
 
         <!-- Load More Action -->
+        <?php if (count($gridPosts) > 6): ?>
         <div class="blog-load-more-wrap" id="loadMoreWrap">
           <button type="button" id="loadMoreBtn" class="btn btn-secondary btn-lg">
             Load More Articles
           </button>
         </div>
+        <?php endif; ?>
 
       </div>
     </section>
@@ -289,4 +371,3 @@ include CMS_ROOT . '/includes/blog-header.php';
   </main>
 
 <?php include CMS_ROOT . '/includes/blog-footer.php'; ?>
-

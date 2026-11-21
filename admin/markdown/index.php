@@ -58,12 +58,11 @@ function getManagedContentFiles(PDO $db): array {
         }
     } catch (Throwable $e) {}
 
-    // 3. Scan subdirectories in MARKDOWN_DIR (blogs, pages, services, case-studies, other)
+    // 3. Scan subdirectories in MARKDOWN_DIR (blogs, pages, services, other)
     $categories = [
         'blogs'        => ['dir' => 'blogs', 'name' => 'Blogs', 'icon' => 'blog'],
         'pages'        => ['dir' => 'pages', 'name' => 'Pages', 'icon' => 'page'],
         'services'     => ['dir' => 'services', 'name' => 'Services', 'icon' => 'service'],
-        'case-studies' => ['dir' => 'case-studies', 'name' => 'Case Studies', 'icon' => 'case'],
         'other'        => ['dir' => 'other', 'name' => 'Other', 'icon' => 'file']
     ];
 
@@ -299,7 +298,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $title = trim($_POST['title'] ?? '');
         $initialContent = trim($_POST['content'] ?? '');
 
-        if (!in_array($cat, ['blogs', 'pages', 'case-studies', 'other', 'llm', 'schemas'])) {
+        if (!in_array($cat, ['blogs', 'pages', 'other', 'llm', 'schemas'])) {
             $cat = 'other';
         }
 
@@ -360,7 +359,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'upload_file') {
         $cat = trim($_POST['category'] ?? 'other');
-        if (!in_array($cat, ['pages', 'case-studies', 'other', 'blogs', 'schemas'])) {
+        if (!in_array($cat, ['pages', 'other', 'blogs', 'schemas'])) {
             $cat = 'other';
         }
 
@@ -1219,9 +1218,6 @@ include CMS_ROOT . '/admin/includes/header.php';
       } elseif ($activeFile['category'] === 'services') {
           $srvSlug = pathinfo($activeFile['filename'], PATHINFO_FILENAME);
           $directPublicUrl = SITE_URL . '/services/' . urlencode($srvSlug) . '.md';
-      } elseif ($activeFile['category'] === 'case-studies') {
-          $caseSlug = pathinfo($activeFile['filename'], PATHINFO_FILENAME);
-          $directPublicUrl = SITE_URL . '/case-studies/' . urlencode($caseSlug) . '.md';
       } elseif ($activeFile['category'] === 'other') {
           $otherSlug = pathinfo($activeFile['filename'], PATHINFO_FILENAME);
           $directPublicUrl = SITE_URL . '/other/' . urlencode($otherSlug) . '.md';
@@ -1375,7 +1371,6 @@ include CMS_ROOT . '/admin/includes/header.php';
             <select id="createCategory" name="category" class="form-control" onchange="handleCategoryChange(this.value)" required>
               <option value="pages">Pages (markdown/pages/)</option>
               <option value="services">Services (markdown/services/)</option>
-              <option value="case-studies">Case Studies (markdown/case-studies/)</option>
               <option value="blogs">Blogs (markdown/blogs/)</option>
               <option value="other" selected>Other (markdown/other/)</option>
               <option value="llm">LLM Directives (root directory)</option>
@@ -1427,7 +1422,6 @@ include CMS_ROOT . '/admin/includes/header.php';
           <select id="uploadCategory" name="category" class="form-control" required>
             <option value="pages">Pages (markdown/pages/)</option>
             <option value="services">Services (markdown/services/)</option>
-            <option value="case-studies">Case Studies (markdown/case-studies/)</option>
             <option value="blogs">Blogs (markdown/blogs/)</option>
             <option value="other" selected>Other (markdown/other/)</option>
           </select>
