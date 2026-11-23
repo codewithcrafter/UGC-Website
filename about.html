@@ -50,6 +50,7 @@
   
   
   
+  
   <!-- Centralized Dynamic Schema Manager JSON-LD -->
   <script type="application/ld+json">
   {
@@ -76,12 +77,38 @@
     "name": "MY UGC VIDEO",
     "url": "https://myugcvideo.in/",
     "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
-    "description": "MY UGC VIDEO is a UGC video production company creating authentic user-generated content videos for brands.",
+    "description": "MY UGC VIDEO is a performance-driven UGC video production agency and creator network connecting brands with authentic creators for UGC video ads, product videos, testimonials, unboxing videos, AI UGC content and social media video production.",
     "email": "hello@myugcvideo.in",
-    "sameAs": [
-        "https://www.instagram.com/myugcvideo/",
-        "https://www.linkedin.com/company/myugcvideo/"
-    ]
+    "telephone": "+91 98765 43210",
+    "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Basement Floor, B-16, Block D, Ram Dutt Enclave, Uttam Nagar",
+        "addressLocality": "New Delhi",
+        "addressRegion": "Delhi",
+        "postalCode": "110059",
+        "addressCountry": {
+            "@type": "Country",
+            "name": "IN"
+        }
+    },
+    "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91 98765 43210",
+        "email": "hello@myugcvideo.in",
+        "contactType": "customer service",
+        "areaServed": {
+            "@type": "Country",
+            "name": "India"
+        },
+        "availableLanguage": [
+            "English",
+            "Hindi"
+        ]
+    },
+    "areaServed": {
+        "@type": "Country",
+        "name": "India"
+    }
 }
   </script>
   <script type="application/ld+json">
@@ -304,7 +331,7 @@
           </div>
 
           <h1 id="hero-headline" class="hero-editorial-title font-display">
-            We Find the Right Creator for Your Product.
+            We Find the Right Creator <span class="highlight-mint">for Your Product.</span>
           </h1>
 
           <div class="hero-editorial-desc">
@@ -763,7 +790,7 @@
           <form class="newsletter-form" action="#" method="POST" novalidate>
             <div class="newsletter-input-wrap">
               <label for="newsletterEmailFooter" class="sr-only">Email address</label>
-              <input type="email" id="newsletterEmailFooter" class="newsletter-input" placeholder="Your work email"
+              <input type="email" id="newsletterEmailFooter" class="newsletter-input" placeholder="alex@yourbrand.com"
                 required>
             </div>
             <button type="submit" class="newsletter-submit">Subscribe</button>

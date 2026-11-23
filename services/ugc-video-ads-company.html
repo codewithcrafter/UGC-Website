@@ -38,195 +38,216 @@
   <!-- Breadcrumb Schema -->
   <!-- Service Schema -->
   <!-- FAQ Schema -->
-      <!-- Centralized Schema Manager JSON-LD -->
+      
+  <!-- Centralized Dynamic Schema Manager JSON-LD -->
   <script type="application/ld+json">
-{
+  {
     "@context": "https://schema.org",
-    "@graph": [
+    "@type": "Service",
+    "@id": "https://myugcvideo.in/services/ugc-video-ads-company#service",
+    "name": "UGC Video Ads Company",
+    "url": "https://myugcvideo.in/services/ugc-video-ads-company",
+    "description": "Get UGC video ads for Meta, TikTok and YouTube: creator-made, hook-tested ad creatives with commercial usage rights for e-commerce and D2C brands.",
+    "serviceType": "UGC Video Ads Creation",
+    "provider": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in"
+    },
+    "areaServed": {
+        "@type": "Country",
+        "name": "India"
+    },
+    "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "UGC Video Ads Services",
+        "itemListElement": [
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "Meta UGC Video Ads"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "TikTok UGC Video Ads"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "YouTube UGC Video Ads"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "UGC Ad Creative Production"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "Commercial Usage Rights"
+                }
+            }
+        ]
+    }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://myugcvideo.in/#organization",
+    "name": "MY UGC VIDEO",
+    "url": "https://myugcvideo.in/",
+    "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
+    "description": "MY UGC VIDEO is a performance-driven UGC video production agency and creator network connecting brands with authentic creators for UGC video ads, product videos, testimonials, unboxing videos, AI UGC content and social media video production.",
+    "email": "hello@myugcvideo.in",
+    "telephone": "+91 98765 43210",
+    "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Basement Floor, B-16, Block D, Ram Dutt Enclave, Uttam Nagar",
+        "addressLocality": "New Delhi",
+        "addressRegion": "Delhi",
+        "postalCode": "110059",
+        "addressCountry": {
+            "@type": "Country",
+            "name": "IN"
+        }
+    },
+    "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91 98765 43210",
+        "email": "hello@myugcvideo.in",
+        "contactType": "customer service",
+        "areaServed": {
+            "@type": "Country",
+            "name": "India"
+        },
+        "availableLanguage": [
+            "English",
+            "Hindi"
+        ]
+    },
+    "areaServed": {
+        "@type": "Country",
+        "name": "India"
+    }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": "https://myugcvideo.in/services/ugc-video-ads-company#breadcrumb",
+    "itemListElement": [
         {
-            "@type": "Service",
-            "@id": "https://myugcvideo.in/services/ugc-video-ads-company#service",
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://myugcvideo.in"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Services",
+            "item": "https://myugcvideo.in/services"
+        },
+        {
+            "@type": "ListItem",
+            "position": 3,
             "name": "UGC Video Ads Company",
-            "url": "https://myugcvideo.in/services/ugc-video-ads-company",
-            "description": "Get UGC video ads for Meta, TikTok and YouTube: creator-made, hook-tested ad creatives with commercial usage rights for e-commerce and D2C brands.",
-            "serviceType": "UGC Video Ads Creation",
-            "provider": {
-                "@type": "Organization",
-                "name": "MY UGC VIDEO",
-                "url": "https://myugcvideo.in"
-            },
-            "areaServed": {
-                "@type": "Country",
-                "name": "India"
-            },
-            "hasOfferCatalog": {
-                "@type": "OfferCatalog",
-                "name": "UGC Video Ads Services",
-                "itemListElement": [
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "Meta UGC Video Ads"
-                        }
-                    },
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "TikTok UGC Video Ads"
-                        }
-                    },
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "YouTube UGC Video Ads"
-                        }
-                    },
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "UGC Ad Creative Production"
-                        }
-                    },
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "Commercial Usage Rights"
-                        }
-                    }
-                ]
+            "item": "https://myugcvideo.in/services/ugc-video-ads-company"
+        }
+    ]
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": "https://myugcvideo.in/services/ugc-video-ads-company#faq",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "How do UGC video ads differ from regular organic UGC?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Organic UGC is content you post like normal. An ad is made for paid media, so it needs a strong start,\r\n                one clear message, and something that tells people what to do next. We also make a few versions so you\r\n                can test which one works."
             }
         },
         {
-            "@type": "Organization",
-            "@id": "https://myugcvideo.in/#organization",
-            "name": "MY UGC VIDEO",
-            "url": "https://myugcvideo.in",
-            "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
-            "description": "Premier performance-driven UGC video production studio and creator network connecting brands with authentic creator-led video content.",
-            "email": "hello@myugcvideo.in",
-            "sameAs": [
-                "https://instagram.com",
-                "https://linkedin.com"
-            ],
-            "contactPoint": [
-                {
-                    "@type": "ContactPoint",
-                    "contactType": "customer service",
-                    "email": "hello@myugcvideo.in",
-                    "availableLanguage": [
-                        "English",
-                        "Hindi"
-                    ]
-                }
-            ],
-            "areaServed": [
-                {
-                    "@type": "Country",
-                    "name": "India"
-                }
-            ]
+            "@type": "Question",
+            "name": "How many hook variations do you provide with each ad?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Usually a few per video. Want more? Put it in your brief and we’ll send you a quote."
+            }
         },
         {
-            "@type": "BreadcrumbList",
-            "@id": "https://myugcvideo.in/services/ugc-video-ads-company#breadcrumb",
-            "itemListElement": [
-                {
-                    "@type": "ListItem",
-                    "position": 1,
-                    "name": "Home",
-                    "item": "https://myugcvideo.in"
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 2,
-                    "name": "Services",
-                    "item": "https://myugcvideo.in/services"
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 3,
-                    "name": "UGC Video Ads Company",
-                    "item": "https://myugcvideo.in/services/ugc-video-ads-company"
-                }
-            ]
+            "@type": "Question",
+            "name": "Do you design ads for Meta and TikTok specifically?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. We set the size, captions and text position for each platform. What works on TikTok doesn’t always\r\n                work on YouTube Shorts."
+            }
         },
         {
-            "@type": "FAQPage",
-            "@id": "https://myugcvideo.in/services/ugc-video-ads-company#faq",
-            "mainEntity": [
-                {
-                    "@type": "Question",
-                    "name": "How do UGC video ads differ from regular organic UGC?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Organic UGC is content you post like normal. An ad is made for paid media, so it needs a strong start,\r\n                one clear message, and something that tells people what to do next. We also make a few versions so you\r\n                can test which one works."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "How many hook variations do you provide with each ad?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Usually a few per video. Want more? Put it in your brief and we\u2019ll send you a quote."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Do you design ads for Meta and YouTube specifically?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Yes. We set the size, captions and text position for each platform. What works on TikTok doesn\u2019t always\r\n                work on YouTube Shorts."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Can we run these videos as Spark Ads or whitelisted creator ads?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "It depends on the creator saying yes and on what your agreement covers."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "What is the recommended turnaround time for new ad packs?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Usually 7 to 12 business days. If the pack is big or feedback comes late, UGC video ad turnaround can\r\n                take longer."
-                    }
-                }
-            ]
+            "@type": "Question",
+            "name": "Can we run these videos as Spark Ads or whitelisted creator ads?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "It depends on the creator saying yes and on what your agreement covers."
+            }
         },
         {
-            "@type": "WebPage",
-            "@id": "https://myugcvideo.in/services/ugc-video-ads-company#webpage",
-            "url": "https://myugcvideo.in/services/ugc-video-ads-company",
-            "name": "UGC Video Ads for Meta, TikTok & YouTube | MY UGC VIDEO",
-            "description": "Get UGC video ads for Meta, TikTok and YouTube: creator-made, hook-tested ad creatives with commercial usage rights for e-commerce and D2C brands.",
-            "publisher": {
-                "@type": "Organization",
-                "name": "MY UGC VIDEO",
-                "url": "https://myugcvideo.in"
-            },
-            "isPartOf": "https://myugcvideo.in/"
-        },
-        {
-            "@type": "Product",
-            "name": "UGC Video Ads Company",
-            "aggregateRating": {
-                "@type": "AggregateRating",
-                "ratingValue": "4.9",
-                "bestRating": "5",
-                "worstRating": "1",
-                "ratingCount": "1476",
-                "reviewCount": "1476"
+            "@type": "Question",
+            "name": "What is the recommended turnaround time for new ad packs?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Usually 7 to 12 business days. If the pack is big or feedback comes late, UGC video ad turnaround can\r\n                take longer."
             }
         }
     ]
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://myugcvideo.in/services/ugc-video-ads-company#webpage",
+    "url": "https://myugcvideo.in/services/ugc-video-ads-company",
+    "name": "UGC Video Ads for Meta, TikTok & YouTube | MY UGC VIDEO",
+    "description": "Get UGC video ads for Meta, TikTok and YouTube: creator-made, hook-tested ad creatives with commercial usage rights for e-commerce and D2C brands.",
+    "publisher": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in"
+    },
+    "isPartOf": "https://myugcvideo.in/"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "UGC Video Ads Company",
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "bestRating": "5",
+        "worstRating": "1",
+        "ratingCount": "1476",
+        "reviewCount": "1476"
+    }
 }
   </script>
 </head>
@@ -457,7 +478,7 @@
           </div>
 
           <h1 id="service-hero-title" class="service-hero-title">
-            Short Creator Ads Made for Meta and YouTube.
+            Short Creator Ads Made for <span class="highlight-mint">Meta and YouTube.</span>
           </h1>
 
           <p class="service-hero-desc">
@@ -510,7 +531,7 @@
               <div class="quick-form-group">
                 <label for="qeName" class="quick-form-label">Name <span class="required">*</span></label>
                 <div class="quick-input-wrapper">
-                  <input type="text" id="qeName" name="name" class="quick-form-input" placeholder="Your Full Name"
+                  <input type="text" id="qeName" name="name" class="quick-form-input" placeholder="e.g. Alex Morgan"
                     required autocomplete="name">
                   <span class="quick-input-icon" aria-hidden="true">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -526,7 +547,7 @@
               <div class="quick-form-group">
                 <label for="qeEmail" class="quick-form-label">Email <span class="required">*</span></label>
                 <div class="quick-input-wrapper">
-                  <input type="email" id="qeEmail" name="email" class="quick-form-input" placeholder="name@company.com"
+                  <input type="email" id="qeEmail" name="email" class="quick-form-input" placeholder="alex@yourbrand.com"
                     required autocomplete="email">
                   <span class="quick-input-icon" aria-hidden="true">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -561,7 +582,7 @@
                 <label for="qeMessage" class="quick-form-label">Message <span
                     class="optional-tag">(Optional)</span></label>
                 <textarea id="qeMessage" name="message" class="quick-form-textarea" rows="2"
-                  placeholder="Tell us what you sell or your video goals..."></textarea>
+                  placeholder="Tell us about your brand, project requirements, or any questions..."></textarea>
                 <div class="quick-form-error" id="qeMessageError"></div>
               </div>
 
@@ -1485,7 +1506,7 @@
           <form class="newsletter-form" action="#" method="POST" novalidate>
             <div class="newsletter-input-wrap">
               <label for="newsletterEmailServicePage" class="sr-only">Email address</label>
-              <input type="email" id="newsletterEmailServicePage" class="newsletter-input" placeholder="Your work email"
+              <input type="email" id="newsletterEmailServicePage" class="newsletter-input" placeholder="alex@yourbrand.com"
                 required>
             </div>
 

@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initBlogStrategyCallForm();
   initAnnouncementBar();
   initFloatingCtasAndChatbot();
+  initContactPopup();
 });
 
 /* --------------------------------------------------------------------------
@@ -518,54 +519,6 @@ if (document.readyState === 'loading') {
 
 function initContactForm() {
   const form = document.querySelector('#contactForm');
-  const pathButtons = document.querySelectorAll('.path-btn');
-  const roleSelect = document.querySelector('#inquiryRole');
-
-  // Audience toggle (Brands vs Creators)
-  if (pathButtons.length) {
-    pathButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        pathButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const role = btn.getAttribute('data-role');
-        if (roleSelect && role) {
-          roleSelect.value = role;
-          handleRoleChange(role);
-        }
-      });
-    });
-  }
-
-  if (roleSelect) {
-    roleSelect.addEventListener('change', (e) => {
-      const selected = e.target.value;
-      pathButtons.forEach(btn => {
-        if (btn.getAttribute('data-role') === selected) {
-          btn.classList.add('active');
-        } else {
-          btn.classList.remove('active');
-        }
-      });
-      handleRoleChange(selected);
-    });
-  }
-
-  function handleRoleChange(role) {
-    const companyLabel = document.querySelector('#companyLabel');
-    const serviceLabel = document.querySelector('#serviceLabel');
-    const msgPlaceholder = document.querySelector('#messageInput');
-
-    if (role === 'creator') {
-      if (companyLabel) companyLabel.innerHTML = 'Portfolio Link / Social Handle <span class="req">*</span>';
-      if (serviceLabel) serviceLabel.textContent = 'Primary Creative Focus';
-      if (msgPlaceholder) msgPlaceholder.placeholder = 'Tell us about your creator experience, platform niches, on-camera style, and availability...';
-    } else {
-      if (companyLabel) companyLabel.innerHTML = 'Brand / Company Name <span class="req">*</span>';
-      if (serviceLabel) serviceLabel.textContent = 'Service Interested In';
-      if (msgPlaceholder) msgPlaceholder.placeholder = 'Describe your campaign objectives, target audience, preferred video formats, and timeline...';
-    }
-  }
-
   if (!form) return;
 
   const statusAlert = document.querySelector('#formStatusAlert');
@@ -576,21 +529,24 @@ function initContactForm() {
 
     // Reset previous errors
     form.querySelectorAll('.form-control').forEach(ctrl => ctrl.classList.remove('error'));
-    form.querySelectorAll('.form-error-msg').forEach(msg => msg.classList.remove('visible'));
+    form.querySelectorAll('.form-error-msg').forEach(msg => {
+      msg.classList.remove('visible');
+      msg.textContent = '';
+    });
     if (statusAlert) {
       statusAlert.className = 'form-status-alert';
       statusAlert.style.display = 'none';
       statusAlert.textContent = '';
     }
 
-    // Validate Full Name
+    // 1. Validate Full Name (Required)
     const nameInput = form.querySelector('#fullName');
     if (nameInput && nameInput.value.trim().length < 2) {
       showError(nameInput, 'Please provide your full name.');
       isValid = false;
     }
 
-    // Validate Email
+    // 2. Validate Email Address (Required)
     const emailInput = form.querySelector('#workEmail');
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (emailInput && !emailRegex.test(emailInput.value.trim())) {
@@ -598,17 +554,19 @@ function initContactForm() {
       isValid = false;
     }
 
-    // Validate Brand/Handle
-    const companyInput = form.querySelector('#companyName');
-    if (companyInput && companyInput.value.trim().length < 2) {
-      showError(companyInput, 'Please provide your brand or social handle.');
+    // 3. Validate Phone Number (Required)
+    const phoneInput = form.querySelector('#phoneNumber');
+    const phoneVal = phoneInput ? phoneInput.value.trim() : '';
+    const phoneRegex = /^[+]?[\d\s\-().]{7,25}$/;
+    if (!phoneInput || phoneVal.length < 7 || !phoneRegex.test(phoneVal)) {
+      showError(phoneInput, 'Please provide a valid phone number (at least 7 digits).');
       isValid = false;
     }
 
-    // Validate Message
+    // 4. Message is Optional
     const msgInput = form.querySelector('#messageInput');
-    if (msgInput && msgInput.value.trim().length < 15) {
-      showError(msgInput, 'Please share at least 15 characters of project context.');
+    if (msgInput && msgInput.value.trim().length > 5000) {
+      showError(msgInput, 'Message is too long (maximum 5000 characters).');
       isValid = false;
     }
 
@@ -618,7 +576,7 @@ function initContactForm() {
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
     submitBtn.disabled = true;
-    submitBtn.innerHTML = 'Submitting Inquiry...';
+    submitBtn.innerHTML = 'Sending Inquiry...';
 
     try {
       // Prepare Form Data for centralized endpoint
@@ -630,13 +588,8 @@ function initContactForm() {
       // Map field IDs to standardized API keys
       if (nameInput) formData.set('name', nameInput.value.trim());
       if (emailInput) formData.set('email', emailInput.value.trim());
-      if (companyInput) formData.set('brand', companyInput.value.trim());
-      const phoneInput = form.querySelector('#phoneNumber');
       if (phoneInput) formData.set('phone', phoneInput.value.trim());
-      if (roleSelect) formData.set('service', roleSelect.value);
-      const budgetSelect = form.querySelector('#approxBudget');
-      if (budgetSelect) formData.set('budget', budgetSelect.value);
-      if (msgInput) formData.set('message', msgInput.value.trim());
+      formData.set('message', msgInput && msgInput.value.trim() ? msgInput.value.trim() : '');
 
       const response = await fetch(getLeadApiEndpoint(), {
         method: 'POST',
@@ -2457,4 +2410,481 @@ function initFloatingCtasAndChatbot() {
     div.textContent = str;
     return div.innerHTML;
   }
+}
+
+/* --------------------------------------------------------------------------
+   CONTACT FORM POPUP — AUTOMATIC 5-SECOND INQUIRY DIALOG
+   Fires 5 seconds after page load on eligible pages.
+   Restarts timer on every page refresh (no sessionStorage/localStorage/cookies).
+   In-memory per-page-load suppression only (does not re-open in same view once closed/submitted).
+   -------------------------------------------------------------------------- */
+let contactPopupHandledThisPage = false;
+
+function isContactPopupEligiblePage() {
+  try {
+    const rawPath = window.location.pathname || '';
+    const pathname = decodeURIComponent(rawPath).toLowerCase().replace(/\/+/g, '/');
+    const search = (window.location.search || '').toLowerCase();
+
+    // 1. Exclude Admin, Login, Config, API, includes, etc.
+    if (pathname.includes('/admin') ||
+        pathname.includes('/api') ||
+        pathname.includes('/config') ||
+        pathname.includes('/includes') ||
+        pathname.includes('/login') ||
+        pathname.includes('/logout')) {
+      return false;
+    }
+
+    // 2. Exclude Contact page
+    if (pathname.endsWith('/contact') ||
+        pathname.endsWith('/contact/') ||
+        pathname.endsWith('/contact.html') ||
+        pathname.includes('/contact.')) {
+      return false;
+    }
+
+    // 3. Exclude Dedicated Service pages (Note: /services, /services.html is ELIGIBLE)
+    const isServicesOverview = pathname.endsWith('/services') ||
+                               pathname.endsWith('/services/') ||
+                               pathname.endsWith('/services.html');
+    if (pathname.includes('/services/')) {
+      const parts = pathname.split('/services/');
+      const sub = parts[1] ? parts[1].trim() : '';
+      if (sub && sub !== 'index.html' && sub !== 'services.html') {
+        return false;
+      }
+    }
+
+    // 4. Exclude Individual Blog article pages (Note: /blogs, /blogs.php, /blogs.html is ELIGIBLE)
+    if (pathname.includes('/blog/') || pathname.endsWith('/blog')) {
+      return false;
+    }
+    if (pathname.endsWith('/blog.php') && search.includes('slug=')) {
+      return false;
+    }
+
+    // DOM-based safeguard checks
+    if (document.body && (document.body.classList.contains('blog-detail-page') || document.querySelector('.article-title'))) {
+      return false;
+    }
+    if (!isServicesOverview && document.querySelector('.service-hero-section')) {
+      return false;
+    }
+    if (document.querySelector('.contact-hero-editorial') || document.querySelector('.contact-hero-section')) {
+      return false;
+    }
+
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function initContactPopup() {
+  // Check eligibility first
+  if (!isContactPopupEligiblePage()) return;
+  if (contactPopupHandledThisPage) return;
+
+  let popupTimer = null;
+
+  // Schedule popup for exactly 5 seconds after load
+  popupTimer = setTimeout(() => {
+    if (!contactPopupHandledThisPage) {
+      openContactPopup();
+    }
+  }, 5000);
+
+  // If user navigates away before 5 seconds, cancel timer
+  window.addEventListener('beforeunload', () => {
+    if (popupTimer) clearTimeout(popupTimer);
+  });
+  window.addEventListener('pagehide', () => {
+    if (popupTimer) clearTimeout(popupTimer);
+  });
+}
+
+function openContactPopup(force = false) {
+  // Prevent duplicate instances
+  if (document.querySelector('#siteContactPopup')) {
+    const existing = document.querySelector('#siteContactPopup');
+    existing.classList.add('active');
+    existing.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    return;
+  }
+
+  // Double-check eligibility and in-memory flag (restarts on page refresh)
+  if (!force && (!isContactPopupEligiblePage() || contactPopupHandledThisPage)) return;
+  contactPopupHandledThisPage = true;
+
+  // Inject markup
+  const overlay = document.createElement('div');
+  overlay.id = 'siteContactPopup';
+  overlay.className = 'contact-popup-overlay';
+  overlay.setAttribute('role', 'dialog');
+  overlay.setAttribute('aria-modal', 'true');
+  overlay.setAttribute('aria-labelledby', 'popupTitle');
+  overlay.setAttribute('aria-hidden', 'false');
+
+  overlay.innerHTML = `
+    <div class="contact-popup-container">
+      <div class="contact-popup-card" role="document">
+        <button type="button" class="contact-popup-close" id="popupCloseBtn" aria-label="Close inquiry dialog">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
+        <!-- FORM VIEW -->
+        <div id="popupFormView" class="popup-view-form">
+          <div class="contact-popup-header">
+            <div class="contact-popup-badge font-display">
+              <span class="badge-dot" aria-hidden="true"></span>
+              <span>QUICK INQUIRY</span>
+            </div>
+            <h3 id="popupTitle" class="contact-popup-title font-display">
+              Let's Create High-Converting <span class="highlight-mint">UGC Videos</span>
+            </h3>
+            <p class="contact-popup-desc">
+              Tell us about your brand. Our creative directors will review your inquiry and reply within 24 business hours.
+            </p>
+          </div>
+
+          <div id="popupStatusAlert" class="form-status-alert" style="display: none;" role="alert"></div>
+
+          <form id="popupInquiryForm" class="contact-popup-form" novalidate>
+            <input type="text" name="website_hp" style="display:none !important;" tabindex="-1" autocomplete="off">
+            
+            <div class="popup-form-grid">
+              <!-- Full Name -->
+              <div class="form-group">
+                <label for="popupFullName" class="form-label">Full Name <span class="req">*</span></label>
+                <div class="popup-input-wrapper">
+                  <input type="text" id="popupFullName" name="name" class="form-control" placeholder="e.g. John Doe" required autocomplete="name">
+                  <span class="popup-input-icon" aria-hidden="true">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                  </span>
+                </div>
+                <span class="form-error-msg"></span>
+              </div>
+
+              <!-- Email Address -->
+              <div class="form-group">
+                <label for="popupWorkEmail" class="form-label">Email Address <span class="req">*</span></label>
+                <div class="popup-input-wrapper">
+                  <input type="email" id="popupWorkEmail" name="email" class="form-control" placeholder="e.g. john@example.com" required autocomplete="email">
+                  <span class="popup-input-icon" aria-hidden="true">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                      <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                  </span>
+                </div>
+                <span class="form-error-msg"></span>
+              </div>
+
+              <!-- Phone Number -->
+              <div class="form-group full-width">
+                <label for="popupPhoneNumber" class="form-label">Phone Number <span class="req">*</span></label>
+                <div class="popup-input-wrapper">
+                  <input type="tel" id="popupPhoneNumber" name="phone" class="form-control" placeholder="e.g. 00000 00000" required autocomplete="tel">
+                  <span class="popup-input-icon" aria-hidden="true">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                  </span>
+                </div>
+                <span class="form-error-msg"></span>
+              </div>
+
+              <!-- Message -->
+              <div class="form-group full-width">
+                <div class="popup-field-header">
+                  <label for="popupMessage" class="form-label">Message <span class="optional-tag">(Optional)</span></label>
+                  <span class="popup-char-counter" id="popupCharCounter"><span id="popupCharCount">0</span>/500</span>
+                </div>
+                <div class="popup-input-wrapper">
+                  <textarea id="popupMessage" name="message" class="form-control" rows="3" maxlength="500" placeholder="Tell us about your product, goals, or timeline..."></textarea>
+                </div>
+                <span class="form-error-msg"></span>
+              </div>
+            </div>
+
+            <div class="popup-form-footer">
+              <button type="submit" class="btn btn-primary popup-submit-btn" id="popupSubmitBtn">
+                <span class="btn-text">Send Inquiry</span>
+                <svg class="btn-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+                <span class="btn-spinner" aria-hidden="true" style="display:none;"></span>
+              </button>
+              <p class="form-privacy-note">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px; margin-right:4px;">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                Your information is protected. We respect your privacy. No spam, ever.
+              </p>
+            </div>
+          </form>
+        </div>
+
+        <!-- SUCCESS VIEW (Connected to actual PHP submission) -->
+        <div id="popupSuccessView" class="popup-view-success" style="display: none;">
+          <div class="success-icon-badge" aria-hidden="true">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#36D9B0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <h3 class="success-title font-display">Inquiry Received!</h3>
+          <p class="success-desc">
+            Thank you for reaching out. Our creative directors will review your brief and get back to you within 24 business hours.
+          </p>
+          <div class="success-actions">
+            <button type="button" class="btn btn-outline popup-new-inquiry-btn" id="popupNewInquiryBtn">
+              <span>New Inquiry</span>
+            </button>
+            <button type="button" class="btn btn-primary popup-done-btn" id="popupDoneBtn">
+              <span>Done</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  // Trigger smooth entrance animation in next frame
+  requestAnimationFrame(() => {
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    const firstInput = overlay.querySelector('#popupFullName');
+    if (firstInput) firstInput.focus();
+  });
+
+  // Setup close events
+  const closeBtn = overlay.querySelector('#popupCloseBtn');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeContactPopup);
+  }
+
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      closeContactPopup();
+    }
+  });
+
+  document.addEventListener('keydown', handlePopupKeydown);
+
+  // Setup live character counter
+  const msgInput = overlay.querySelector('#popupMessage');
+  const charCounter = overlay.querySelector('#popupCharCount');
+  if (msgInput && charCounter) {
+    msgInput.addEventListener('input', () => {
+      charCounter.textContent = msgInput.value.length;
+    });
+  }
+
+  // Setup success action buttons
+  const newInquiryBtn = overlay.querySelector('#popupNewInquiryBtn');
+  const doneBtn = overlay.querySelector('#popupDoneBtn');
+  const formView = overlay.querySelector('#popupFormView');
+  const successView = overlay.querySelector('#popupSuccessView');
+
+  if (newInquiryBtn) {
+    newInquiryBtn.addEventListener('click', () => {
+      if (successView) successView.style.display = 'none';
+      if (formView) formView.style.display = 'block';
+      const form = overlay.querySelector('#popupInquiryForm');
+      if (form) form.reset();
+      if (charCounter) charCounter.textContent = '0';
+      const firstInput = overlay.querySelector('#popupFullName');
+      if (firstInput) firstInput.focus();
+    });
+  }
+
+  if (doneBtn) {
+    doneBtn.addEventListener('click', () => {
+      closeContactPopup();
+    });
+  }
+
+  // Bind Form Submission
+  bindPopupFormSubmission(overlay);
+}
+
+function handlePopupKeydown(e) {
+  if (e.key === 'Escape') {
+    closeContactPopup();
+  }
+}
+
+function closeContactPopup() {
+  const overlay = document.querySelector('#siteContactPopup');
+  if (!overlay) return;
+
+  contactPopupHandledThisPage = true;
+
+  overlay.classList.remove('active');
+  overlay.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+  document.removeEventListener('keydown', handlePopupKeydown);
+
+  setTimeout(() => {
+    if (overlay && overlay.parentNode) {
+      overlay.parentNode.removeChild(overlay);
+    }
+  }, 350);
+}
+
+function bindPopupFormSubmission(overlay) {
+  const form = overlay.querySelector('#popupInquiryForm');
+  if (!form) return;
+
+  const statusAlert = overlay.querySelector('#popupStatusAlert');
+  const formView = overlay.querySelector('#popupFormView');
+  const successView = overlay.querySelector('#popupSuccessView');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    let isValid = true;
+
+    // Reset previous errors
+    form.querySelectorAll('.form-control').forEach(ctrl => ctrl.classList.remove('error'));
+    form.querySelectorAll('.form-error-msg').forEach(msg => {
+      msg.classList.remove('visible');
+      msg.textContent = '';
+    });
+    if (statusAlert) {
+      statusAlert.className = 'form-status-alert';
+      statusAlert.style.display = 'none';
+      statusAlert.textContent = '';
+    }
+
+    function showPopupError(input, message) {
+      if (!input) return;
+      input.classList.add('error');
+      const group = input.closest('.form-group');
+      if (group) {
+        const errorEl = group.querySelector('.form-error-msg');
+        if (errorEl) {
+          errorEl.textContent = message;
+          errorEl.classList.add('visible');
+        }
+      }
+    }
+
+    // 1. Validate Full Name (Required)
+    const nameInput = form.querySelector('#popupFullName');
+    if (nameInput && nameInput.value.trim().length < 2) {
+      showPopupError(nameInput, 'Please provide your full name.');
+      isValid = false;
+    }
+
+    // 2. Validate Email Address (Required)
+    const emailInput = form.querySelector('#popupWorkEmail');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailInput && !emailRegex.test(emailInput.value.trim())) {
+      showPopupError(emailInput, 'Please provide a valid email address.');
+      isValid = false;
+    }
+
+    // 3. Validate Phone Number (Required)
+    const phoneInput = form.querySelector('#popupPhoneNumber');
+    const phoneVal = phoneInput ? phoneInput.value.trim() : '';
+    const phoneRegex = /^[+]?[\d\s\-().]{7,25}$/;
+    if (!phoneInput || phoneVal.length < 7 || !phoneRegex.test(phoneVal)) {
+      showPopupError(phoneInput, 'Please provide a valid phone number (at least 7 digits).');
+      isValid = false;
+    }
+
+    // 4. Message is Optional (max 500 chars)
+    const msgInput = form.querySelector('#popupMessage');
+    if (msgInput && msgInput.value.trim().length > 500) {
+      showPopupError(msgInput, 'Message is too long (maximum 500 characters).');
+      isValid = false;
+    }
+
+    if (!isValid) return;
+
+    // Submit via centralized endpoint
+    const submitBtn = form.querySelector('#popupSubmitBtn');
+    const btnText = submitBtn ? submitBtn.querySelector('.btn-text') : null;
+    const btnArrow = submitBtn ? submitBtn.querySelector('.btn-arrow') : null;
+    const btnSpinner = submitBtn ? submitBtn.querySelector('.btn-spinner') : null;
+
+    if (submitBtn) submitBtn.disabled = true;
+    if (btnText) btnText.textContent = 'Sending Inquiry...';
+    if (btnArrow) btnArrow.style.display = 'none';
+    if (btnSpinner) btnSpinner.style.display = 'inline-block';
+
+    try {
+      const csrfToken = await getLeadCsrfToken();
+      const formData = new FormData(form);
+      formData.set('source', 'Contact Popup Form');
+      formData.set('csrf_token', csrfToken);
+
+      if (nameInput) formData.set('name', nameInput.value.trim());
+      if (emailInput) formData.set('email', emailInput.value.trim());
+      if (phoneInput) formData.set('phone', phoneInput.value.trim());
+      formData.set('message', msgInput && msgInput.value.trim() ? msgInput.value.trim() : '');
+
+      const response = await fetch(getLeadApiEndpoint(), {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': csrfToken
+        },
+        credentials: 'same-origin',
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (submitBtn) submitBtn.disabled = false;
+      if (btnText) btnText.textContent = 'Send Inquiry';
+      if (btnArrow) btnArrow.style.display = '';
+      if (btnSpinner) btnSpinner.style.display = 'none';
+
+      if (result.success) {
+        form.reset();
+        const charCounter = overlay.querySelector('#popupCharCount');
+        if (charCounter) charCounter.textContent = '0';
+
+        // Switch to attractive Success Screen
+        if (formView) formView.style.display = 'none';
+        if (successView) {
+          successView.style.display = 'block';
+        }
+      } else {
+        if (statusAlert) {
+          statusAlert.className = 'form-status-alert error';
+          statusAlert.style.display = 'block';
+          const msg = result.message || 'We could not submit your inquiry at this moment. Please check your inputs and try again.';
+          statusAlert.innerHTML = `<strong>Submission Error:</strong> ${msg}`;
+          statusAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }
+    } catch (err) {
+      if (submitBtn) submitBtn.disabled = false;
+      if (btnText) btnText.textContent = 'Send Inquiry';
+      if (btnArrow) btnArrow.style.display = '';
+      if (btnSpinner) btnSpinner.style.display = 'none';
+
+      if (statusAlert) {
+        statusAlert.className = 'form-status-alert error';
+        statusAlert.style.display = 'block';
+        statusAlert.innerHTML = '<strong>Network error:</strong> Unable to reach server. Please try again.';
+        statusAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+  });
 }

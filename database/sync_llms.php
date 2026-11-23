@@ -109,14 +109,19 @@ cronLog("=== Starting Scheduled Discovery Reconciliation ===", $options['verbose
 if ($options['dry_run']) cronLog("[MODE] DRY-RUN enabled (no disk modifications or search pings)", $options['verbose'], true);
 if ($options['force'])   cronLog("[MODE] FORCE enabled (unconditional full regeneration)", $options['verbose'], true);
 
-// 3. Step 1: Reconcile MySQL blog posts to filesystem Markdown representations
-cronLog("Step 1/5: Auditing MySQL blog posts vs. Markdown storage...", $options['verbose'], true);
+// 3. Step 1: Reconcile Website Content & MySQL Blog Posts to Markdown Storage
+cronLog("Step 1/5: Auditing Website Content (Core Pages, Services & Blogs) vs. Markdown storage...", $options['verbose'], true);
 $blogReconcileStats = ['synced' => 0, 'total' => 0];
-if (!$options['dry_run'] && function_exists('reconcileAllBlogsToMarkdown')) {
-    $blogReconcileStats = reconcileAllBlogsToMarkdown();
-    cronLog(" -> Reconciled {$blogReconcileStats['synced']} of {$blogReconcileStats['total']} published posts to markdown storage.", $options['verbose'], true);
+if (!$options['dry_run']) {
+    if (class_exists('WebsiteMarkdownSync')) {
+        $webReconcile = WebsiteMarkdownSync::reconcileAll($options['force']);
+        cronLog(" -> Reconciled {$webReconcile['synced']} of {$webReconcile['total']} website pages to markdown storage ({$webReconcile['updated']} updated, {$webReconcile['unchanged']} unchanged).", $options['verbose'], true);
+    } elseif (function_exists('reconcileAllBlogsToMarkdown')) {
+        $blogReconcileStats = reconcileAllBlogsToMarkdown();
+        cronLog(" -> Reconciled {$blogReconcileStats['synced']} of {$blogReconcileStats['total']} published posts to markdown storage.", $options['verbose'], true);
+    }
 } else {
-    cronLog(" -> Skipped blog write-back (dry-run mode).", $options['verbose'], true);
+    cronLog(" -> Skipped website markdown write-back (dry-run mode).", $options['verbose'], true);
 }
 
 // 4. Step 2: Audit Filesystem Schemas & Documentation

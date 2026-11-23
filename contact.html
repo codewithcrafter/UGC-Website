@@ -33,79 +33,94 @@
   <link rel="stylesheet" href="css/style.css">
 
   <!-- JSON-LD Structured Data: ContactPage -->
-  <!-- Centralized Schema Manager JSON-LD -->
+  
+  <!-- Centralized Dynamic Schema Manager JSON-LD -->
   <script type="application/ld+json">
-{
+  {
     "@context": "https://schema.org",
-    "@graph": [
+    "@type": "ContactPage",
+    "@id": "https://myugcvideo.in/contact#contactpage",
+    "url": "https://myugcvideo.in/contact",
+    "name": "Contact MY UGC VIDEO",
+    "description": "Contact channels and project inquiry form for MY UGC VIDEO production agency.",
+    "mainEntityOfPage": "https://myugcvideo.in/contact"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://myugcvideo.in/contact#webpage",
+    "url": "https://myugcvideo.in/contact",
+    "name": "Contact MY UGC VIDEO",
+    "description": "Contact channels and project inquiry form for MY UGC VIDEO production agency.",
+    "publisher": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in"
+    },
+    "isPartOf": "https://myugcvideo.in/"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://myugcvideo.in/#organization",
+    "name": "MY UGC VIDEO",
+    "url": "https://myugcvideo.in/",
+    "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
+    "description": "MY UGC VIDEO is a performance-driven UGC video production agency and creator network connecting brands with authentic creators for UGC video ads, product videos, testimonials, unboxing videos, AI UGC content and social media video production.",
+    "email": "hello@myugcvideo.in",
+    "telephone": "+91 98765 43210",
+    "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Basement Floor, B-16, Block D, Ram Dutt Enclave, Uttam Nagar",
+        "addressLocality": "New Delhi",
+        "addressRegion": "Delhi",
+        "postalCode": "110059",
+        "addressCountry": {
+            "@type": "Country",
+            "name": "IN"
+        }
+    },
+    "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91 98765 43210",
+        "email": "hello@myugcvideo.in",
+        "contactType": "customer service",
+        "areaServed": {
+            "@type": "Country",
+            "name": "India"
+        },
+        "availableLanguage": [
+            "English",
+            "Hindi"
+        ]
+    },
+    "areaServed": {
+        "@type": "Country",
+        "name": "India"
+    }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": "https://myugcvideo.in/contact#breadcrumb",
+    "itemListElement": [
         {
-            "@type": "ContactPage",
-            "@id": "https://myugcvideo.in/contact#contactpage",
-            "url": "https://myugcvideo.in/contact",
-            "name": "Contact MY UGC VIDEO",
-            "description": "Contact channels and project inquiry form for MY UGC VIDEO production agency.",
-            "mainEntityOfPage": "https://myugcvideo.in/contact"
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://myugcvideo.in"
         },
         {
-            "@type": "WebPage",
-            "@id": "https://myugcvideo.in/contact#webpage",
-            "url": "https://myugcvideo.in/contact",
-            "name": "Contact MY UGC VIDEO",
-            "description": "Contact channels and project inquiry form for MY UGC VIDEO production agency.",
-            "publisher": {
-                "@type": "Organization",
-                "name": "MY UGC VIDEO",
-                "url": "https://myugcvideo.in"
-            },
-            "isPartOf": "https://myugcvideo.in/"
-        },
-        {
-            "@type": "Organization",
-            "@id": "https://myugcvideo.in/#organization",
-            "name": "MY UGC VIDEO",
-            "url": "https://myugcvideo.in",
-            "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
-            "description": "Premier performance-driven UGC video production studio and creator network connecting brands with authentic creator-led video content.",
-            "email": "hello@myugcvideo.in",
-            "sameAs": [
-                "https://instagram.com",
-                "https://linkedin.com"
-            ],
-            "contactPoint": [
-                {
-                    "@type": "ContactPoint",
-                    "contactType": "customer service",
-                    "email": "hello@myugcvideo.in",
-                    "availableLanguage": [
-                        "English",
-                        "Hindi"
-                    ]
-                }
-            ],
-            "areaServed": [
-                {
-                    "@type": "Country",
-                    "name": "India"
-                }
-            ]
-        },
-        {
-            "@type": "BreadcrumbList",
-            "@id": "https://myugcvideo.in/contact#breadcrumb",
-            "itemListElement": [
-                {
-                    "@type": "ListItem",
-                    "position": 1,
-                    "name": "Home",
-                    "item": "https://myugcvideo.in"
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 2,
-                    "name": "Contact Us",
-                    "item": "https://myugcvideo.in/contact"
-                }
-            ]
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Contact Us",
+            "item": "https://myugcvideo.in/contact"
         }
     ]
 }
@@ -447,201 +462,60 @@
             <div class="contact-form-card">
 
               <div class="contact-form-card-header">
-                <h3 class="contact-form-card-title font-display">Send Us Your Brief</h3>
+                <h3 class="contact-form-card-title font-display">Quick Inquiry</h3>
                 <p class="contact-form-card-desc">
-                  Tell us about your product, required formats and timeline. We'll review your brief and reply within 24
-                  business hours.
+                  Tell us about your requirements. We'll review your inquiry and reply within 24 business hours.
                 </p>
               </div>
 
-              <!-- Dual Inquiry Mode Tabs -->
-              <div class="inquiry-tabs-header" role="tablist">
-                <button type="button" class="inquiry-tab-trigger active" data-target="contactTabGeneral" role="tab"
-                  aria-selected="true">
-                  Quick Inquiry
-                </button>
-                <button type="button" class="inquiry-tab-trigger" data-target="contactTabDetailed" role="tab"
-                  aria-selected="false">
-                  Detailed Project Scope
-                </button>
-              </div>
+              <!-- Simplified Quick Inquiry Form -->
+              <form id="contactForm" class="contact-form-editorial" novalidate>
+                <input type="text" name="website_hp" style="display:none !important;" tabindex="-1"
+                  autocomplete="off">
+                <div id="formStatusAlert" class="form-status-alert" style="display: none;" role="alert"></div>
 
-              <!-- Tab 1: General Inquiry Form -->
-              <div class="inquiry-tab-content active" id="contactTabGeneral" role="tabpanel">
-                <form id="contactForm" class="contact-form-editorial" novalidate>
-                  <input type="text" name="website_hp" style="display:none !important;" tabindex="-1"
-                    autocomplete="off">
-                  <div id="formStatusAlert" class="form-status-alert" style="display: none;" role="alert"></div>
-
-                  <div class="editorial-form-grid">
-                    <div class="form-group">
-                      <label for="fullName" class="form-label">Full Name <span class="req">*</span></label>
-                      <input type="text" id="fullName" class="form-control" placeholder="e.g. Alex Morgan" required>
-                      <span class="form-error-msg"></span>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="workEmail" class="form-label">Work Email <span class="req">*</span></label>
-                      <input type="email" id="workEmail" class="form-control" placeholder="alex@yourbrand.com" required>
-                      <span class="form-error-msg"></span>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="companyName" id="companyLabel" class="form-label">Company / Brand Name <span
-                          class="req">*</span></label>
-                      <input type="text" id="companyName" class="form-control" placeholder="e.g. Lumina Skincare"
-                        required>
-                      <span class="form-error-msg"></span>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="phoneNumber" class="form-label">Phone Number</label>
-                      <input type="tel" id="phoneNumber" class="form-control" placeholder="+91 98765 43210">
-                      <span class="form-error-msg"></span>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="inquiryRole" id="serviceLabel" class="form-label">Service Required <span
-                          class="req">*</span></label>
-                      <select id="inquiryRole" class="form-control">
-                        <option value="ugc-video-creation">UGC Video Creation Services</option>
-                        <option value="ugc-video-ads">UGC Video Ads</option>
-                        <option value="ai-ugc-video">AI UGC Video Creation</option>
-                        <option value="ugc-product-video">UGC Product Video</option>
-                        <option value="ugc-product-reviews">UGC Product Reviews Videos</option>
-                        <option value="ugc-video-delhi">UGC Video Company in Delhi</option>
-                        <option value="ugc-unboxing">UGC Unboxing Videos</option>
-                        <option value="ugc-testimonials">UGC Testimonial Videos</option>
-                        <option value="ugc-editing">UGC Video Editing Service</option>
-                        <option value="general-inquiry">General Creative Discussion</option>
-                      </select>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="approxBudget" class="form-label">Approximate Budget (Optional)</label>
-                      <select id="approxBudget" class="form-control">
-                        <option value="">Select project budget range...</option>
-                        <option value="tier-1">&lt; ₹50,000 / $600 (Starter Batch)</option>
-                        <option value="tier-2">₹50,000 – ₹1,50,000 (Growth Campaign)</option>
-                        <option value="tier-3">₹1,50,000 – ₹3,50,000 (Scale Package)</option>
-                        <option value="tier-4">₹3,50,000+ / Custom Retainer</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div class="form-group" style="margin-top: 1.25rem;">
-                    <label for="messageInput" class="form-label">Project Details / Message <span
-                        class="req">*</span></label>
-                    <textarea id="messageInput" class="form-control" rows="4"
-                      placeholder="Tell us about your brand, target audience, preferred video formats, and timeline..."
-                      required></textarea>
+                <div class="editorial-form-grid">
+                  <div class="form-group">
+                    <label for="fullName" class="form-label">Full Name <span class="req">*</span></label>
+                    <input type="text" id="fullName" name="name" class="form-control" placeholder="e.g. Alex Morgan" required autocomplete="name">
                     <span class="form-error-msg"></span>
                   </div>
 
-                  <div class="editorial-form-footer">
-                    <button type="submit" class="btn btn-primary contact-submit-btn">
-                      <span>Send Project Inquiry</span>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2.2">
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                        <polyline points="12 5 19 12 12 19"></polyline>
-                      </svg>
-                    </button>
-                    <p class="form-privacy-note">
-                      By submitting, you agree to be contacted about your project. No spam, ever.
-                    </p>
-                  </div>
-
-                </form>
-              </div>
-
-              <!-- Tab 2: Detailed Project Scope Form -->
-              <div class="inquiry-tab-content" id="contactTabDetailed" role="tabpanel">
-                <form id="detailedInquiryForm" class="contact-form-editorial" novalidate>
-                  <input type="text" name="website_hp" style="display:none !important;" tabindex="-1"
-                    autocomplete="off">
-                  <div class="form-status-alert" style="display: none;" role="alert"></div>
-
-                  <div class="editorial-form-grid">
-                    <div class="form-group">
-                      <label for="detailedName" class="form-label">Your Name <span class="req">*</span></label>
-                      <input type="text" id="detailedName" class="form-control" placeholder="e.g. Sarah Jenkins"
-                        required>
-                      <span class="form-error-msg"></span>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="detailedEmail" class="form-label">Work Email <span class="req">*</span></label>
-                      <input type="email" id="detailedEmail" class="form-control" placeholder="sarah@company.com"
-                        required>
-                      <span class="form-error-msg"></span>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="detailedBrand" class="form-label">Company / Brand Name <span
-                          class="req">*</span></label>
-                      <input type="text" id="detailedBrand" class="form-control" placeholder="Brand Name & Website URL"
-                        required>
-                      <span class="form-error-msg"></span>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="detailedPhone" class="form-label">Phone / WhatsApp Number</label>
-                      <input type="tel" id="detailedPhone" class="form-control" placeholder="+91 98765 43210">
-                      <span class="form-error-msg"></span>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="detailedService" class="form-label">Required Video Service <span
-                          class="req">*</span></label>
-                      <select id="detailedService" class="form-control">
-                        <option value="ugc-video-creation">UGC Video Creation Services</option>
-                        <option value="ugc-video-ads">UGC Video Ads</option>
-                        <option value="ai-ugc-video">AI UGC Video Creation</option>
-                        <option value="ugc-product-video">UGC Product Video</option>
-                        <option value="ugc-product-reviews">UGC Product Reviews Videos</option>
-                        <option value="ugc-video-delhi">UGC Video Company in Delhi</option>
-                        <option value="ugc-unboxing">UGC Unboxing Videos</option>
-                        <option value="ugc-testimonials">UGC Testimonial Videos</option>
-                        <option value="ugc-editing">UGC Video Editing Service</option>
-                      </select>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="detailedVolume" class="form-label">Estimated Monthly Video Volume</label>
-                      <select id="detailedVolume" class="form-control">
-                        <option value="1-3">1 – 3 Master UGC Videos</option>
-                        <option value="4-8">4 – 8 UGC Videos (Performance Pack)</option>
-                        <option value="10+">10+ Videos / Ongoing Creative Retainer</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div class="form-group" style="margin-top: 1.25rem;">
-                    <label for="detailedRequirements" class="form-label">Project Scope, Target Platforms &amp; Hooks
-                      <span class="req">*</span></label>
-                    <textarea id="detailedRequirements" class="form-control" rows="4"
-                      placeholder="Detail your target platforms (Meta, TikTok, YouTube Shorts), core value propositions, product shipping timeline, and any specific creator demographics required..."
-                      required></textarea>
+                  <div class="form-group">
+                    <label for="workEmail" class="form-label">Email Address <span class="req">*</span></label>
+                    <input type="email" id="workEmail" name="email" class="form-control" placeholder="alex@yourbrand.com" required autocomplete="email">
                     <span class="form-error-msg"></span>
                   </div>
 
-                  <div class="editorial-form-footer">
-                    <button type="submit" class="btn btn-primary contact-submit-btn">
-                      <span>Submit Detailed Scope</span>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        stroke-width="2.2">
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                        <polyline points="12 5 19 12 12 19"></polyline>
-                      </svg>
-                    </button>
-                    <p class="form-privacy-note">
-                      Our production lead will review your scope and provide a structured proposal.
-                    </p>
+                  <div class="form-group full-width" style="grid-column: 1 / -1;">
+                    <label for="phoneNumber" class="form-label">Phone Number <span class="req">*</span></label>
+                    <input type="tel" id="phoneNumber" name="phone" class="form-control" placeholder="+91 98765 43210" required autocomplete="tel">
+                    <span class="form-error-msg"></span>
                   </div>
+                </div>
 
-                </form>
-              </div>
+                <div class="form-group" style="margin-top: 1.25rem;">
+                  <label for="messageInput" class="form-label">Message <span class="optional-tag" style="color: var(--text-muted, #718096); font-size: 0.85em; font-weight: 400;">(Optional)</span></label>
+                  <textarea id="messageInput" name="message" class="form-control" rows="4"
+                    placeholder="Tell us about your brand, project requirements, or any questions..."></textarea>
+                  <span class="form-error-msg"></span>
+                </div>
+
+                <div class="editorial-form-footer">
+                  <button type="submit" class="btn btn-primary contact-submit-btn">
+                    <span>Send Inquiry</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2.2">
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                      <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                  </button>
+                  <p class="form-privacy-note">
+                    By submitting, you agree to be contacted about your project. No spam, ever.
+                  </p>
+                </div>
+
+              </form>
 
             </div>
           </div>
@@ -839,7 +713,7 @@
           <form class="newsletter-form" action="#" method="POST" novalidate>
             <div class="newsletter-input-wrap">
               <label for="newsletterEmailFooter" class="sr-only">Email address</label>
-              <input type="email" id="newsletterEmailFooter" class="newsletter-input" placeholder="Your work email"
+              <input type="email" id="newsletterEmailFooter" class="newsletter-input" placeholder="alex@yourbrand.com"
                 required>
             </div>
             <button type="submit" class="newsletter-submit">Subscribe</button>

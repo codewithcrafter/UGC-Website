@@ -75,21 +75,42 @@ function sanitizeHtmlContent(string $html): string {
 }
 
 /**
- * Retrieve single post by slug
+ * Retrieve single post by slug (supports primary slug, canonical URL matching, and legacy aliases)
  */
 function getPostBySlug(string $slug, bool $publishedOnly = true): ?array {
     $db = getDb();
+    
+    // Legacy slug alias dictionary for seamless backwards compatibility
+    $slugAliases = [
+        'product-photography-shapes-online' => 'brand-identity-through-content',
+        'ugc-instagram-strategy'            => 'ugc-instagram-tiktok-strategy'
+    ];
+    $lookupSlugs = [$slug];
+    if (isset($slugAliases[$slug])) {
+        $lookupSlugs[] = $slugAliases[$slug];
+    }
+    $revKey = array_search($slug, $slugAliases);
+    if ($revKey !== false) {
+        $lookupSlugs[] = $revKey;
+    }
+    $lookupSlugs = array_unique($lookupSlugs);
+
+    $inPlaceholders = implode(',', array_fill(0, count($lookupSlugs), '?'));
+    
     $sql = "SELECT p.*, c.name AS category_name, c.slug AS category_slug 
             FROM blog_posts p 
             LEFT JOIN categories c ON p.category_id = c.id 
-            WHERE p.slug = :slug";
+            WHERE (p.slug IN ($inPlaceholders) OR p.canonical_url LIKE ?)";
     
     if ($publishedOnly) {
         $sql .= " AND p.status = 'published'";
     }
 
+    $params = array_values($lookupSlugs);
+    $params[] = "%/blog/{$slug}";
+
     $stmt = $db->prepare($sql);
-    $stmt->execute([':slug' => $slug]);
+    $stmt->execute($params);
     $post = $stmt->fetch();
     return $post ?: null;
 }
@@ -138,10 +159,17 @@ function getPosts(array $options = []): array {
     $joins = "LEFT JOIN categories c ON p.category_id = c.id";
 
     if ($tag !== null && $tag !== '') {
+        $cleanTag = trim(ltrim(urldecode($tag), '#'));
+        $tagSlug = slugify($cleanTag);
+        $tagName = $cleanTag;
+        $tagSpaced = str_replace(['-', '+'], ' ', $cleanTag);
+
         $joins .= " INNER JOIN blog_post_tags bpt ON p.id = bpt.post_id INNER JOIN tags t ON bpt.tag_id = t.id";
-        $where[] = "(t.slug = :tag_slug OR t.name = :tag_name)";
-        $params[':tag_slug'] = slugify(ltrim($tag, '#'));
-        $params[':tag_name'] = ltrim($tag, '#');
+        $where[] = "(LOWER(t.slug) = :tag_slug OR LOWER(t.name) = :tag_name OR LOWER(t.name) = :tag_spaced OR LOWER(t.slug) = :tag_slug_from_spaced)";
+        $params[':tag_slug'] = strtolower($tagSlug);
+        $params[':tag_name'] = strtolower($tagName);
+        $params[':tag_spaced'] = strtolower($tagSpaced);
+        $params[':tag_slug_from_spaced'] = strtolower(slugify($tagSpaced));
     }
 
     if ($status !== null) {

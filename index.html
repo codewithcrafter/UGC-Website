@@ -33,74 +33,167 @@
   <link rel="stylesheet" href="css/style.css">
 
   <!-- JSON-LD Structured Data: Organization & Agency -->
-  <!-- Centralized Schema Manager JSON-LD -->
+  
+  
+  <!-- Centralized Dynamic Schema Manager JSON-LD -->
   <script type="application/ld+json">
-{
+  {
     "@context": "https://schema.org",
-    "@graph": [
-        {
-            "@type": "ProfessionalService",
-            "@id": "https://myugcvideo.in/#professionalservice",
-            "name": "MY UGC VIDEO",
-            "url": "https://myugcvideo.in/",
-            "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
-            "description": "Premium UGC video production agency specializing in creator-led video advertising, product demonstrations, unboxings, and direct-response social media video production.",
-            "address": {
-                "@type": "PostalAddress",
-                "addressLocality": "Delhi",
-                "addressRegion": "DL",
-                "addressCountry": "IN"
-            },
-            "mainEntityOfPage": "https://myugcvideo.in/"
-        },
-        {
-            "@type": "Organization",
-            "@id": "https://myugcvideo.in/#organization",
-            "name": "MY UGC VIDEO",
-            "url": "https://myugcvideo.in",
-            "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
-            "description": "Premier performance-driven UGC video production studio and creator network connecting brands with authentic creator-led video content.",
-            "email": "hello@myugcvideo.in",
-            "contactPoint": [
-                {
-                    "@type": "ContactPoint",
-                    "contactType": "customer service",
-                    "email": "hello@myugcvideo.in",
-                    "availableLanguage": [
-                        "English",
-                        "Hindi"
-                    ]
+    "@type": "Service",
+    "@id": "https://myugcvideo.in/#ugc-video-service",
+    "name": "UGC Video Production Services",
+    "url": "https://myugcvideo.in/",
+    "areaServed": {
+        "@type": "Country",
+        "name": "India"
+    },
+    "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "UGC Video Production Services",
+        "itemListElement": [
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "UGC Video Creation Services",
+                    "url": "https://myugcvideo.in/services/ugc-video-creation-company"
                 }
-            ],
-            "areaServed": [
-                {
-                    "@type": "Country",
-                    "name": "India"
-                }
-            ]
-        },
-        {
-            "@type": "WebPage",
-            "@id": "https://myugcvideo.in/#webpage",
-            "url": "https://myugcvideo.in/",
-            "name": "MY UGC VIDEO \u2014 Premier UGC Video Production Agency",
-            "description": "High-performing user-generated content video ads, product demonstrations, and creator-led marketing campaigns.",
-            "publisher": {
-                "@type": "Organization",
-                "name": "MY UGC VIDEO",
-                "url": "https://myugcvideo.in"
             },
-            "isPartOf": "https://myugcvideo.in/"
-        },
-        {
-            "@type": "VideoObject",
-            "@id": "https://myugcvideo.in/#video-showcase",
-            "name": "Creator-Led Video Production \u2014 UGC Video Showcase",
-            "description": "Watch our creator-led video production preview showcasing authentic 9:16 vertical UGC video content crafted for direct-to-consumer brand campaigns.",
-            "thumbnailUrl": [
-                "https://myugcvideo.in/images/hero/hero-ugc-production.jpg"
-            ]
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "UGC Video Ads",
+                    "url": "https://myugcvideo.in/services/ugc-video-ads-company"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "AI UGC Video Creation",
+                    "url": "https://myugcvideo.in/services/ai-ugc-video-creation-company"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "UGC Product Video",
+                    "url": "https://myugcvideo.in/services/ugc-product-video-company"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "UGC Product Review Videos",
+                    "url": "https://myugcvideo.in/services/ugc-product-review-videos-company"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "UGC Video Company in Delhi",
+                    "url": "https://myugcvideo.in/services/ugc-video-company-in-delhi"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "UGC Unboxing Videos",
+                    "url": "https://myugcvideo.in/services/ugc-unboxing-videos-company"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "UGC Testimonial Videos",
+                    "url": "https://myugcvideo.in/services/ugc-testimonial-videos-company"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "UGC Video Editing",
+                    "url": "https://myugcvideo.in/services/ugc-video-editing-company"
+                }
+            }
+        ]
+    }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://myugcvideo.in/#organization",
+    "name": "MY UGC VIDEO",
+    "url": "https://myugcvideo.in/",
+    "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
+    "description": "MY UGC VIDEO is a performance-driven UGC video production agency and creator network connecting brands with authentic creators for UGC video ads, product videos, testimonials, unboxing videos, AI UGC content and social media video production.",
+    "email": "hello@myugcvideo.in",
+    "telephone": "+91 98765 43210",
+    "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Basement Floor, B-16, Block D, Ram Dutt Enclave, Uttam Nagar",
+        "addressLocality": "New Delhi",
+        "addressRegion": "Delhi",
+        "postalCode": "110059",
+        "addressCountry": {
+            "@type": "Country",
+            "name": "IN"
         }
+    },
+    "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91 98765 43210",
+        "email": "hello@myugcvideo.in",
+        "contactType": "customer service",
+        "areaServed": {
+            "@type": "Country",
+            "name": "India"
+        },
+        "availableLanguage": [
+            "English",
+            "Hindi"
+        ]
+    },
+    "areaServed": {
+        "@type": "Country",
+        "name": "India"
+    }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://myugcvideo.in/#webpage",
+    "url": "https://myugcvideo.in/",
+    "name": "MY UGC VIDEO — Premier UGC Video Production Agency",
+    "description": "High-performing user-generated content video ads, product demonstrations, and creator-led marketing campaigns.",
+    "publisher": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in"
+    },
+    "isPartOf": "https://myugcvideo.in/"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "@id": "https://myugcvideo.in/#video-showcase",
+    "name": "Creator-Led Video Production — UGC Video Showcase",
+    "description": "Watch our creator-led video production preview showcasing authentic 9:16 vertical UGC video content crafted for direct-to-consumer brand campaigns.",
+    "thumbnailUrl": [
+        "https://myugcvideo.in/images/hero/hero-ugc-production.jpg"
     ]
 }
   </script>
@@ -416,7 +509,7 @@
                     <label for="heroLeadMessage" class="hero-form-label">Tell Us About Your Project <span
                         class="required-star">*</span></label>
                     <textarea id="heroLeadMessage" name="message" class="hero-form-input hero-form-textarea" rows="3"
-                      placeholder="Tell us about your brand, goals, target audience, and deliverables..."
+                      placeholder="Tell us about your brand, project requirements, or any questions..."
                       required></textarea>
                     <span class="hero-field-error" aria-live="polite"></span>
                   </div>
@@ -1497,7 +1590,7 @@
                     <label for="inquiryBrand" class="form-label">Brand Name or Website <span
                         class="required">*</span></label>
                     <input type="text" id="inquiryBrand" name="brand" class="form-input"
-                      placeholder="e.g. Acme Botanics (acme.com)" required>
+                      placeholder="e.g. Acme Botanics" required>
                     <span class="form-error-msg" aria-live="polite"></span>
                   </div>
 
@@ -1536,7 +1629,7 @@
                     <label for="inquiryDetails" class="form-label">Project Details &amp; Objectives <span
                         class="required">*</span></label>
                     <textarea id="inquiryDetails" name="details" class="form-input form-textarea" rows="4"
-                      placeholder="Briefly describe your product, target audience, preferred platforms (TikTok, Reels, Meta Ads), and timeline..."
+                      placeholder="Tell us about your brand, project requirements, or any questions..."
                       required></textarea>
                     <span class="form-error-msg" aria-live="polite"></span>
                   </div>
@@ -1680,7 +1773,7 @@
           <form class="newsletter-form" action="#" method="POST" novalidate>
             <div class="newsletter-input-wrap">
               <label for="newsletterEmailFooter" class="sr-only">Email address</label>
-              <input type="email" id="newsletterEmailFooter" class="newsletter-input" placeholder="Your work email"
+              <input type="email" id="newsletterEmailFooter" class="newsletter-input" placeholder="alex@yourbrand.com"
                 required>
             </div>
             <button type="submit" class="newsletter-submit">Subscribe</button>

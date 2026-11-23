@@ -2,13 +2,13 @@
     "configured": true,
     "key": "3a9d80...0fdb",
     "key_file": "3a9d80f3f912c4d406e4bc4cb9a50fdb.txt",
-    "last_notification": "2026-11-17T09:08:32+01:00",
-    "last_formatted": "November 17, 2026 at 9:08 AM",
-    "last_status_code": 202,
+    "last_notification": "2026-11-23T10:11:24+01:00",
+    "last_formatted": "November 23, 2026 at 10:11 AM",
+    "last_status_code": 200,
     "notified_count": 2,
     "url_sample": [
-        "https://myugcvideo.in/blog/product-photography-shapes-online",
-        "https://myugcvideo.in/blogs"
+        "https://myugcvideo.in",
+        "https://myugcvideo.in/sitemap.xml"
     ],
     "success": true
 }

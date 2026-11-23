@@ -33,203 +33,224 @@
   <link rel="stylesheet" href="../css/style.css">
 
   <!-- JSON-LD Structured Data -->
-      <!-- Centralized Schema Manager JSON-LD -->
+      
+  <!-- Centralized Dynamic Schema Manager JSON-LD -->
   <script type="application/ld+json">
-{
+  {
     "@context": "https://schema.org",
-    "@graph": [
+    "@type": "Service",
+    "@id": "https://myugcvideo.in/services/ai-ugc-video-creation-company#service",
+    "name": "AI UGC Videos Company",
+    "url": "https://myugcvideo.in/services/ai-ugc-video-creation-company",
+    "description": "Get AI UGC video creation for fast ad testing: AI presenters, multilingual voiceovers and hook variations, blended with real product footage.",
+    "serviceType": "AI UGC Video Creation",
+    "provider": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in"
+    },
+    "areaServed": {
+        "@type": "Country",
+        "name": "India"
+    },
+    "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "AI UGC Video Creation Services",
+        "itemListElement": [
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "AI Presenter Videos"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "Multilingual AI Voiceovers"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "AI UGC Ad Hook Variations"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "AI Product Video Creation"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "AI UGC Video Ad Testing"
+                }
+            }
+        ]
+    }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://myugcvideo.in/#organization",
+    "name": "MY UGC VIDEO",
+    "url": "https://myugcvideo.in/",
+    "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
+    "description": "MY UGC VIDEO is a performance-driven UGC video production agency and creator network connecting brands with authentic creators for UGC video ads, product videos, testimonials, unboxing videos, AI UGC content and social media video production.",
+    "email": "hello@myugcvideo.in",
+    "telephone": "+91 98765 43210",
+    "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Basement Floor, B-16, Block D, Ram Dutt Enclave, Uttam Nagar",
+        "addressLocality": "New Delhi",
+        "addressRegion": "Delhi",
+        "postalCode": "110059",
+        "addressCountry": {
+            "@type": "Country",
+            "name": "IN"
+        }
+    },
+    "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91 98765 43210",
+        "email": "hello@myugcvideo.in",
+        "contactType": "customer service",
+        "areaServed": {
+            "@type": "Country",
+            "name": "India"
+        },
+        "availableLanguage": [
+            "English",
+            "Hindi"
+        ]
+    },
+    "areaServed": {
+        "@type": "Country",
+        "name": "India"
+    }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": "https://myugcvideo.in/services/ai-ugc-video-creation-company#breadcrumb",
+    "itemListElement": [
         {
-            "@type": "Service",
-            "@id": "https://myugcvideo.in/services/ai-ugc-video-creation-company#service",
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://myugcvideo.in"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Services",
+            "item": "https://myugcvideo.in/services"
+        },
+        {
+            "@type": "ListItem",
+            "position": 3,
             "name": "AI UGC Videos Company",
-            "url": "https://myugcvideo.in/services/ai-ugc-video-creation-company",
-            "description": "Get AI UGC video creation for fast ad testing: AI presenters, multilingual voiceovers and hook variations, blended with real product footage.",
-            "serviceType": "AI UGC Video Creation",
-            "provider": {
-                "@type": "Organization",
-                "name": "MY UGC VIDEO",
-                "url": "https://myugcvideo.in"
-            },
-            "areaServed": {
-                "@type": "Country",
-                "name": "India"
-            },
-            "hasOfferCatalog": {
-                "@type": "OfferCatalog",
-                "name": "AI UGC Video Creation Services",
-                "itemListElement": [
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "AI Presenter Videos"
-                        }
-                    },
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "Multilingual AI Voiceovers"
-                        }
-                    },
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "AI UGC Ad Hook Variations"
-                        }
-                    },
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "AI Product Video Creation"
-                        }
-                    },
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "AI UGC Video Ad Testing"
-                        }
-                    }
-                ]
+            "item": "https://myugcvideo.in/services/ai-ugc-video-creation-company"
+        }
+    ]
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": "https://myugcvideo.in/services/ai-ugc-video-creation-company#faq",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "Does AI UGC video creation look natural to social media users?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Mostly, yes. We put the AI presenter over real footage of your product, and that’s a big part of why it\r\n                feels believable. It won’t suit every brand though, so we’d suggest testing AI UGC vs real creator UGC\r\n                side by side."
             }
         },
         {
-            "@type": "Organization",
-            "@id": "https://myugcvideo.in/#organization",
-            "name": "MY UGC VIDEO",
-            "url": "https://myugcvideo.in",
-            "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
-            "description": "Premier performance-driven UGC video production studio and creator network connecting brands with authentic creator-led video content.",
-            "email": "hello@myugcvideo.in",
-            "sameAs": [
-                "https://instagram.com",
-                "https://linkedin.com"
-            ],
-            "contactPoint": [
-                {
-                    "@type": "ContactPoint",
-                    "contactType": "customer service",
-                    "email": "hello@myugcvideo.in",
-                    "availableLanguage": [
-                        "English",
-                        "Hindi"
-                    ]
-                }
-            ],
-            "areaServed": [
-                {
-                    "@type": "Country",
-                    "name": "India"
-                }
-            ]
+            "@type": "Question",
+            "name": "Can we translate our existing winning UGC videos into other languages?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. We can re-voice and lip-sync a video that’s already working. Right now that means Hindi, Tamil,\r\n                Telugu and English."
+            }
         },
         {
-            "@type": "BreadcrumbList",
-            "@id": "https://myugcvideo.in/services/ai-ugc-video-creation-company#breadcrumb",
-            "itemListElement": [
-                {
-                    "@type": "ListItem",
-                    "position": 1,
-                    "name": "Home",
-                    "item": "https://myugcvideo.in"
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 2,
-                    "name": "Services",
-                    "item": "https://myugcvideo.in/services"
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 3,
-                    "name": "AI UGC Videos Company",
-                    "item": "https://myugcvideo.in/services/ai-ugc-video-creation-company"
-                }
-            ]
+            "@type": "Question",
+            "name": "How quickly can you deliver an AI UGC video batch?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "New versions can be ready in 48 to 72 hours. A bigger batch will take a bit longer, and we’ll share the\r\n                AI UGC video turnaround dates when you send the brief."
+            }
         },
         {
-            "@type": "FAQPage",
-            "@id": "https://myugcvideo.in/services/ai-ugc-video-creation-company#faq",
-            "mainEntity": [
-                {
-                    "@type": "Question",
-                    "name": "Does AI UGC video creation look natural to social media users?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Mostly, yes. We put the AI presenter over real footage of your product, and that\u2019s a big part of why it\r\n                feels believable. It won\u2019t suit every brand though, so we\u2019d suggest testing AI UGC vs real creator UGC\r\n                side by side."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Can we translate our existing winning UGC videos into other languages?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Yes. We can re-voice and lip-sync a video that\u2019s already working. Right now that means Hindi, Tamil,\r\n                Telugu and English."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "How quickly can you deliver an AI UGC video batch?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "New versions can be ready in 48 to 72 hours. A bigger batch will take a bit longer, and we\u2019ll share the\r\n                AI UGC video turnaround dates when you send the brief."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Are AI personas cleared for commercial advertising?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "You get commercial ad rights with every video, and the details are in your agreement. Please read it\r\n                before you sign. [CONFIRM: wording on AI presenter licensing]"
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Which products suit AI UGC videos best?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Products that are easy to show up close and easy to explain in 15 to 45 seconds. If your product needs a\r\n                long demo or a lot of explaining, a real creator video usually works better."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Do I need to label AI-made ads on Meta and TikTok?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Platform rules on AI labels can change, so check the latest policy before you upload. We\u2019ll flag it in\r\n                your brief and help you set it up. [CONFIRM]"
-                    }
-                }
-            ]
+            "@type": "Question",
+            "name": "Are AI personas cleared for commercial advertising?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "You get commercial ad rights with every video, and the details are in your agreement. Please read it\r\n                before you sign. [CONFIRM: wording on AI presenter licensing]"
+            }
         },
         {
-            "@type": "WebPage",
-            "@id": "https://myugcvideo.in/services/ai-ugc-video-creation-company#webpage",
-            "url": "https://myugcvideo.in/services/ai-ugc-video-creation-company",
-            "name": "AI UGC Video Creation for Fast Ad Testing | MY UGC VIDEO",
-            "description": "Get AI UGC video creation for fast ad testing: AI presenters, multilingual voiceovers and hook variations, blended with real product footage.",
-            "publisher": {
-                "@type": "Organization",
-                "name": "MY UGC VIDEO",
-                "url": "https://myugcvideo.in"
-            },
-            "isPartOf": "https://myugcvideo.in/"
+            "@type": "Question",
+            "name": "Which products suit AI UGC videos best?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Products that are easy to show up close and easy to explain in 15 to 45 seconds. If your product needs a\r\n                long demo or a lot of explaining, a real creator video usually works better."
+            }
         },
         {
-            "@type": "Product",
-            "name": "AI UGC Videos Company",
-            "aggregateRating": {
-                "@type": "AggregateRating",
-                "ratingValue": "4.9",
-                "bestRating": "5",
-                "worstRating": "1",
-                "ratingCount": "1238",
-                "reviewCount": "1238"
+            "@type": "Question",
+            "name": "Do I need to label AI-made ads on Meta and TikTok?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Platform rules on AI labels can change, so check the latest policy before you upload. We’ll flag it in\r\n                your brief and help you set it up. [CONFIRM]"
             }
         }
     ]
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://myugcvideo.in/services/ai-ugc-video-creation-company#webpage",
+    "url": "https://myugcvideo.in/services/ai-ugc-video-creation-company",
+    "name": "AI UGC Video Creation for Fast Ad Testing | MY UGC VIDEO",
+    "description": "Get AI UGC video creation for fast ad testing: AI presenters, multilingual voiceovers and hook variations, blended with real product footage.",
+    "publisher": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in"
+    },
+    "isPartOf": "https://myugcvideo.in/"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "AI UGC Videos Company",
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "bestRating": "5",
+        "worstRating": "1",
+        "ratingCount": "1238",
+        "reviewCount": "1238"
+    }
 }
   </script>
 </head>
@@ -460,7 +481,7 @@
           </div>
 
           <h1 id="service-hero-title" class="service-hero-title">
-            Make Lots of Ad Videos, Fast.
+            Make Lots of Ad Videos, <span class="highlight-mint">Fast.</span>
           </h1>
 
           <p class="service-hero-desc">
@@ -514,7 +535,7 @@
               <div class="quick-form-group">
                 <label for="qeName" class="quick-form-label">Name <span class="required">*</span></label>
                 <div class="quick-input-wrapper">
-                  <input type="text" id="qeName" name="name" class="quick-form-input" placeholder="Your Full Name"
+                  <input type="text" id="qeName" name="name" class="quick-form-input" placeholder="e.g. Alex Morgan"
                     required autocomplete="name">
                   <span class="quick-input-icon" aria-hidden="true">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -530,7 +551,7 @@
               <div class="quick-form-group">
                 <label for="qeEmail" class="quick-form-label">Email <span class="required">*</span></label>
                 <div class="quick-input-wrapper">
-                  <input type="email" id="qeEmail" name="email" class="quick-form-input" placeholder="name@company.com"
+                  <input type="email" id="qeEmail" name="email" class="quick-form-input" placeholder="alex@yourbrand.com"
                     required autocomplete="email">
                   <span class="quick-input-icon" aria-hidden="true">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -565,7 +586,7 @@
                 <label for="qeMessage" class="quick-form-label">Message <span
                     class="optional-tag">(Optional)</span></label>
                 <textarea id="qeMessage" name="message" class="quick-form-textarea" rows="2"
-                  placeholder="Tell us what you sell or your video goals..."></textarea>
+                  placeholder="Tell us about your brand, project requirements, or any questions..."></textarea>
                 <div class="quick-form-error" id="qeMessageError"></div>
               </div>
 
@@ -1515,7 +1536,7 @@
           <form class="newsletter-form" action="#" method="POST" novalidate>
             <div class="newsletter-input-wrap">
               <label for="newsletterEmailServicePage" class="sr-only">Email address</label>
-              <input type="email" id="newsletterEmailServicePage" class="newsletter-input" placeholder="Your work email"
+              <input type="email" id="newsletterEmailServicePage" class="newsletter-input" placeholder="alex@yourbrand.com"
                 required>
             </div>
 

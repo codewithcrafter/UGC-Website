@@ -38,204 +38,225 @@
   <!-- Breadcrumb Schema -->
   <!-- Service Schema -->
   <!-- FAQ Schema -->
-                      <!-- Centralized Schema Manager JSON-LD -->
+                      
+  <!-- Centralized Dynamic Schema Manager JSON-LD -->
   <script type="application/ld+json">
-{
+  {
     "@context": "https://schema.org",
-    "@graph": [
+    "@type": "Service",
+    "@id": "https://myugcvideo.in/services/ugc-product-video-company#service",
+    "name": "UGC Product Videos Company",
+    "url": "https://myugcvideo.in/services/ugc-product-video-company",
+    "description": "Looking for a UGC Product Video Agency in India? We create authentic creator-led product videos for your Shopify, Amazon and ads.",
+    "serviceType": "UGC Product Video Creation",
+    "provider": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in"
+    },
+    "areaServed": {
+        "@type": "Country",
+        "name": "India"
+    },
+    "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "UGC Product Video Services",
+        "itemListElement": [
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "Creator-Led Product Videos"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "Shopify Product Videos"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "Amazon Product Videos"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "UGC Product Ad Videos"
+                }
+            }
+        ]
+    }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://myugcvideo.in/#organization",
+    "name": "MY UGC VIDEO",
+    "url": "https://myugcvideo.in/",
+    "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
+    "description": "MY UGC VIDEO is a performance-driven UGC video production agency and creator network connecting brands with authentic creators for UGC video ads, product videos, testimonials, unboxing videos, AI UGC content and social media video production.",
+    "email": "hello@myugcvideo.in",
+    "telephone": "+91 98765 43210",
+    "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Basement Floor, B-16, Block D, Ram Dutt Enclave, Uttam Nagar",
+        "addressLocality": "New Delhi",
+        "addressRegion": "Delhi",
+        "postalCode": "110059",
+        "addressCountry": {
+            "@type": "Country",
+            "name": "IN"
+        }
+    },
+    "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91 98765 43210",
+        "email": "hello@myugcvideo.in",
+        "contactType": "customer service",
+        "areaServed": {
+            "@type": "Country",
+            "name": "India"
+        },
+        "availableLanguage": [
+            "English",
+            "Hindi"
+        ]
+    },
+    "areaServed": {
+        "@type": "Country",
+        "name": "India"
+    }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": "https://myugcvideo.in/services/ugc-product-video-company#breadcrumb",
+    "itemListElement": [
         {
-            "@type": "Service",
-            "@id": "https://myugcvideo.in/services/ugc-product-video-company#service",
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://myugcvideo.in"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Services",
+            "item": "https://myugcvideo.in/services"
+        },
+        {
+            "@type": "ListItem",
+            "position": 3,
             "name": "UGC Product Videos Company",
-            "url": "https://myugcvideo.in/services/ugc-product-video-company",
-            "description": "Looking for a UGC Product Video Agency in India? We create authentic creator-led product videos for your Shopify, Amazon and ads.",
-            "serviceType": "UGC Product Video Creation",
-            "provider": {
-                "@type": "Organization",
-                "name": "MY UGC VIDEO",
-                "url": "https://myugcvideo.in"
-            },
-            "areaServed": {
-                "@type": "Country",
-                "name": "India"
-            },
-            "hasOfferCatalog": {
-                "@type": "OfferCatalog",
-                "name": "UGC Product Video Services",
-                "itemListElement": [
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "Creator-Led Product Videos"
-                        }
-                    },
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "Shopify Product Videos"
-                        }
-                    },
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "Amazon Product Videos"
-                        }
-                    },
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "UGC Product Ad Videos"
-                        }
-                    }
-                ]
+            "item": "https://myugcvideo.in/services/ugc-product-video-company"
+        }
+    ]
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": "https://myugcvideo.in/services/ugc-product-video-company#faq",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "Which products are best suited to UGC product videos?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Any products that your customers would want to see before purchasing. Beauty, Skincare, Kitchenware,\r\n                Homeware & Clothing all do well as they have texture and finish."
             }
         },
         {
-            "@type": "Organization",
-            "@id": "https://myugcvideo.in/#organization",
-            "name": "MY UGC VIDEO",
-            "url": "https://myugcvideo.in",
-            "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
-            "description": "Premier performance-driven UGC video production studio and creator network connecting brands with authentic creator-led video content.",
-            "email": "hello@myugcvideo.in",
-            "sameAs": [
-                "https://instagram.com",
-                "https://linkedin.com"
-            ],
-            "contactPoint": [
-                {
-                    "@type": "ContactPoint",
-                    "contactType": "customer service",
-                    "email": "hello@myugcvideo.in",
-                    "availableLanguage": [
-                        "English",
-                        "Hindi"
-                    ]
-                }
-            ],
-            "areaServed": [
-                {
-                    "@type": "Country",
-                    "name": "India"
-                }
-            ]
+            "@type": "Question",
+            "name": "Is this suitable for all products?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No. If your product requires a long technical video or customers don't care about it looking nice up\r\n                close then a creator video won't help much. We'll let you know before you pay."
+            }
         },
         {
-            "@type": "BreadcrumbList",
-            "@id": "https://myugcvideo.in/services/ugc-product-video-company#breadcrumb",
-            "itemListElement": [
-                {
-                    "@type": "ListItem",
-                    "position": 1,
-                    "name": "Home",
-                    "item": "https://myugcvideo.in"
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 2,
-                    "name": "Services",
-                    "item": "https://myugcvideo.in/services"
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 3,
-                    "name": "UGC Product Videos Company",
-                    "item": "https://myugcvideo.in/services/ugc-product-video-company"
-                }
-            ]
+            "@type": "Question",
+            "name": "Can we request certain features to be shown?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes! We'll include these in your brief. They will be added to your script and shot list. You'll approve\r\n                these."
+            }
         },
         {
-            "@type": "FAQPage",
-            "@id": "https://myugcvideo.in/services/ugc-product-video-company#faq",
-            "mainEntity": [
-                {
-                    "@type": "Question",
-                    "name": "Which products are best suited to UGC product videos?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Any products that your customers would want to see before purchasing. Beauty, Skincare, Kitchenware,\r\n                Homeware & Clothing all do well as they have texture and finish."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Is this suitable for all products?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "No. If your product requires a long technical video or customers don't care about it looking nice up\r\n                close then a creator video won't help much. We'll let you know before you pay."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Can we request certain features to be shown?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Yes! We'll include these in your brief. They will be added to your script and shot list. You'll approve\r\n                these."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Will we receive raw footage?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Yes! We'll include this if requested. Just mention this in your brief."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Can we use these on our Shopify product page?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Yes! They're regular MP4s so you can upload them."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "How many samples should we send?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Typically one per creator. If your product runs out whilst filming then send an extra."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "How long will it take?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Usually 7-12 working days from brief to final files. If samples arrive late or we have slow feedback\r\n                this can be longer."
-                    }
-                }
-            ]
+            "@type": "Question",
+            "name": "Will we receive raw footage?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes! We'll include this if requested. Just mention this in your brief."
+            }
         },
         {
-            "@type": "WebPage",
-            "@id": "https://myugcvideo.in/services/ugc-product-video-company#webpage",
-            "url": "https://myugcvideo.in/services/ugc-product-video-company",
-            "name": "UGC Product Video Agency in India | MY UGC VIDEO",
-            "description": "Looking for a UGC Product Video Agency in India? We create authentic creator-led product videos for your Shopify, Amazon and ads.",
-            "publisher": {
-                "@type": "Organization",
-                "name": "MY UGC VIDEO",
-                "url": "https://myugcvideo.in"
-            },
-            "isPartOf": "https://myugcvideo.in/"
+            "@type": "Question",
+            "name": "Can we use these on our Shopify product page?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes! They're regular MP4s so you can upload them."
+            }
         },
         {
-            "@type": "Product",
-            "name": "UGC Product Videos Company",
-            "aggregateRating": {
-                "@type": "AggregateRating",
-                "ratingValue": "4.7",
-                "bestRating": "5",
-                "worstRating": "1",
-                "ratingCount": "1767",
-                "reviewCount": "1767"
+            "@type": "Question",
+            "name": "How many samples should we send?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Typically one per creator. If your product runs out whilst filming then send an extra."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "How long will it take?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Usually 7-12 working days from brief to final files. If samples arrive late or we have slow feedback\r\n                this can be longer."
             }
         }
     ]
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://myugcvideo.in/services/ugc-product-video-company#webpage",
+    "url": "https://myugcvideo.in/services/ugc-product-video-company",
+    "name": "UGC Product Video Agency in India | MY UGC VIDEO",
+    "description": "Looking for a UGC Product Video Agency in India? We create authentic creator-led product videos for your Shopify, Amazon and ads.",
+    "publisher": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in"
+    },
+    "isPartOf": "https://myugcvideo.in/"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "UGC Product Videos Company",
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.7",
+        "bestRating": "5",
+        "worstRating": "1",
+        "ratingCount": "1767",
+        "reviewCount": "1767"
+    }
 }
   </script>
 </head>
@@ -437,7 +458,7 @@
           </div>
 
           <h1 id="service-hero-title" class="service-hero-title">
-            UGC Product Video
+            UGC <span class="highlight-mint">Product Video</span>
           </h1>
 
           <p class="service-hero-desc">
@@ -491,7 +512,7 @@
               <div class="quick-form-group">
                 <label for="qeName" class="quick-form-label">Name <span class="required">*</span></label>
                 <div class="quick-input-wrapper">
-                  <input type="text" id="qeName" name="name" class="quick-form-input" placeholder="Your Full Name" required autocomplete="name">
+                  <input type="text" id="qeName" name="name" class="quick-form-input" placeholder="e.g. Alex Morgan" required autocomplete="name">
                   <span class="quick-input-icon" aria-hidden="true">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                   </span>
@@ -503,7 +524,7 @@
               <div class="quick-form-group">
                 <label for="qeEmail" class="quick-form-label">Email <span class="required">*</span></label>
                 <div class="quick-input-wrapper">
-                  <input type="email" id="qeEmail" name="email" class="quick-form-input" placeholder="name@company.com" required autocomplete="email">
+                  <input type="email" id="qeEmail" name="email" class="quick-form-input" placeholder="alex@yourbrand.com" required autocomplete="email">
                   <span class="quick-input-icon" aria-hidden="true">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                   </span>
@@ -527,7 +548,7 @@
               <!-- Field 4: Message (Optional) -->
               <div class="quick-form-group">
                 <label for="qeMessage" class="quick-form-label">Message <span class="optional-tag">(Optional)</span></label>
-                <textarea id="qeMessage" name="message" class="quick-form-textarea" rows="2" placeholder="Tell us what you sell or your video goals..."></textarea>
+                <textarea id="qeMessage" name="message" class="quick-form-textarea" rows="2" placeholder="Tell us about your brand, project requirements, or any questions..."></textarea>
                 <div class="quick-form-error" id="qeMessageError"></div>
               </div>
 
@@ -1460,7 +1481,7 @@
           <form class="newsletter-form" action="#" method="POST" novalidate>
             <div class="newsletter-input-wrap">
               <label for="newsletterEmailServicePage" class="sr-only">Email address</label>
-              <input type="email" id="newsletterEmailServicePage" class="newsletter-input" placeholder="Your work email"
+              <input type="email" id="newsletterEmailServicePage" class="newsletter-input" placeholder="alex@yourbrand.com"
                 required>
             </div>
 

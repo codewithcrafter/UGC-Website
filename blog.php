@@ -100,6 +100,36 @@ if ($post['status'] === 'published') {
     }
 }
 
+/**
+ * Format blog hero title with tasteful brand color highlights
+ */
+function renderBlogTitleWithAccent(string $title): string {
+    $titleSafe = htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
+    
+    $phraseHighlights = [
+        'How Product Photography Shapes Online Shopping Today' => 'How Product Photography Shapes <span class="highlight-mint">Online Shopping Today</span>',
+        'UGC Content Strategy for Instagram and TikTok' => 'UGC Content Strategy for <span class="highlight-mint">Instagram and TikTok</span>',
+        'The Psychology of Authenticity: How UGC Directly Influences Consumer Purchasing' => 'The Psychology of Authenticity: How UGC Directly Influences <span class="highlight-mint">Consumer Purchasing</span>',
+        'The Role of Product Photography in Modern E-commerce' => 'The Role of Product Photography in <span class="highlight-mint">Modern E-commerce</span>',
+        'How Brands Can Work Effectively With UGC Creators' => 'How Brands Can Work Effectively With <span class="highlight-mint">UGC Creators</span>',
+        '10 Creative UGC Content Ideas Every E-commerce Brand Should Try' => '10 Creative UGC Content Ideas Every E-commerce Brand <span class="highlight-mint">Should Try</span>',
+        'How to Create Engaging UGC Videos for Your Brand' => 'How to Create <span class="highlight-mint">Engaging UGC Videos</span> for Your Brand',
+        'UGC vs Influencer Marketing: Understanding the Strategic Differences' => 'UGC vs Influencer Marketing: Understanding the <span class="highlight-mint">Strategic Differences</span>',
+        'Why UGC Marketing Is Essential for Building Brand Trust' => 'Why UGC Marketing Is Essential for <span class="highlight-mint">Building Brand Trust</span>',
+        'What Is User Generated Content? A Complete Guide for Modern Brands' => 'What Is User Generated Content? A Complete Guide for <span class="highlight-mint">Modern Brands</span>',
+    ];
+
+    if (isset($phraseHighlights[$title])) {
+        return $phraseHighlights[$title];
+    }
+
+    if (preg_match('/^(.*?)(\s+\S+\s+\S+)$/u', $titleSafe, $matches)) {
+        return $matches[1] . '<span class="highlight-mint">' . $matches[2] . '</span>';
+    }
+
+    return $titleSafe;
+}
+
 include CMS_ROOT . '/includes/blog-header.php';
 ?>
 
@@ -145,7 +175,7 @@ include CMS_ROOT . '/includes/blog-header.php';
             </div>
 
             <!-- 3. Blog Title (H1) -->
-            <h1 class="article-title font-display"><?= e($post['title']) ?></h1>
+            <h1 class="article-title font-display"><?= renderBlogTitleWithAccent($post['title']) ?></h1>
 
             <!-- 4. Blog Excerpt / Description -->
             <?php if (!empty($post['excerpt'])): ?>
@@ -178,19 +208,19 @@ include CMS_ROOT . '/includes/blog-header.php';
 
                 <div class="strategy-form-group">
                   <label for="strat_name" class="strategy-label">Full Name <span class="req">*</span></label>
-                  <input type="text" id="strat_name" name="name" class="strategy-input" required placeholder="Your Name" autocomplete="name">
+                  <input type="text" id="strat_name" name="name" class="strategy-input" required placeholder="e.g. Alex Morgan" autocomplete="name">
                   <div class="field-error" id="stratNameError"></div>
                 </div>
 
                 <div class="strategy-form-group">
                   <label for="strat_email" class="strategy-label">Email Address <span class="req">*</span></label>
-                  <input type="email" id="strat_email" name="email" class="strategy-input" required placeholder="you@company.com" autocomplete="email">
+                  <input type="email" id="strat_email" name="email" class="strategy-input" required placeholder="alex@yourbrand.com" autocomplete="email">
                   <div class="field-error" id="stratEmailError"></div>
                 </div>
 
                 <div class="strategy-form-group">
                   <label for="strat_phone" class="strategy-label">Contact Number <span class="req">*</span></label>
-                  <input type="tel" id="strat_phone" name="phone" class="strategy-input" required placeholder="00000 00000" autocomplete="tel">
+                  <input type="tel" id="strat_phone" name="phone" class="strategy-input" required placeholder="+91 98765 43210" autocomplete="tel">
                   <div class="field-error" id="stratPhoneError"></div>
                 </div>
 

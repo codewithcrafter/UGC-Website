@@ -205,6 +205,9 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
+      justify-content: flex-start;
+      margin-left: 0;
+      padding-left: 0;
     }
 
     .services-hero-eyebrow {
@@ -229,6 +232,11 @@
       overflow-wrap: break-word;
       word-break: normal;
       white-space: normal;
+      margin: 0 !important;
+      margin-left: 0 !important;
+      margin-right: auto !important;
+      align-self: flex-start !important;
+      text-align: left !important;
     }
 
     .services-hero-eyebrow .eyebrow-circle-dot {
@@ -1588,127 +1596,142 @@
   </style>
 
   <!-- Structured Data: CollectionPage & Service -->
-  <!-- Centralized Schema Manager JSON-LD -->
+  
+  <!-- Centralized Dynamic Schema Manager JSON-LD -->
   <script type="application/ld+json">
-{
+  {
     "@context": "https://schema.org",
-    "@graph": [
+    "@type": "Organization",
+    "@id": "https://myugcvideo.in/#organization",
+    "name": "MY UGC VIDEO",
+    "url": "https://myugcvideo.in/",
+    "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
+    "description": "MY UGC VIDEO is a performance-driven UGC video production agency and creator network connecting brands with authentic creators for UGC video ads, product videos, testimonials, unboxing videos, AI UGC content and social media video production.",
+    "email": "hello@myugcvideo.in",
+    "telephone": "+91 98765 43210",
+    "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Basement Floor, B-16, Block D, Ram Dutt Enclave, Uttam Nagar",
+        "addressLocality": "New Delhi",
+        "addressRegion": "Delhi",
+        "postalCode": "110059",
+        "addressCountry": {
+            "@type": "Country",
+            "name": "IN"
+        }
+    },
+    "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91 98765 43210",
+        "email": "hello@myugcvideo.in",
+        "contactType": "customer service",
+        "areaServed": {
+            "@type": "Country",
+            "name": "India"
+        },
+        "availableLanguage": [
+            "English",
+            "Hindi"
+        ]
+    },
+    "areaServed": {
+        "@type": "Country",
+        "name": "India"
+    }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": "https://myugcvideo.in/services#breadcrumb",
+    "itemListElement": [
         {
-            "@type": "Organization",
-            "@id": "https://myugcvideo.in/#organization",
-            "name": "MY UGC VIDEO",
-            "url": "https://myugcvideo.in",
-            "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
-            "description": "Premier performance-driven UGC video production studio and creator network connecting brands with authentic creator-led video content.",
-            "email": "hello@myugcvideo.in",
-            "sameAs": [
-                "https://instagram.com",
-                "https://linkedin.com"
-            ],
-            "contactPoint": [
-                {
-                    "@type": "ContactPoint",
-                    "contactType": "customer service",
-                    "email": "hello@myugcvideo.in",
-                    "availableLanguage": [
-                        "English",
-                        "Hindi"
-                    ]
-                }
-            ],
-            "areaServed": [
-                {
-                    "@type": "Country",
-                    "name": "India"
-                }
-            ]
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://myugcvideo.in"
         },
         {
-            "@type": "BreadcrumbList",
-            "@id": "https://myugcvideo.in/services#breadcrumb",
-            "itemListElement": [
-                {
-                    "@type": "ListItem",
-                    "position": 1,
-                    "name": "Home",
-                    "item": "https://myugcvideo.in"
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 2,
-                    "name": "Services",
-                    "item": "https://myugcvideo.in/services"
-                }
-            ]
-        },
-        {
-            "@type": "FAQPage",
-            "@id": "https://myugcvideo.in/services#faq",
-            "mainEntity": [
-                {
-                    "@type": "Question",
-                    "name": "What commercial usage rights do you provide?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "You can use the finished videos in paid ads on Meta, TikTok, YouTube and Google. The exact platforms\r\n                and duration are in your project agreement, so read that before signing. [ADD YOUR REAL TERMS]"
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "How long does production take?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Most projects take about 7 to 12 business days, from brief to final video. A big batch or slow feedback\r\n                can add time."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "How do you select creators?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "We look at your product, your audience and the platform. Then we shortlist creators whose style and\r\n                followers suit it, and who are free on your dates."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Do clients approve scripts before filming?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Yes. We send the script and hooks first. Filming starts only after you say yes."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "What aspect ratios are delivered?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "9:16, 4:5, 1:1 and 16:9, as MP4 files. Captions can be burned in, and we can send separate SRT subtitle\r\n                files too."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "How are revisions handled?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Send all your feedback together and we'll make the changes. [ADD YOUR REAL REVISION LIMIT, like 2\r\n                rounds]"
-                    }
-                }
-            ]
-        },
-        {
-            "@type": "WebPage",
-            "@id": "https://myugcvideo.in/services#webpage",
-            "url": "https://myugcvideo.in/services",
-            "name": "UGC Video Production Services Directory",
-            "description": "Explore our comprehensive suite of user-generated content video production services, from performance video ads to unboxings and reviews.",
-            "publisher": {
-                "@type": "Organization",
-                "name": "MY UGC VIDEO",
-                "url": "https://myugcvideo.in"
-            },
-            "isPartOf": "https://myugcvideo.in/"
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Services",
+            "item": "https://myugcvideo.in/services"
         }
     ]
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": "https://myugcvideo.in/services#faq",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "What commercial usage rights do you provide?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "You can use the finished videos in paid ads on Meta, TikTok, YouTube and Google. The exact platforms\r\n                and duration are in your project agreement, so read that before signing. [ADD YOUR REAL TERMS]"
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "How long does production take?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Most projects take about 7 to 12 business days, from brief to final video. A big batch or slow feedback\r\n                can add time."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "How do you select creators?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "We look at your product, your audience and the platform. Then we shortlist creators whose style and\r\n                followers suit it, and who are free on your dates."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Do clients approve scripts before filming?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. We send the script and hooks first. Filming starts only after you say yes."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "What aspect ratios are delivered?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "9:16, 4:5, 1:1 and 16:9, as MP4 files. Captions can be burned in, and we can send separate SRT subtitle\r\n                files too."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "How are revisions handled?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Send all your feedback together and we'll make the changes. [ADD YOUR REAL REVISION LIMIT, like 2\r\n                rounds]"
+            }
+        }
+    ]
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://myugcvideo.in/services#webpage",
+    "url": "https://myugcvideo.in/services",
+    "name": "UGC Video Production Services Directory",
+    "description": "Explore our comprehensive suite of user-generated content video production services, from performance video ads to unboxings and reviews.",
+    "publisher": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in"
+    },
+    "isPartOf": "https://myugcvideo.in/"
 }
   </script>
 </head>
@@ -2021,7 +2044,7 @@
                 <div class="quick-form-group">
                   <label for="qeName" class="quick-form-label">Name <span class="required">*</span></label>
                   <div class="quick-input-wrapper">
-                    <input type="text" id="qeName" name="name" class="quick-form-input" placeholder="Your Full Name"
+                    <input type="text" id="qeName" name="name" class="quick-form-input" placeholder="e.g. Alex Morgan"
                       required autocomplete="name">
                     <span class="quick-input-icon" aria-hidden="true">
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -2039,7 +2062,7 @@
                   <label for="qeEmail" class="quick-form-label">Email <span class="required">*</span></label>
                   <div class="quick-input-wrapper">
                     <input type="email" id="qeEmail" name="email" class="quick-form-input"
-                      placeholder="name@company.com" required autocomplete="email">
+                      placeholder="alex@yourbrand.com" required autocomplete="email">
                     <span class="quick-input-icon" aria-hidden="true">
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2">
@@ -2075,7 +2098,7 @@
                   <label for="qeMessage" class="quick-form-label">Message <span
                       class="optional-tag">(Optional)</span></label>
                   <textarea id="qeMessage" name="message" class="quick-form-textarea" rows="2"
-                    placeholder="Tell us what you sell or your video goals..."></textarea>
+                    placeholder="Tell us about your brand, project requirements, or any questions..."></textarea>
                   <div class="quick-form-error" id="qeMessageError"></div>
                 </div>
 
@@ -3272,7 +3295,7 @@
           <form class="newsletter-form" action="#" method="POST" novalidate>
             <div class="newsletter-input-wrap">
               <label for="newsletterEmailFooter" class="sr-only">Email address</label>
-              <input type="email" id="newsletterEmailFooter" class="newsletter-input" placeholder="Your work email"
+              <input type="email" id="newsletterEmailFooter" class="newsletter-input" placeholder="alex@yourbrand.com"
                 required>
             </div>
             <button type="submit" class="newsletter-submit">Subscribe</button>

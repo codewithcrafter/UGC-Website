@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $postId = (int) ($_POST['post_id'] ?? 0);
     if ($postId > 0) {
         $db = getDb();
-        $stmt = $db->prepare("SELECT title, markdown_file, schema_filename FROM blog_posts WHERE id = :id");
+        $stmt = $db->prepare("SELECT title, slug, markdown_file, schema_filename FROM blog_posts WHERE id = :id");
         $stmt->execute([':id' => $postId]);
         $post = $stmt->fetch();
 
@@ -33,6 +33,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!empty($post['schema_filename'])) {
                 $sfPath = CMS_ROOT . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $post['schema_filename']);
                 if (file_exists($sfPath)) @unlink($sfPath);
+            }
+
+            // Sync blogs.md listing
+            if (class_exists('WebsiteMarkdownSync')) {
+                WebsiteMarkdownSync::syncBlogsListing();
+            } elseif (function_exists('syncBlogsMd')) {
+                syncBlogsMd();
             }
 
             // Automatically regenerate discovery systems & notify engines

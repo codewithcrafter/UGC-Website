@@ -10,6 +10,9 @@ if (!defined('CMS_ROOT')) {
 }
 require_once CMS_ROOT . '/config/config.php';
 requireAuth();
+if (file_exists(CMS_ROOT . '/includes/website-markdown-sync.php')) {
+    require_once CMS_ROOT . '/includes/website-markdown-sync.php';
+}
 if (file_exists(CMS_ROOT . '/includes/llms-sync.php')) {
     require_once CMS_ROOT . '/includes/llms-sync.php';
 }
@@ -178,6 +181,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verifyCsrfOrDie();
     $action = trim($_POST['action'] ?? '');
 
+    if ($action === 'reconcile_all_website_to_markdown') {
+        if (class_exists('WebsiteMarkdownSync')) {
+            $res = WebsiteMarkdownSync::reconcileAll(true);
+            if (function_exists('triggerLlmsSynchronization')) {
+                triggerLlmsSynchronization('reconcile_all_website_to_markdown');
+            }
+            $errCount = count($res['errors'] ?? []);
+            if ($errCount === 0) {
+                setFlash('success', "Website-to-Markdown Sync complete: {$res['synced']} updated, {$res['unchanged']} up-to-date across {$res['total']} website pages.");
+            } else {
+                setFlash('warning', "Website-to-Markdown Sync finished with {$errCount} warning(s). {$res['synced']} pages updated.");
+            }
+        } else {
+            setFlash('error', 'WebsiteMarkdownSync handler unavailable.');
+        }
+        header('Location: ' . ADMIN_URL . '/markdown');
+        exit;
+    }
+
+    if ($action === 'sync_website_page') {
+        $pageKey = trim($_POST['page_key'] ?? '');
+        if (class_exists('WebsiteMarkdownSync') && !empty($pageKey)) {
+            $res = WebsiteMarkdownSync::syncHtmlPage($pageKey, true);
+            if ($res['success']) {
+                if (function_exists('triggerLlmsSynchronization')) {
+                    triggerLlmsSynchronization('sync_website_page_' . $pageKey);
+                }
+                setFlash('success', "Page '{$pageKey}' synchronized successfully: " . ($res['changed'] ? 'Markdown file updated.' : 'Already in sync with source HTML.'));
+            } else {
+                setFlash('error', "Failed to sync page '{$pageKey}': " . ($res['error'] ?? 'Unknown error'));
+            }
+        } else {
+            setFlash('error', 'Invalid page key or sync handler unavailable.');
+        }
+        header('Location: ' . ADMIN_URL . '/markdown');
+        exit;
+    }
+
     if ($action === 'reconcile_blogs') {
         if (function_exists('reconcileAllBlogsToMarkdown')) {
             $res = reconcileAllBlogsToMarkdown();
@@ -305,6 +346,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $filename = preg_replace('/[^a-zA-Z0-9_\-\.]/', '-', $filename);
         $filename = trim($filename, '-.');
 
+        // Phase 3 Rule: Exclude homepage markdown permanently
+        $baseNameOnly = strtolower(pathinfo($filename, PATHINFO_FILENAME));
+        if (in_array($baseNameOnly, ['home', 'index', 'homepage'])) {
+            setFlash('error', 'Homepage must never have a separate markdown file.');
+            header('Location: ' . ADMIN_URL . '/markdown');
+            exit;
+        }
+
         if ($cat === 'schemas') {
             $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
             if (!in_array($ext, ['json', 'sql'])) {
@@ -379,6 +428,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $cleanBase = preg_replace('/[^a-zA-Z0-9_\-\.]/', '-', pathinfo($origName, PATHINFO_FILENAME));
+        $cleanBase = trim($cleanBase, '-.');
+
+        // Phase 3 Rule: Exclude homepage markdown permanently
+        $baseNameOnly = strtolower($cleanBase);
+        if (in_array($baseNameOnly, ['home', 'index', 'homepage'])) {
+            setFlash('error', 'Homepage must never have a separate markdown file.');
+            header('Location: ' . ADMIN_URL . '/markdown');
+            exit;
+        }
+
         $cleanName = $cleanBase . '.' . ($ext === 'markdown' ? 'md' : $ext);
 
         if ($cat === 'schemas' || in_array($ext, ['json', 'sql'])) {
@@ -406,6 +465,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: ' . ADMIN_URL . '/markdown');
             exit;
         }
+    }
+
+    if ($action === 'rename_file') {
+        $fileKey = trim($_POST['file_key'] ?? '');
+        $newFilename = trim($_POST['new_filename'] ?? '');
+
+        if ($fileKey === 'llms.txt') {
+            setFlash('error', 'llms.txt is a required core directive and cannot be renamed.');
+            header('Location: ' . ADMIN_URL . '/markdown/index.php?file=llms.txt');
+            exit;
+        }
+
+        $safePath = resolveSafeContentPath($fileKey);
+        if (!$safePath || !is_file($safePath)) {
+            setFlash('error', 'Original file not found or access denied.');
+            header('Location: ' . ADMIN_URL . '/markdown');
+            exit;
+        }
+
+        $origExt = strtolower(pathinfo($safePath, PATHINFO_EXTENSION));
+        $cleanBase = preg_replace('/[^a-zA-Z0-9_\-\.]/', '-', pathinfo($newFilename, PATHINFO_FILENAME));
+        $cleanBase = trim($cleanBase, '-.');
+        $newExt = strtolower(pathinfo($newFilename, PATHINFO_EXTENSION)) ?: $origExt;
+
+        if (empty($cleanBase)) {
+            setFlash('error', 'Please provide a valid new file name.');
+            header('Location: ' . ADMIN_URL . '/markdown/index.php?file=' . urlencode($fileKey));
+            exit;
+        }
+
+        // Phase 3 Rule: Exclude homepage markdown permanently
+        $lowerBase = strtolower($cleanBase);
+        if (in_array($lowerBase, ['home', 'index', 'homepage'])) {
+            setFlash('error', 'Homepage must never have a separate markdown file.');
+            header('Location: ' . ADMIN_URL . '/markdown/index.php?file=' . urlencode($fileKey));
+            exit;
+        }
+
+        $newCleanFilename = $cleanBase . '.' . $newExt;
+        $destDir = dirname($safePath);
+        $destPath = $destDir . DIRECTORY_SEPARATOR . $newCleanFilename;
+
+        if (file_exists($destPath) && realpath($destPath) !== realpath($safePath)) {
+            setFlash('error', 'A file named "' . htmlspecialchars($newCleanFilename) . '" already exists.');
+            header('Location: ' . ADMIN_URL . '/markdown/index.php?file=' . urlencode($fileKey));
+            exit;
+        }
+
+        if (!rename($safePath, $destPath)) {
+            setFlash('error', 'Failed to rename file on disk.');
+            header('Location: ' . ADMIN_URL . '/markdown/index.php?file=' . urlencode($fileKey));
+            exit;
+        }
+
+        $catDir = basename($destDir);
+        $newKey = ($catDir === 'schemas' || $catDir === 'uploads') ? 'schemas/' . $newCleanFilename : $catDir . '/' . $newCleanFilename;
+
+        if (function_exists('triggerLlmsSynchronization')) {
+            triggerLlmsSynchronization('rename_file');
+        }
+
+        setFlash('success', 'File renamed to "' . htmlspecialchars($newCleanFilename) . '" successfully.');
+        header('Location: ' . ADMIN_URL . '/markdown/index.php?file=' . urlencode($newKey));
+        exit;
     }
 
     if ($action === 'delete_file') {
@@ -461,454 +584,54 @@ if (!empty($activeFileKey)) {
 }
 
 $syncStatus = function_exists('getLlmsSyncStatus') ? getLlmsSyncStatus() : [];
+$websiteAuditLog = class_exists('WebsiteMarkdownSync') ? WebsiteMarkdownSync::getSyncAuditLog() : [];
+$pageInventory = class_exists('WebsiteMarkdownSync') ? WebsiteMarkdownSync::PAGE_INVENTORY : [];
+
+// Calculate category distribution counts for filter pills
+$catCounts = [
+    'all'      => count($allFiles),
+    'pages'    => 0,
+    'services' => 0,
+    'blogs'    => 0,
+    'llm'      => 0,
+    'other'    => 0
+];
+foreach ($allFiles as $f) {
+    $c = $f['category'] ?? 'other';
+    if (isset($catCounts[$c])) {
+        $catCounts[$c]++;
+    } else {
+        $catCounts['other']++;
+    }
+}
+
+$websiteSyncedCount = 0;
+foreach ($pageInventory as $pKey => $pInfo) {
+    $mdRel = $pInfo['markdown_file'] ?? $pInfo['md_file'] ?? '';
+    $pMd = CMS_ROOT . '/' . $mdRel;
+    $pAudit = $websiteAuditLog['pages'][$pKey] ?? null;
+    if (!empty($mdRel) && file_exists($pMd) && (!empty($pAudit['status']) && $pAudit['status'] !== 'error')) {
+        $websiteSyncedCount++;
+    }
+}
 
 include CMS_ROOT . '/admin/includes/header.php';
 ?>
 
 <style>
-/* Refined styles for original Markdown & LLMs layout */
-.md-manager-grid {
-  display: grid;
-  grid-template-columns: 360px 1fr;
-  gap: 1.75rem;
-  align-items: stretch;
-  margin-top: 1.25rem;
+/* Page-Specific Polish for Markdown & LLMs Manager */
+.cms-action-bar form {
+  margin: 0 !important;
+  display: inline-flex;
 }
 
-@media (max-width: 1080px) {
-  .md-manager-grid {
-    grid-template-columns: 310px 1fr;
-    gap: 1.25rem;
-  }
-}
-
-@media (max-width: 820px) {
-  .md-manager-grid {
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-  }
-}
-
-/* Sidebar Explorer Panel */
-.md-explorer-panel {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-sage);
-  border-radius: var(--radius-md);
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 4px 20px rgba(0, 23, 19, 0.4);
-  min-height: 540px;
-  height: calc(100vh - 275px);
-  max-height: calc(100vh - 275px);
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-@media (max-width: 820px) {
-  .md-explorer-panel {
-    height: auto;
-    max-height: 480px;
-    min-height: 320px;
-  }
-}
-
-.md-search-wrap {
-  margin-bottom: 1rem;
-  padding-bottom: 0.85rem;
-  border-bottom: 1px solid var(--border-sage-subtle);
-  flex-shrink: 0;
-}
-
-.md-search-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.65rem;
-}
-
-.md-search-title {
-  font-size: 0.82rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--accent-mint);
-}
-
-.md-search-count {
-  font-size: 0.72rem;
-  font-family: var(--font-mono);
-  color: var(--text-muted);
-  background: #001613;
-  padding: 0.15rem 0.5rem;
-  border-radius: 999px;
-  border: 1px solid var(--border-sage-subtle);
-}
-
-.md-search-input {
-  width: 100%;
-  padding: 0.55rem 0.85rem;
-  font-size: 0.85rem;
-  background: #00120f !important;
-  border: 1px solid var(--border-sage) !important;
-  border-radius: var(--radius-xs);
-  color: var(--text-white) !important;
-  transition: var(--transition);
-  box-sizing: border-box;
-}
-
-.md-search-input:focus {
-  border-color: var(--accent-mint) !important;
-  box-shadow: 0 0 0 3px rgba(54, 217, 176, 0.15) !important;
-  outline: none;
-}
-
-/* Independent Sidebar File List */
-.md-explorer-panel .md-file-list {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding-right: 6px;
-  box-sizing: border-box;
-}
-
-.md-explorer-panel .md-file-item {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: stretch !important;
-  justify-content: flex-start !important;
-  gap: 0.35rem !important;
-  padding: 0.65rem 0.85rem !important;
-  border-radius: var(--radius-xs) !important;
-  border: 1px solid rgba(49, 83, 77, 0.3) !important;
-  background: #001613 !important;
-  color: var(--text-primary) !important;
-  text-decoration: none !important;
-  transition: var(--transition) !important;
-  min-width: 0 !important;
-  width: 100% !important;
-  box-sizing: border-box !important;
-  flex-shrink: 0 !important;
-  min-height: 56px !important;
-  height: auto !important;
-  overflow: visible !important;
-}
-
-.md-explorer-panel .md-file-item:hover {
-  background: rgba(54, 217, 176, 0.06) !important;
-  border-color: var(--border-sage) !important;
-}
-
-.md-explorer-panel .md-file-item.active {
-  background: rgba(54, 217, 176, 0.12) !important;
-  border-color: var(--accent-mint) !important;
-  border-left: 3px solid var(--accent-mint) !important;
-}
-
-.md-explorer-panel .md-file-item-header {
-  display: flex !important;
-  align-items: center !important;
-  gap: 0.5rem !important;
-  overflow: hidden !important;
-  min-width: 0 !important;
-  width: 100% !important;
-  height: auto !important;
-  min-height: 20px !important;
-  flex-shrink: 0 !important;
-}
-
-.md-explorer-panel .md-file-icon {
-  color: var(--accent-mint);
+.cms-action-bar .btn {
+  height: 34px;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 18px;
-  height: 18px;
-}
-
-.md-explorer-panel .md-file-name {
-  font-size: 0.84rem !important;
-  font-weight: 600 !important;
-  color: var(--text-white) !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  min-width: 0 !important;
-  flex: 1 !important;
-  display: block !important;
-  line-height: 1.3 !important;
-}
-
-.md-explorer-panel .md-file-meta-row {
-  display: flex !important;
-  align-items: center !important;
-  gap: 0.4rem !important;
-  font-size: 0.7rem !important;
-  color: var(--text-muted) !important;
-  flex-wrap: wrap !important;
-  min-width: 0 !important;
-  width: 100% !important;
-  margin-top: 0.15rem !important;
-  flex-shrink: 0 !important;
-}
-
-.md-badge-cat {
-  background: rgba(49, 83, 77, 0.4);
-  color: var(--text-secondary);
-  padding: 0.1rem 0.4rem;
-  border-radius: 3px;
-  font-size: 0.68rem;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.md-badge-status {
-  padding: 0.1rem 0.4rem;
-  border-radius: 3px;
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  white-space: nowrap;
-}
-
-.md-badge-status.status-pub {
-  background: var(--status-pub-bg);
-  color: var(--status-pub);
-}
-
-.md-badge-status.status-draft {
-  background: var(--status-draft-bg);
-  color: var(--status-draft);
-}
-
-.md-badge-blog {
-  background: rgba(54, 217, 176, 0.12);
-  color: var(--accent-mint);
-  font-family: var(--font-mono);
-  padding: 0.1rem 0.4rem;
-  border-radius: 3px;
-  font-size: 0.68rem;
-  white-space: nowrap;
-}
-
-.md-file-size {
-  margin-left: auto;
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  color: var(--text-muted);
-  white-space: nowrap;
-}
-
-/* Right Column: Markdown Workspace Panel */
-.md-workspace-panel {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-sage);
-  border-radius: var(--radius-md);
-  display: flex;
-  flex-direction: column;
-  min-height: 540px;
-  height: calc(100vh - 275px);
-  max-height: calc(100vh - 275px);
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-@media (max-width: 820px) {
-  .md-workspace-panel {
-    height: auto;
-    max-height: none;
-    min-height: auto;
-  }
-}
-
-.md-empty-workspace {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 5rem 2rem;
-  text-align: center;
-  margin: auto;
-}
-
-/* Workspace Header */
-.md-workspace-header {
-  padding: 1.15rem 1.4rem;
-  border-bottom: 1px solid var(--border-sage);
-  background: #001613;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  flex-shrink: 0;
-}
-
-.md-workspace-meta-row {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.65rem;
-  margin-top: 0.45rem;
-  font-size: 0.75rem;
-}
-
-.md-meta-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  background: #00120f;
-  border: 1px solid var(--border-sage-subtle);
-  padding: 0.2rem 0.55rem;
-  border-radius: var(--radius-xs);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: var(--text-muted);
-}
-
-.md-meta-chip svg {
-  color: var(--accent-mint);
-  flex-shrink: 0;
-}
-
-.md-meta-path {
-  max-width: 320px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.md-meta-path-text {
-  font-family: var(--font-mono);
-  color: var(--text-secondary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Action Buttons Alignment */
-.md-workspace-actions {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.md-action-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   gap: 0.45rem;
-  height: 36px;
-  padding: 0 0.85rem;
   font-size: 0.82rem;
-  font-weight: 500;
   line-height: 1;
-  border-radius: var(--radius-xs);
-  box-sizing: border-box;
-  vertical-align: middle;
-  transition: var(--transition);
-}
-
-.md-action-btn svg {
-  flex-shrink: 0;
-}
-
-/* View Switcher Tabs */
-.md-view-tabs {
-  display: flex;
-  background: #001b17;
-  border-bottom: 1px solid var(--border-sage);
-  padding: 0 1rem;
-  gap: 0.5rem;
-  flex-shrink: 0;
-}
-
-.md-view-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.75rem 1rem;
-  font-size: 0.84rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.md-view-tab:hover {
-  color: var(--text-white);
-}
-
-.md-view-tab.active {
-  color: var(--accent-mint);
-  border-bottom-color: var(--accent-mint);
-}
-
-/* Editor Form & Panes */
-.md-editor-form {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.md-editor-pane {
-  padding: 1.25rem 1.4rem;
-  background: #000c0a;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-/* Raw Textarea with No Top Clipping */
-.md-raw-textarea {
-  width: 100%;
-  flex: 1;
-  min-height: 380px;
-  height: 100%;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--radius-xs);
-  outline: none;
-  color: #D9E5DF;
-  font-family: var(--font-mono);
-  font-size: 0.92rem;
-  line-height: 1.7;
-  letter-spacing: 0.01em;
-  tab-size: 2;
-  padding: 0.85rem 1rem;
-  box-sizing: border-box;
-  resize: none;
-  overflow-y: auto;
-}
-
-.md-raw-textarea:focus {
-  border-color: rgba(54, 217, 176, 0.25);
-  box-shadow: 0 0 0 2px rgba(54, 217, 176, 0.08);
-}
-
-/* Formatted Preview Pane */
-.md-preview-pane {
-  padding: 1.75rem 2rem;
-  background: var(--bg-surface);
-  overflow-y: auto;
-  flex: 1;
-  min-height: 0;
-  box-sizing: border-box;
 }
 
 /* Enhanced Preview Prose Typography & Spacing */
@@ -998,55 +721,6 @@ include CMS_ROOT . '/admin/includes/header.php';
   font-size: 0.88rem;
   line-height: 1.6;
 }
-
-/* Footer Strip */
-.md-footer-strip {
-  padding: 0.9rem 1.4rem;
-  background: #001613;
-  border-top: 1px solid var(--border-sage);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  flex-shrink: 0;
-}
-
-/* Thin Subtle Teal Scrollbar Styling */
-.md-file-list,
-.md-preview-pane,
-.md-raw-textarea {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(54, 217, 176, 0.3) rgba(0, 18, 15, 0.6);
-}
-
-.md-file-list::-webkit-scrollbar,
-.md-preview-pane::-webkit-scrollbar,
-.md-raw-textarea::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.md-file-list::-webkit-scrollbar-track,
-.md-preview-pane::-webkit-scrollbar-track,
-.md-raw-textarea::-webkit-scrollbar-track {
-  background: rgba(0, 18, 15, 0.6);
-  border-radius: 4px;
-}
-
-.md-file-list::-webkit-scrollbar-thumb,
-.md-preview-pane::-webkit-scrollbar-thumb,
-.md-raw-textarea::-webkit-scrollbar-thumb {
-  background: rgba(54, 217, 176, 0.28);
-  border-radius: 4px;
-  border: 1px solid rgba(0, 22, 19, 0.8);
-}
-
-.md-file-list::-webkit-scrollbar-thumb:hover,
-.md-preview-pane::-webkit-scrollbar-thumb:hover,
-.md-raw-textarea::-webkit-scrollbar-thumb:hover {
-  background: rgba(54, 217, 176, 0.55);
-}
 </style>
 
 <!-- Header Actions Bar -->
@@ -1078,6 +752,16 @@ include CMS_ROOT . '/admin/includes/header.php';
       <button type="submit" class="btn btn-secondary btn-sm" title="Reconcile all database blog posts into managed Markdown files" onclick="return confirm('Reconcile all database blog posts into managed Markdown files?')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
         <span>Sync All Blogs</span>
+      </button>
+    </form>
+
+    <!-- Sync All Website Pages -->
+    <form method="POST" action="<?= ADMIN_URL ?>/markdown" style="margin: 0;">
+      <?= csrfField() ?>
+      <input type="hidden" name="action" value="reconcile_all_website_to_markdown">
+      <button type="submit" class="btn btn-secondary btn-sm" title="Reconcile all 13 published website pages to Markdown files" onclick="return confirm('Reconcile all 13 published website pages to Markdown files?')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        <span>Sync Website Pages</span>
       </button>
     </form>
 
@@ -1128,10 +812,40 @@ include CMS_ROOT . '/admin/includes/header.php';
     <!-- Search Bar & Header -->
     <div class="md-search-wrap">
       <div class="md-search-header">
-        <span class="md-search-title">Markdown &amp; LLM Files</span>
-        <span class="md-search-count"><?= count($allFiles) ?> files</span>
+        <span class="md-search-title">Files &amp; Directives</span>
+        <span class="md-search-count" id="visibleFilesCount"><?= count($allFiles) ?> files</span>
       </div>
-      <input type="text" id="fileSearchInput" class="form-control form-control-sm md-search-input" placeholder="Search .md files and llms.txt..." oninput="filterFilesList()">
+      <input type="text" id="fileSearchInput" class="form-control form-control-sm md-search-input" placeholder="Search markdown docs or directives..." oninput="filterFilesList()">
+    </div>
+
+    <!-- Category Filter Pills -->
+    <div class="md-category-pills" id="categoryPillsContainer">
+      <button type="button" class="md-cat-pill active" data-category="all" onclick="filterByCategory('all')" title="Show all files">
+        <span>All</span>
+        <span class="badge-count" id="countAll"><?= $catCounts['all'] ?></span>
+      </button>
+      <button type="button" class="md-cat-pill" data-category="pages" onclick="filterByCategory('pages')" title="Filter core pages">
+        <span>Pages</span>
+        <span class="badge-count" id="countPages"><?= $catCounts['pages'] ?></span>
+      </button>
+      <button type="button" class="md-cat-pill" data-category="services" onclick="filterByCategory('services')" title="Filter service landing pages">
+        <span>Services</span>
+        <span class="badge-count" id="countServices"><?= $catCounts['services'] ?></span>
+      </button>
+      <button type="button" class="md-cat-pill" data-category="blogs" onclick="filterByCategory('blogs')" title="Filter blog articles">
+        <span>Blogs</span>
+        <span class="badge-count" id="countBlogs"><?= $catCounts['blogs'] ?></span>
+      </button>
+      <button type="button" class="md-cat-pill" data-category="llm" onclick="filterByCategory('llm')" title="Filter root LLM directives">
+        <span>Directives</span>
+        <span class="badge-count" id="countLlm"><?= $catCounts['llm'] ?></span>
+      </button>
+      <?php if (!empty($catCounts['other'])): ?>
+      <button type="button" class="md-cat-pill" data-category="other" onclick="filterByCategory('other')" title="Filter schemas and other documents">
+        <span>Other</span>
+        <span class="badge-count" id="countOther"><?= $catCounts['other'] ?></span>
+      </button>
+      <?php endif; ?>
     </div>
 
     <!-- File List Items -->
@@ -1209,20 +923,17 @@ include CMS_ROOT . '/admin/includes/header.php';
         </div>
       </div>
     <?php else: 
-      $directPublicUrl = null;
-      if ($activeFile['is_blog'] && $activeFile['blog_id'] && !empty($blogMap[$activeFile['blog_id']]['slug'])) {
-          $directPublicUrl = SITE_URL . '/blog/' . urlencode($blogMap[$activeFile['blog_id']]['slug']) . '.md';
-      } elseif ($activeFile['category'] === 'pages') {
-          $pageSlug = pathinfo($activeFile['filename'], PATHINFO_FILENAME);
-          $directPublicUrl = SITE_URL . '/pages/' . urlencode($pageSlug) . '.md';
-      } elseif ($activeFile['category'] === 'services') {
-          $srvSlug = pathinfo($activeFile['filename'], PATHINFO_FILENAME);
-          $directPublicUrl = SITE_URL . '/services/' . urlencode($srvSlug) . '.md';
-      } elseif ($activeFile['category'] === 'other') {
-          $otherSlug = pathinfo($activeFile['filename'], PATHINFO_FILENAME);
-          $directPublicUrl = SITE_URL . '/other/' . urlencode($otherSlug) . '.md';
-      }
-      $publicViewUrl = $directPublicUrl ?: (SITE_URL . '/markdown/view.php?file=' . urlencode($activeFile['rel_path']));
+      $blogSlug = ($activeFile['is_blog'] && $activeFile['blog_id'] && !empty($blogMap[$activeFile['blog_id']]['slug'])) 
+          ? $blogMap[$activeFile['blog_id']]['slug'] 
+          : null;
+      $canonicalPublicUrl = function_exists('getCanonicalMarkdownPublicUrl')
+          ? getCanonicalMarkdownPublicUrl($activeFile['category'], $activeFile['filename'], $blogSlug, false)
+          : null;
+      $localPublicUrl = function_exists('getCanonicalMarkdownPublicUrl')
+          ? getCanonicalMarkdownPublicUrl($activeFile['category'], $activeFile['filename'], $blogSlug, true)
+          : null;
+
+      $publicViewUrl = $localPublicUrl ?: (SITE_URL . '/markdown/view.php?file=' . urlencode($activeFile['rel_path']));
       
       // Determine rendered HTML based on file type
       if ($activeFile['file_type'] === 'json') {
@@ -1267,6 +978,12 @@ include CMS_ROOT . '/admin/includes/header.php';
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
               <code class="md-meta-path-text"><?= e($activeFile['rel_path']) ?></code>
             </span>
+            <?php if ($canonicalPublicUrl): ?>
+            <span class="md-meta-chip" title="Canonical Public URL">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--accent-mint)" stroke-width="2" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              <code style="color: var(--accent-mint); font-family: var(--font-mono); font-size: 0.76rem;"><?= e($canonicalPublicUrl) ?></code>
+            </span>
+            <?php endif; ?>
           </div>
         </div>
 
@@ -1277,12 +994,28 @@ include CMS_ROOT . '/admin/includes/header.php';
             <span>Public URL</span>
           </a>
 
+          <?php if ($canonicalPublicUrl): ?>
+          <!-- Copy Canonical URL Button -->
+          <button type="button" class="btn btn-secondary btn-sm md-action-btn" onclick="copyCanonicalUrl('<?= e($canonicalPublicUrl) ?>', this)" title="Copy canonical public URL: <?= e($canonicalPublicUrl) ?>">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span>Copy URL</span>
+          </button>
+          <?php endif; ?>
+
           <!-- Edit in Blog CMS (if linked) -->
           <?php if ($activeFile['is_blog'] && $activeFile['blog_id']): ?>
             <a href="<?= ADMIN_URL ?>/posts/edit.php?id=<?= $activeFile['blog_id'] ?>" class="btn btn-outline-mint btn-sm md-action-btn" title="Edit this article inside the visual Blog Editor">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
               <span>Edit in Blog CMS</span>
             </a>
+          <?php endif; ?>
+
+          <!-- Rename File (if deletable) -->
+          <?php if ($activeFile['is_deletable']): ?>
+            <button type="button" class="btn btn-secondary btn-sm md-action-btn" onclick="openRenameModal('<?= e($activeFile['key']) ?>', '<?= htmlspecialchars($activeFile['filename'], ENT_QUOTES) ?>')" title="Rename file">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              <span>Rename</span>
+            </button>
           <?php endif; ?>
 
           <!-- Delete File (if deletable) -->
@@ -1348,6 +1081,138 @@ include CMS_ROOT . '/admin/includes/header.php';
     <?php endif; ?>
   </main>
 
+</div>
+
+<!-- Website-to-Markdown Live Synchronization Status Panel -->
+<div class="panel" style="margin-top: 1.75rem;">
+  <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <div style="display: flex; align-items: center; gap: 0.65rem;">
+        <h2 class="panel-title" style="margin: 0; font-size: 1.15rem;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          <span>Website-to-Markdown Live Synchronization Status</span>
+        </h2>
+        <span class="sync-badge"><span class="sync-dot"></span> Source of Truth: Website Content</span>
+      </div>
+      <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.35rem;">
+        Whenever content on a public website page is added or updated, its corresponding Markdown file reflects the latest published content.
+      </div>
+    </div>
+    <div style="display: flex; gap: 0.65rem; align-items: center;">
+      <form method="POST" action="<?= ADMIN_URL ?>/markdown" style="margin: 0;">
+        <?= csrfField() ?>
+        <input type="hidden" name="action" value="reconcile_all_website_to_markdown">
+        <button type="submit" class="btn btn-outline-mint btn-sm" onclick="return confirm('Reconcile all 13 published website pages to Markdown files?')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          <span>Sync All Website Pages</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; padding: 1.25rem 1.5rem; background: rgba(0, 18, 15, 0.4); border-bottom: 1px solid var(--border-sage);">
+    <div style="background: #00120f; border: 1px solid var(--border-sage-subtle); border-radius: var(--radius-xs); padding: 0.85rem 1rem;">
+      <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);">Total Website Pages</div>
+      <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-white); font-family: var(--font-mono); margin-top: 0.2rem;"><?= count($pageInventory) ?></div>
+      <div style="font-size: 0.72rem; color: var(--accent-mint); margin-top: 0.2rem;">4 Core + 9 Dedicated Services</div>
+    </div>
+    <div style="background: #00120f; border: 1px solid var(--border-sage-subtle); border-radius: var(--radius-xs); padding: 0.85rem 1rem;">
+      <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);">In-Sync Status</div>
+      <div style="font-size: 1.5rem; font-weight: 700; color: var(--accent-mint); font-family: var(--font-mono); margin-top: 0.2rem;"><?= $websiteSyncedCount ?> / <?= count($pageInventory) ?></div>
+      <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.2rem;">All eligible files active</div>
+    </div>
+    <div style="background: #00120f; border: 1px solid var(--border-sage-subtle); border-radius: var(--radius-xs); padding: 0.85rem 1rem;">
+      <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);">Blog Articles Synced</div>
+      <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-white); font-family: var(--font-mono); margin-top: 0.2rem;"><?= (int)($websiteAuditLog['blogs_count'] ?? 0) ?></div>
+      <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.2rem;">Published posts in markdown/blogs/</div>
+    </div>
+    <div style="background: #00120f; border: 1px solid var(--border-sage-subtle); border-radius: var(--radius-xs); padding: 0.85rem 1rem;">
+      <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted);">Last Auto-Sync</div>
+      <div style="font-size: 0.95rem; font-weight: 600; color: var(--text-white); font-family: var(--font-mono); margin-top: 0.45rem;">
+        <?= !empty($websiteAuditLog['last_reconciliation']) ? date('M j, Y H:i:s', strtotime($websiteAuditLog['last_reconciliation'])) : 'Active' ?>
+      </div>
+      <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.2rem;">Atomic hash-verified</div>
+    </div>
+  </div>
+
+  <!-- Pages Table -->
+  <div class="table-responsive">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Source Page</th>
+          <th>Category</th>
+          <th>Markdown File</th>
+          <th>Canonical Public URL</th>
+          <th>Last Synced</th>
+          <th>Status</th>
+          <th style="text-align: right;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php foreach ($pageInventory as $pKey => $pInfo): 
+          $mdRel = $pInfo['markdown_file'] ?? $pInfo['md_file'] ?? '';
+          $mdAbs = CMS_ROOT . '/' . $mdRel;
+          $mdExists = !empty($mdRel) && file_exists($mdAbs);
+          $audit = $websiteAuditLog['pages'][$pKey] ?? null;
+          $syncedTime = $audit['last_synced'] ?? ($mdExists ? date('Y-m-d H:i:s', filemtime($mdAbs)) : null);
+          $isSynced = $mdExists && (!empty($audit['status']) ? $audit['status'] !== 'error' : true);
+          $hasError = !empty($audit['status']) && $audit['status'] === 'error';
+          $editorFileKey = str_replace('markdown/', '', $mdRel);
+          $sourceFile = $pInfo['source_file'] ?? $pInfo['html_file'] ?? '';
+          $canonicalUrl = $pInfo['canonical_url'] ?? $pInfo['public_url'] ?? '';
+        ?>
+          <tr>
+            <td>
+              <div style="font-weight: 600; color: var(--text-white); font-size: 0.88rem;"><?= e($pInfo['title']) ?></div>
+              <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;"><?= e($sourceFile) ?></div>
+            </td>
+            <td>
+              <span class="md-badge-cat"><?= e($pInfo['category_name']) ?></span>
+            </td>
+            <td>
+              <a href="<?= ADMIN_URL ?>/markdown?file=<?= urlencode($editorFileKey) ?>" style="color: var(--accent-mint); font-family: var(--font-mono); font-size: 0.82rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem;" title="View or edit in Markdown Editor">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <span><?= e(basename($mdRel)) ?></span>
+              </a>
+            </td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 0.45rem;">
+                <code style="color: var(--text-secondary); font-size: 0.75rem; font-family: var(--font-mono); max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><?= e($canonicalUrl) ?></code>
+                <button type="button" class="btn btn-secondary btn-sm" style="padding: 0.15rem 0.45rem; font-size: 0.7rem; height: 24px; line-height: 1;" onclick="copyCanonicalUrl('<?= e($canonicalUrl) ?>', this)" title="Copy canonical public URL">Copy</button>
+              </div>
+            </td>
+            <td>
+              <span style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--text-muted);">
+                <?= $syncedTime ? date('M j, Y H:i:s', strtotime($syncedTime)) : 'Pending' ?>
+              </span>
+            </td>
+            <td>
+              <?php if ($isSynced): ?>
+                <span class="sync-badge" style="font-size: 0.7rem; padding: 0.2rem 0.55rem;"><span class="sync-dot"></span> Synced</span>
+              <?php elseif ($hasError): ?>
+                <span class="badge" style="background: rgba(255, 107, 107, 0.15); color: #ff8585; border: 1px solid rgba(255, 107, 107, 0.3); font-size: 0.7rem;">Error</span>
+              <?php else: ?>
+                <span class="badge" style="background: rgba(240, 185, 11, 0.15); color: #f0b90b; border: 1px solid rgba(240, 185, 11, 0.3); font-size: 0.7rem;">Pending</span>
+              <?php endif; ?>
+            </td>
+            <td style="text-align: right;">
+              <form method="POST" action="<?= ADMIN_URL ?>/markdown" style="margin: 0; display: inline;">
+                <?= csrfField() ?>
+                <input type="hidden" name="action" value="sync_website_page">
+                <input type="hidden" name="page_key" value="<?= e($pKey) ?>">
+                <button type="submit" class="btn btn-secondary btn-sm" title="Re-sync <?= e($pKey) ?> from source website HTML" style="font-size: 0.75rem; padding: 0.25rem 0.6rem; height: 28px;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                  <span>Sync</span>
+                </button>
+              </form>
+            </td>
+          </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <!-- Modal 1: Create New File -->
@@ -1481,6 +1346,42 @@ include CMS_ROOT . '/admin/includes/header.php';
   </div>
 </div>
 
+<!-- Modal 4: Rename File Modal -->
+<div id="renameModal" class="editor-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="renameModalTitle">
+  <div class="editor-modal-card" style="max-width: 480px;">
+    <div class="editor-modal-header">
+      <h3 id="renameModalTitle" class="editor-modal-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <span>Rename File</span>
+      </h3>
+      <button type="button" class="editor-modal-close" onclick="closeModal('renameModal')" aria-label="Close">&times;</button>
+    </div>
+    <form method="POST" action="<?= ADMIN_URL ?>/markdown" id="renameFileForm">
+      <?= csrfField() ?>
+      <input type="hidden" name="action" value="rename_file">
+      <input type="hidden" name="file_key" id="renameModalFileKey" value="">
+
+      <div class="editor-modal-body">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="renameModalNewFilename" class="form-label">New Filename <span class="required">*</span></label>
+          <input type="text" id="renameModalNewFilename" name="new_filename" class="form-control" required>
+          <div class="form-hint" style="margin-top: 0.4rem; font-size: 0.78rem; color: var(--text-muted);">
+            Filename must not represent homepage. Existing extension will be retained if omitted.
+          </div>
+        </div>
+      </div>
+
+      <div class="editor-modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('renameModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.45rem;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          <span>Save New Name</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
 let currentCategoryFilter = 'all';
 
@@ -1545,23 +1446,30 @@ function filterFilesList() {
   applyFilterRules();
 }
 
-function filterByCategory(category) {
-  // Retained for backward compatibility
-}
-
 function applyFilterRules() {
   const searchInput = document.getElementById('fileSearchInput');
   const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
   const items = document.querySelectorAll('.md-file-item');
+  let visibleCount = 0;
 
   items.forEach(item => {
     const itemName = item.getAttribute('data-name') || '';
-    if (!searchVal || itemName.includes(searchVal)) {
+    const itemCat = item.getAttribute('data-category') || '';
+    const matchesCat = (currentCategoryFilter === 'all' || itemCat === currentCategoryFilter);
+    const matchesSearch = (!searchVal || itemName.includes(searchVal));
+
+    if (matchesCat && matchesSearch) {
       item.style.display = 'flex';
+      visibleCount++;
     } else {
       item.style.display = 'none';
     }
   });
+
+  const countEl = document.getElementById('visibleFilesCount');
+  if (countEl) {
+    countEl.textContent = visibleCount + ' files';
+  }
 }
 
 function openModal(id) {
@@ -1580,6 +1488,14 @@ function openDeleteModal(fileKey, fileName) {
   if (keyInput) keyInput.value = fileKey;
   if (nameDisplay) nameDisplay.textContent = fileName;
   openModal('deleteModal');
+}
+
+function openRenameModal(fileKey, fileName) {
+  const keyInput = document.getElementById('renameModalFileKey');
+  const nameInput = document.getElementById('renameModalNewFilename');
+  if (keyInput) keyInput.value = fileKey;
+  if (nameInput) nameInput.value = fileName;
+  openModal('renameModal');
 }
 
 function escapeHtml(text) {
@@ -1631,6 +1547,24 @@ function clientMarkdownToHtml(md) {
     if (/^<(h[1-6]|ul|ol|blockquote|hr|div|pre)/i.test(p)) return p;
     return '<p>' + p.replace(/\n/g, '<br>') + '</p>';
   }).join('\n');
+}
+
+function copyCanonicalUrl(url, btnElement) {
+  if (!url) return;
+  navigator.clipboard.writeText(url).then(function() {
+    const span = btnElement.querySelector('span');
+    const origText = span ? span.textContent : 'Copy URL';
+    if (span) span.textContent = 'Copied!';
+    btnElement.style.borderColor = 'var(--accent-mint)';
+    btnElement.style.color = 'var(--accent-mint)';
+    setTimeout(function() {
+      if (span) span.textContent = origText;
+      btnElement.style.borderColor = '';
+      btnElement.style.color = '';
+    }, 2000);
+  }).catch(function(err) {
+    prompt('Canonical Public URL:', url);
+  });
 }
 
 // Reset scroll position of editor textarea on load to guarantee first line visibility

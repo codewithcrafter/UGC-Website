@@ -2420,175 +2420,125 @@ textarea.form-control {
   word-break: break-all;
 }
 
-/* Markdown & LLMs Admin Page Layout */
+/* ==========================================================================
+   MARKDOWN & LLMS MANAGER — UNIFIED DESIGN SYSTEM
+   ========================================================================== */
 .md-manager-grid {
   display: grid;
   grid-template-columns: 340px 1fr;
   gap: 1.5rem;
-  align-items: start;
+  align-items: stretch;
+  min-height: 640px;
+  height: 74vh;
+  max-height: 840px;
+  margin-top: 1.25rem;
 }
 
-.md-files-panel {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-sage);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-}
-
-.md-search-bar {
-  padding: 0.85rem 1rem;
-  border-bottom: 1px solid var(--border-sage-subtle);
-  background: #001613;
-}
-
-.md-category-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border-sage-subtle);
-  background: #001b17;
-}
-
-.md-pill {
-  padding: 0.22rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-sage-subtle);
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: var(--transition);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.md-pill:hover,
-.md-pill.active {
-  background: var(--accent-mint);
-  color: #001713;
-  border-color: var(--accent-mint);
-}
-
-.md-file-list {
-  max-height: calc(100vh - 280px);
-  overflow-y: auto;
-  list-style: none;
-  margin: 0;
-  padding: 0.35rem 0;
-}
-
-.md-file-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid rgba(49, 83, 77, 0.2);
-  cursor: pointer;
-  transition: var(--transition);
-  text-decoration: none;
-  color: inherit;
-}
-
-.md-file-item:hover,
-.md-file-item.selected {
-  background: rgba(54, 217, 176, 0.08);
-  border-left: 3px solid var(--accent-mint);
-}
-
-.md-file-meta-name {
-  font-weight: 600;
-  font-size: 0.86rem;
-  color: var(--text-white);
-  line-height: 1.3;
-}
-
-.md-file-meta-sub {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  margin-top: 0.2rem;
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-}
-
-.md-detail-panel {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-sage);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  min-height: 600px;
-  display: flex;
-  flex-direction: column;
-}
-
-.md-detail-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 5rem 2rem;
-  text-align: center;
-  color: var(--text-muted);
-  flex-grow: 1;
-}
-
-.md-detail-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 1rem 1.5rem;
-  background: #001613;
-  border-bottom: 1px solid var(--border-sage-subtle);
-}
-
-.md-detail-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+@media (max-width: 1080px) {
+  .md-manager-grid {
+    grid-template-columns: 300px 1fr;
+    gap: 1.25rem;
+  }
 }
 
 @media (max-width: 900px) {
   .md-manager-grid {
     grid-template-columns: 1fr;
-  }
-  .markdown-split-container {
-    grid-template-columns: 1fr;
-  }
-  .markdown-split-container .markdown-editor-pane {
-    border-right: none;
-    border-bottom: 1px solid var(--border-sage);
+    height: auto;
+    max-height: none;
+    min-height: auto;
+    gap: 1.25rem;
   }
 }
 
-/* Markdown Explorer & Workspace UI */
+/* Sidebar Explorer Panel */
 .md-explorer-panel {
   background: var(--bg-surface);
   border: 1px solid var(--border-sage);
   border-radius: var(--radius-md);
-  padding: 1rem;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 23, 19, 0.4);
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
+@media (max-width: 900px) {
+  .md-explorer-panel {
+    height: 480px;
+  }
+}
+
+.md-search-wrap {
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-sage-subtle);
+  flex-shrink: 0;
+}
+
+.md-search-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.65rem;
+}
+
+.md-search-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-mint);
+  font-family: var(--font-heading);
+}
+
+.md-search-count {
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  background: #001613;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-sage-subtle);
+}
+
+.md-search-input {
+  width: 100%;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.85rem;
+  background: #00120f;
+  border: 1px solid var(--border-sage);
+  border-radius: var(--radius-xs);
+  color: var(--text-white);
+  transition: var(--transition);
+  box-sizing: border-box;
+}
+
+.md-search-input:focus {
+  border-color: var(--accent-mint);
+  box-shadow: 0 0 0 3px rgba(54, 217, 176, 0.15);
+  outline: none;
+}
+
+/* Category Filter Pills */
 .md-category-pills {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
   margin-bottom: 0.85rem;
-  padding-bottom: 0.85rem;
+  padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--border-sage-subtle);
+  flex-shrink: 0;
 }
 
 .md-cat-pill {
   padding: 0.22rem 0.6rem;
   border-radius: 999px;
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 600;
   background: #001613;
   border: 1px solid var(--border-sage-subtle);
   color: var(--text-muted);
@@ -2596,14 +2546,21 @@ textarea.form-control {
   transition: var(--transition);
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.35rem;
+  line-height: 1.2;
 }
 
-.md-cat-pill:hover,
+.md-cat-pill:hover {
+  background: rgba(54, 217, 176, 0.08);
+  color: var(--text-white);
+  border-color: var(--border-sage);
+}
+
 .md-cat-pill.active {
-  background: var(--accent-mint);
-  color: #001713;
+  background: rgba(54, 217, 176, 0.16);
+  color: var(--accent-mint);
   border-color: var(--accent-mint);
+  font-weight: 700;
 }
 
 .md-cat-pill .badge-count {
@@ -2612,12 +2569,17 @@ textarea.form-control {
   opacity: 0.85;
 }
 
+/* File List Scroll Container */
 .md-file-list {
-  max-height: calc(100vh - 280px);
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.45rem;
+  padding-right: 4px;
+  box-sizing: border-box;
 }
 
 .md-file-item {
@@ -2631,6 +2593,10 @@ textarea.form-control {
   color: var(--text-primary);
   text-decoration: none;
   transition: var(--transition);
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .md-file-item:hover {
@@ -2641,28 +2607,37 @@ textarea.form-control {
 .md-file-item.active {
   background: rgba(54, 217, 176, 0.12);
   border-color: var(--accent-mint);
+  border-left: 3px solid var(--accent-mint);
 }
 
 .md-file-item-header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  min-width: 0;
+  width: 100%;
 }
 
 .md-file-icon {
   color: var(--accent-mint);
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
 }
 
 .md-file-name {
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 600;
   color: var(--text-white);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
   flex: 1;
+  line-height: 1.3;
 }
 
 .md-file-meta-row {
@@ -2672,22 +2647,28 @@ textarea.form-control {
   font-size: 0.7rem;
   color: var(--text-muted);
   flex-wrap: wrap;
+  min-width: 0;
+  width: 100%;
 }
 
 .md-badge-cat {
   background: rgba(49, 83, 77, 0.4);
   color: var(--text-secondary);
-  padding: 0.1rem 0.35rem;
+  padding: 0.1rem 0.4rem;
   border-radius: 3px;
   font-size: 0.68rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .md-badge-status {
-  padding: 0.1rem 0.35rem;
+  padding: 0.1rem 0.4rem;
   border-radius: 3px;
   font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
 }
 
 .md-badge-status.status-pub {
@@ -2704,9 +2685,10 @@ textarea.form-control {
   background: rgba(54, 217, 176, 0.12);
   color: var(--accent-mint);
   font-family: var(--font-mono);
-  padding: 0.1rem 0.35rem;
+  padding: 0.1rem 0.4rem;
   border-radius: 3px;
   font-size: 0.68rem;
+  white-space: nowrap;
 }
 
 .md-file-size {
@@ -2714,16 +2696,27 @@ textarea.form-control {
   font-family: var(--font-mono);
   font-size: 0.68rem;
   color: var(--text-muted);
+  white-space: nowrap;
 }
 
+/* Right Column: Markdown Workspace Panel */
 .md-workspace-panel {
   background: var(--bg-surface);
   border: 1px solid var(--border-sage);
   border-radius: var(--radius-md);
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 220px);
+  min-height: 0;
+  height: 100%;
   overflow: hidden;
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  .md-workspace-panel {
+    height: auto;
+    min-height: 520px;
+  }
 }
 
 .md-empty-workspace {
@@ -2737,7 +2730,7 @@ textarea.form-control {
 }
 
 .md-workspace-header {
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.4rem;
   border-bottom: 1px solid var(--border-sage);
   background: #001613;
   display: flex;
@@ -2745,6 +2738,71 @@ textarea.form-control {
   align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
+  flex-shrink: 0;
+}
+
+.md-workspace-meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 0.45rem;
+  font-size: 0.75rem;
+}
+
+.md-meta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #00120f;
+  border: 1px solid var(--border-sage-subtle);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.md-meta-chip svg {
+  color: var(--accent-mint);
+  flex-shrink: 0;
+}
+
+.md-meta-path {
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.md-meta-path-text {
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.md-workspace-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.md-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  height: 34px;
+  padding: 0 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: var(--radius-xs);
+  box-sizing: border-box;
+  vertical-align: middle;
+  transition: var(--transition);
 }
 
 .md-view-tabs {
@@ -2753,13 +2811,14 @@ textarea.form-control {
   border-bottom: 1px solid var(--border-sage);
   padding: 0 1rem;
   gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .md-view-tab {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.75rem 1rem;
+  padding: 0.7rem 1rem;
   font-size: 0.84rem;
   font-weight: 600;
   color: var(--text-muted);
@@ -2779,34 +2838,63 @@ textarea.form-control {
   border-bottom-color: var(--accent-mint);
 }
 
+/* Editor Form Container */
+.md-editor-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .md-editor-pane {
-  padding: 1.25rem;
+  padding: 1rem 1.25rem;
   background: #000c0a;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .md-raw-textarea {
   width: 100%;
   flex: 1;
-  min-height: 520px;
+  min-height: 0;
+  height: 100%;
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-xs);
   outline: none;
   color: #D9E5DF;
   font-family: var(--font-mono);
   font-size: 0.92rem;
-  line-height: 1.65;
-  resize: vertical;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  tab-size: 2;
+  padding: 0.75rem 0.85rem;
+  box-sizing: border-box;
+  resize: none;
+  overflow-y: auto;
+}
+
+.md-raw-textarea:focus {
+  border-color: rgba(54, 217, 176, 0.25);
+  box-shadow: 0 0 0 2px rgba(54, 217, 176, 0.08);
 }
 
 .md-preview-pane {
-  padding: 2rem;
+  padding: 1.5rem 1.75rem;
   background: var(--bg-surface);
   overflow-y: auto;
-  max-height: calc(100vh - 350px);
+  flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
 }
 
 .md-footer-strip {
-  padding: 1rem 1.5rem;
+  padding: 0.85rem 1.4rem;
   background: #001613;
   border-top: 1px solid var(--border-sage);
   display: flex;
@@ -2814,6 +2902,43 @@ textarea.form-control {
   align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
+  flex-shrink: 0;
+}
+
+/* Scrollbar Styling */
+.md-file-list,
+.md-preview-pane,
+.md-raw-textarea {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(54, 217, 176, 0.3) rgba(0, 18, 15, 0.6);
+}
+
+.md-file-list::-webkit-scrollbar,
+.md-preview-pane::-webkit-scrollbar,
+.md-raw-textarea::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.md-file-list::-webkit-scrollbar-track,
+.md-preview-pane::-webkit-scrollbar-track,
+.md-raw-textarea::-webkit-scrollbar-track {
+  background: rgba(0, 18, 15, 0.6);
+  border-radius: 4px;
+}
+
+.md-file-list::-webkit-scrollbar-thumb,
+.md-preview-pane::-webkit-scrollbar-thumb,
+.md-raw-textarea::-webkit-scrollbar-thumb {
+  background: rgba(54, 217, 176, 0.28);
+  border-radius: 4px;
+  border: 1px solid rgba(0, 22, 19, 0.8);
+}
+
+.md-file-list::-webkit-scrollbar-thumb:hover,
+.md-preview-pane::-webkit-scrollbar-thumb:hover,
+.md-raw-textarea::-webkit-scrollbar-thumb:hover {
+  background: rgba(54, 217, 176, 0.55);
 }
 
 /* Table Styles in Admin Visual Editor and Live Preview */

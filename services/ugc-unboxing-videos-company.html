@@ -33,195 +33,216 @@
   <link rel="stylesheet" href="../css/style.css">
 
   <!-- JSON-LD Structured Data -->
-                      <!-- Centralized Schema Manager JSON-LD -->
+                      
+  <!-- Centralized Dynamic Schema Manager JSON-LD -->
   <script type="application/ld+json">
-{
+  {
     "@context": "https://schema.org",
-    "@graph": [
+    "@type": "Service",
+    "@id": "https://myugcvideo.in/services/ugc-unboxing-videos-company#service",
+    "name": "UGC Unboxing Videos Company",
+    "url": "https://myugcvideo.in/services/ugc-unboxing-videos-company",
+    "description": "UGC unboxing videos from real creators across India. ASMR, gift and first-reaction unboxings for Shopify, ads and festive campaigns.",
+    "serviceType": "UGC Unboxing Video Creation",
+    "provider": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in"
+    },
+    "areaServed": {
+        "@type": "Country",
+        "name": "India"
+    },
+    "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "UGC Unboxing Video Services",
+        "itemListElement": [
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "ASMR Unboxing Videos"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "Gift Unboxing Videos"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "First-Reaction Unboxing Videos"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "Shopify Product Unboxing Videos"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "Festive Campaign Unboxing Videos"
+                }
+            }
+        ]
+    }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://myugcvideo.in/#organization",
+    "name": "MY UGC VIDEO",
+    "url": "https://myugcvideo.in/",
+    "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
+    "description": "MY UGC VIDEO is a performance-driven UGC video production agency and creator network connecting brands with authentic creators for UGC video ads, product videos, testimonials, unboxing videos, AI UGC content and social media video production.",
+    "email": "hello@myugcvideo.in",
+    "telephone": "+91 98765 43210",
+    "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Basement Floor, B-16, Block D, Ram Dutt Enclave, Uttam Nagar",
+        "addressLocality": "New Delhi",
+        "addressRegion": "Delhi",
+        "postalCode": "110059",
+        "addressCountry": {
+            "@type": "Country",
+            "name": "IN"
+        }
+    },
+    "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91 98765 43210",
+        "email": "hello@myugcvideo.in",
+        "contactType": "customer service",
+        "areaServed": {
+            "@type": "Country",
+            "name": "India"
+        },
+        "availableLanguage": [
+            "English",
+            "Hindi"
+        ]
+    },
+    "areaServed": {
+        "@type": "Country",
+        "name": "India"
+    }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": "https://myugcvideo.in/services/ugc-unboxing-videos-company#breadcrumb",
+    "itemListElement": [
         {
-            "@type": "Service",
-            "@id": "https://myugcvideo.in/services/ugc-unboxing-videos-company#service",
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://myugcvideo.in"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Services",
+            "item": "https://myugcvideo.in/services"
+        },
+        {
+            "@type": "ListItem",
+            "position": 3,
             "name": "UGC Unboxing Videos Company",
-            "url": "https://myugcvideo.in/services/ugc-unboxing-videos-company",
-            "description": "UGC unboxing videos from real creators across India. ASMR, gift and first-reaction unboxings for Shopify, ads and festive campaigns.",
-            "serviceType": "UGC Unboxing Video Creation",
-            "provider": {
-                "@type": "Organization",
-                "name": "MY UGC VIDEO",
-                "url": "https://myugcvideo.in"
-            },
-            "areaServed": {
-                "@type": "Country",
-                "name": "India"
-            },
-            "hasOfferCatalog": {
-                "@type": "OfferCatalog",
-                "name": "UGC Unboxing Video Services",
-                "itemListElement": [
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "ASMR Unboxing Videos"
-                        }
-                    },
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "Gift Unboxing Videos"
-                        }
-                    },
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "First-Reaction Unboxing Videos"
-                        }
-                    },
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "Shopify Product Unboxing Videos"
-                        }
-                    },
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "Festive Campaign Unboxing Videos"
-                        }
-                    }
-                ]
+            "item": "https://myugcvideo.in/services/ugc-unboxing-videos-company"
+        }
+    ]
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": "https://myugcvideo.in/services/ugc-unboxing-videos-company#faq",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "Why do UGC unboxing videos work so well for e-commerce brands?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Buyers can't hold the product before they order. Watching someone else open it is the next best thing,\r\n                and it shows them what will land at their door."
             }
         },
         {
-            "@type": "Organization",
-            "@id": "https://myugcvideo.in/#organization",
-            "name": "MY UGC VIDEO",
-            "url": "https://myugcvideo.in",
-            "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
-            "description": "Premier performance-driven UGC video production studio and creator network connecting brands with authentic creator-led video content.",
-            "email": "hello@myugcvideo.in",
-            "sameAs": [
-                "https://instagram.com",
-                "https://linkedin.com"
-            ],
-            "contactPoint": [
-                {
-                    "@type": "ContactPoint",
-                    "contactType": "customer service",
-                    "email": "hello@myugcvideo.in",
-                    "availableLanguage": [
-                        "English",
-                        "Hindi"
-                    ]
-                }
-            ],
-            "areaServed": [
-                {
-                    "@type": "Country",
-                    "name": "India"
-                }
-            ]
+            "@type": "Question",
+            "name": "Should we send special PR packaging or standard customer packaging?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Standard customer packaging is usually better, because it shows buyers what they'll actually receive. If\r\n                you'd like PR packaging, say so in the brief."
+            }
         },
         {
-            "@type": "BreadcrumbList",
-            "@id": "https://myugcvideo.in/services/ugc-unboxing-videos-company#breadcrumb",
-            "itemListElement": [
-                {
-                    "@type": "ListItem",
-                    "position": 1,
-                    "name": "Home",
-                    "item": "https://myugcvideo.in"
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 2,
-                    "name": "Services",
-                    "item": "https://myugcvideo.in/services"
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 3,
-                    "name": "UGC Unboxing Videos Company",
-                    "item": "https://myugcvideo.in/services/ugc-unboxing-videos-company"
-                }
-            ]
+            "@type": "Question",
+            "name": "Do you capture audio for ASMR-style unboxings?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. Clear audio is part of every shoot, and ASMR is one of our formats."
+            }
         },
         {
-            "@type": "FAQPage",
-            "@id": "https://myugcvideo.in/services/ugc-unboxing-videos-company#faq",
-            "mainEntity": [
-                {
-                    "@type": "Question",
-                    "name": "Why do UGC unboxing videos work so well for e-commerce brands?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Buyers can't hold the product before they order. Watching someone else open it is the next best thing,\r\n                and it shows them what will land at their door."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Should we send special PR packaging or standard customer packaging?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Standard customer packaging is usually better, because it shows buyers what they'll actually receive. If\r\n                you'd like PR packaging, say so in the brief."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Do you capture audio for ASMR-style unboxings?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Yes. Clear audio is part of every shoot, and ASMR is one of our formats."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Can creators demonstrate the product after unboxing it?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Yes. Add it to the brief and we'll write it into the script for you to approve."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "How long does an unboxing package take?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Usually 7 to 12 business days. A big package or slow feedback can add some time."
-                    }
-                }
-            ]
+            "@type": "Question",
+            "name": "Can creators demonstrate the product after unboxing it?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. Add it to the brief and we'll write it into the script for you to approve."
+            }
         },
         {
-            "@type": "WebPage",
-            "@id": "https://myugcvideo.in/services/ugc-unboxing-videos-company#webpage",
-            "url": "https://myugcvideo.in/services/ugc-unboxing-videos-company",
-            "name": "UGC Unboxing Videos for Brands in India | MY UGC VIDEO",
-            "description": "UGC unboxing videos from real creators across India. ASMR, gift and first-reaction unboxings for Shopify, ads and festive campaigns.",
-            "publisher": {
-                "@type": "Organization",
-                "name": "MY UGC VIDEO",
-                "url": "https://myugcvideo.in"
-            },
-            "isPartOf": "https://myugcvideo.in/"
-        },
-        {
-            "@type": "Product",
-            "name": "UGC Unboxing Videos Company",
-            "aggregateRating": {
-                "@type": "AggregateRating",
-                "ratingValue": "4.8",
-                "bestRating": "5",
-                "worstRating": "1",
-                "ratingCount": "1368",
-                "reviewCount": "1368"
+            "@type": "Question",
+            "name": "How long does an unboxing package take?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Usually 7 to 12 business days. A big package or slow feedback can add some time."
             }
         }
     ]
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://myugcvideo.in/services/ugc-unboxing-videos-company#webpage",
+    "url": "https://myugcvideo.in/services/ugc-unboxing-videos-company",
+    "name": "UGC Unboxing Videos for Brands in India | MY UGC VIDEO",
+    "description": "UGC unboxing videos from real creators across India. ASMR, gift and first-reaction unboxings for Shopify, ads and festive campaigns.",
+    "publisher": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in"
+    },
+    "isPartOf": "https://myugcvideo.in/"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "UGC Unboxing Videos Company",
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "bestRating": "5",
+        "worstRating": "1",
+        "ratingCount": "1368",
+        "reviewCount": "1368"
+    }
 }
   </script>
 </head>
@@ -421,7 +442,7 @@
           </div>
 
           <h1 id="service-hero-title" class="service-hero-title">
-            UGC Unboxing Videos That Catch the Excitement of the First Look
+            UGC Unboxing Videos That Catch the Excitement of the <span class="highlight-mint">First Look</span>
           </h1>
 
           <p class="service-hero-desc">
@@ -475,7 +496,7 @@
               <div class="quick-form-group">
                 <label for="qeName" class="quick-form-label">Name <span class="required">*</span></label>
                 <div class="quick-input-wrapper">
-                  <input type="text" id="qeName" name="name" class="quick-form-input" placeholder="Your Full Name" required autocomplete="name">
+                  <input type="text" id="qeName" name="name" class="quick-form-input" placeholder="e.g. Alex Morgan" required autocomplete="name">
                   <span class="quick-input-icon" aria-hidden="true">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                   </span>
@@ -487,7 +508,7 @@
               <div class="quick-form-group">
                 <label for="qeEmail" class="quick-form-label">Email <span class="required">*</span></label>
                 <div class="quick-input-wrapper">
-                  <input type="email" id="qeEmail" name="email" class="quick-form-input" placeholder="name@company.com" required autocomplete="email">
+                  <input type="email" id="qeEmail" name="email" class="quick-form-input" placeholder="alex@yourbrand.com" required autocomplete="email">
                   <span class="quick-input-icon" aria-hidden="true">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                   </span>
@@ -511,7 +532,7 @@
               <!-- Field 4: Message (Optional) -->
               <div class="quick-form-group">
                 <label for="qeMessage" class="quick-form-label">Message <span class="optional-tag">(Optional)</span></label>
-                <textarea id="qeMessage" name="message" class="quick-form-textarea" rows="2" placeholder="Tell us what you sell or your video goals..."></textarea>
+                <textarea id="qeMessage" name="message" class="quick-form-textarea" rows="2" placeholder="Tell us about your brand, project requirements, or any questions..."></textarea>
                 <div class="quick-form-error" id="qeMessageError"></div>
               </div>
 
@@ -1420,7 +1441,7 @@
           <form class="newsletter-form" action="#" method="POST" novalidate>
             <div class="newsletter-input-wrap">
               <label for="newsletterEmailServicePage" class="sr-only">Email address</label>
-              <input type="email" id="newsletterEmailServicePage" class="newsletter-input" placeholder="Your work email"
+              <input type="email" id="newsletterEmailServicePage" class="newsletter-input" placeholder="alex@yourbrand.com"
                 required>
             </div>
 

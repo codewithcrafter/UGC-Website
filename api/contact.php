@@ -102,7 +102,7 @@ $message = trim(strip_tags($_POST['message'] ?? $_POST['details'] ?? $_POST['mes
 $source = trim(strip_tags($_POST['source'] ?? ''));
 
 // Validate and normalize Source
-$allowedSources = ['Homepage Hero Form', 'Homepage Inquiry Form', 'Contact Page Form'];
+$allowedSources = ['Homepage Hero Form', 'Homepage Inquiry Form', 'Contact Page Form', 'Contact Popup Form'];
 if (!in_array($source, $allowedSources)) {
     // Auto-detect based on referer if not explicitly set
     $referer = $_SERVER['HTTP_REFERER'] ?? '';
@@ -121,28 +121,38 @@ if (mb_strlen($name) < 2 || mb_strlen($name) > 150) {
 }
 
 if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($email) > 190) {
-    $errors['email'] = 'Please provide a valid business email address.';
+    $errors['email'] = 'Please provide a valid email address.';
 }
 
-if (mb_strlen($message) < 10 || mb_strlen($message) > 5000) {
-    $errors['message'] = 'Please provide at least 10 characters of project context.';
-}
-
-if (!empty($phone) && mb_strlen($phone) > 50) {
-    $errors['phone'] = 'Phone number is too long (maximum 50 characters).';
-}
-
-if (!empty($brand) && mb_strlen($brand) > 150) {
-    $errors['brand'] = 'Brand name is too long (maximum 150 characters).';
-}
-
-// Additional validations for Homepage forms
-if ($source === 'Homepage Hero Form' || $source === 'Homepage Inquiry Form') {
-    if (empty($brand) || mb_strlen($brand) < 2) {
-        $errors['brand'] = 'Please provide your brand name or website.';
+if ($source === 'Contact Page Form' || $source === 'Contact Popup Form') {
+    // Simplified Quick Inquiry requirements: Full Name, Email, Phone required; Message optional
+    if (empty($phone) || mb_strlen($phone) < 7 || mb_strlen($phone) > 50) {
+        $errors['phone'] = 'Please provide a valid phone number (at least 7 digits).';
     }
-    if (empty($service)) {
-        $errors['service'] = 'Please select your primary content need.';
+    if (!empty($message) && mb_strlen($message) > 5000) {
+        $errors['message'] = 'Message is too long (maximum 5000 characters).';
+    }
+} else {
+    // Standard validations for Homepage and other forms
+    if (mb_strlen($message) < 10 || mb_strlen($message) > 5000) {
+        $errors['message'] = 'Please provide at least 10 characters of project context.';
+    }
+
+    if (!empty($phone) && mb_strlen($phone) > 50) {
+        $errors['phone'] = 'Phone number is too long (maximum 50 characters).';
+    }
+
+    if (!empty($brand) && mb_strlen($brand) > 150) {
+        $errors['brand'] = 'Brand name is too long (maximum 150 characters).';
+    }
+
+    if ($source === 'Homepage Hero Form' || $source === 'Homepage Inquiry Form') {
+        if (empty($brand) || mb_strlen($brand) < 2) {
+            $errors['brand'] = 'Please provide your brand name or website.';
+        }
+        if (empty($service)) {
+            $errors['service'] = 'Please select your primary content need.';
+        }
     }
 }
 
@@ -156,17 +166,18 @@ if (!empty($errors)) {
     exit;
 }
 
-// 6. Duplicate Submission Protection (Same email and message within 60 seconds)
+// 6. Duplicate Submission Protection (Same email within 60 seconds)
 try {
+    $checkMsg = !empty($message) ? $message : 'Quick inquiry via Contact Page';
     $stmtDup = $db->prepare("
         SELECT id, created_at 
         FROM leads 
         WHERE email = :email 
-          AND message = :msg 
+          AND (message = :msg OR message = 'Quick inquiry via Contact Page') 
           AND created_at >= DATE_SUB(NOW(), INTERVAL 60 SECOND)
         ORDER BY id DESC LIMIT 1
     ");
-    $stmtDup->execute([':email' => $email, ':msg' => $message]);
+    $stmtDup->execute([':email' => $email, ':msg' => $checkMsg]);
     $existingLead = $stmtDup->fetch();
 
     if ($existingLead) {
@@ -199,7 +210,7 @@ try {
         ':brand'   => !empty($brand) ? $brand : null,
         ':service' => !empty($service) ? $service : null,
         ':budget'  => !empty($budget) ? $budget : null,
-        ':message' => $message,
+        ':message' => !empty($message) ? $message : 'Quick inquiry via Contact Page',
         ':source'  => $source,
         ':ip'      => $ipAddress,
         ':ua'      => $userAgent

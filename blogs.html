@@ -33,79 +33,94 @@
   <link rel="stylesheet" href="css/style.css">
 
   <!-- JSON-LD Structured Data: CollectionPage -->
-                    <!-- Centralized Schema Manager JSON-LD -->
+                    
+  <!-- Centralized Dynamic Schema Manager JSON-LD -->
   <script type="application/ld+json">
-{
+  {
     "@context": "https://schema.org",
-    "@graph": [
+    "@type": "CollectionPage",
+    "@id": "https://myugcvideo.in/blogs#collection",
+    "url": "https://myugcvideo.in/blogs",
+    "name": "The Creator Journal — UGC Insights, Trends & Strategy",
+    "description": "Explore in-depth articles on UGC video strategy, creator management, paid social performance, and e-commerce content marketing from MY UGC VIDEO.",
+    "mainEntityOfPage": "https://myugcvideo.in/blogs"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://myugcvideo.in/blogs#webpage",
+    "url": "https://myugcvideo.in/blogs",
+    "name": "The Creator Journal — UGC Insights, Trends & Strategy",
+    "description": "Explore in-depth articles on UGC video strategy, creator management, paid social performance, and e-commerce content marketing from MY UGC VIDEO.",
+    "publisher": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in"
+    },
+    "isPartOf": "https://myugcvideo.in/"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://myugcvideo.in/#organization",
+    "name": "MY UGC VIDEO",
+    "url": "https://myugcvideo.in/",
+    "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
+    "description": "MY UGC VIDEO is a performance-driven UGC video production agency and creator network connecting brands with authentic creators for UGC video ads, product videos, testimonials, unboxing videos, AI UGC content and social media video production.",
+    "email": "hello@myugcvideo.in",
+    "telephone": "+91 98765 43210",
+    "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Basement Floor, B-16, Block D, Ram Dutt Enclave, Uttam Nagar",
+        "addressLocality": "New Delhi",
+        "addressRegion": "Delhi",
+        "postalCode": "110059",
+        "addressCountry": {
+            "@type": "Country",
+            "name": "IN"
+        }
+    },
+    "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91 98765 43210",
+        "email": "hello@myugcvideo.in",
+        "contactType": "customer service",
+        "areaServed": {
+            "@type": "Country",
+            "name": "India"
+        },
+        "availableLanguage": [
+            "English",
+            "Hindi"
+        ]
+    },
+    "areaServed": {
+        "@type": "Country",
+        "name": "India"
+    }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": "https://myugcvideo.in/blogs#breadcrumb",
+    "itemListElement": [
         {
-            "@type": "CollectionPage",
-            "@id": "https://myugcvideo.in/blogs#collection",
-            "url": "https://myugcvideo.in/blogs",
-            "name": "The Creator Journal — UGC Insights, Trends & Strategy",
-            "description": "Explore in-depth articles on UGC video strategy, creator management, paid social performance, and e-commerce content marketing from MY UGC VIDEO.",
-            "mainEntityOfPage": "https://myugcvideo.in/blogs"
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://myugcvideo.in"
         },
         {
-            "@type": "WebPage",
-            "@id": "https://myugcvideo.in/blogs#webpage",
-            "url": "https://myugcvideo.in/blogs",
-            "name": "The Creator Journal — UGC Insights, Trends & Strategy",
-            "description": "Explore in-depth articles on UGC video strategy, creator management, paid social performance, and e-commerce content marketing from MY UGC VIDEO.",
-            "publisher": {
-                "@type": "Organization",
-                "name": "MY UGC VIDEO",
-                "url": "https://myugcvideo.in"
-            },
-            "isPartOf": "https://myugcvideo.in/"
-        },
-        {
-            "@type": "Organization",
-            "@id": "https://myugcvideo.in/#organization",
-            "name": "MY UGC VIDEO",
-            "url": "https://myugcvideo.in",
-            "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
-            "description": "Premier performance-driven UGC video production studio and creator network connecting brands with authentic creator-led video content.",
-            "email": "hello@myugcvideo.in",
-            "sameAs": [
-                "https://instagram.com",
-                "https://linkedin.com"
-            ],
-            "contactPoint": [
-                {
-                    "@type": "ContactPoint",
-                    "contactType": "customer service",
-                    "email": "hello@myugcvideo.in",
-                    "availableLanguage": [
-                        "English",
-                        "Hindi"
-                    ]
-                }
-            ],
-            "areaServed": [
-                {
-                    "@type": "Country",
-                    "name": "India"
-                }
-            ]
-        },
-        {
-            "@type": "BreadcrumbList",
-            "@id": "https://myugcvideo.in/blogs#breadcrumb",
-            "itemListElement": [
-                {
-                    "@type": "ListItem",
-                    "position": 1,
-                    "name": "Home",
-                    "item": "https://myugcvideo.in"
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 2,
-                    "name": "Blogs",
-                    "item": "https://myugcvideo.in/blogs"
-                }
-            ]
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Blogs",
+            "item": "https://myugcvideo.in/blogs"
         }
     ]
 }
@@ -293,7 +308,7 @@
           </div>
 
           <h1 id="blog-hero-title" class="blog-hero-title font-display">
-            UGC Marketing Tips and Creator Trends
+            UGC Marketing Tips and <span class="highlight-mint">Creator Trends</span>
           </h1>
 
           <p class="blog-hero-desc">
@@ -780,7 +795,7 @@
           <form class="newsletter-form" action="#" method="POST" novalidate>
             <div class="newsletter-input-wrap">
               <label for="newsletterEmailFooter" class="sr-only">Email address</label>
-              <input type="email" id="newsletterEmailFooter" class="newsletter-input" placeholder="Your work email"
+              <input type="email" id="newsletterEmailFooter" class="newsletter-input" placeholder="alex@yourbrand.com"
                 required>
             </div>
             <button type="submit" class="newsletter-submit">Subscribe</button>

@@ -22,13 +22,16 @@ $categories = getAllCategories();
 // 3. Fetch Posts (Supporting tag filter, category filter, and pagination)
 $gridArgs = [
     'status'      => 'published',
-    'is_featured' => 0,
     'page'        => $page,
-    'per_page'    => 50 // Load published non-featured posts for client-side filtering via main.js
+    'per_page'    => 50 // Load published posts for client-side filtering via main.js
 ];
 
-if ($tagParam !== null && $tagParam !== '') {
+if (!empty($tagParam)) {
     $gridArgs['tag'] = $tagParam;
+    // When filtering by hashtag, include all matching published posts (including featured ones)
+} else {
+    // On general listing, exclude featured post since it's displayed in Section 02
+    $gridArgs['is_featured'] = 0;
 }
 
 $gridResult = getPosts($gridArgs);
@@ -137,17 +140,11 @@ include CMS_ROOT . '/includes/blog-header.php';
     <section class="blog-hero-editorial" aria-labelledby="blog-hero-title">
       <div class="container">
         
-        <!-- Breadcrumb Navigation -->
+        <!-- Breadcrumb Navigation (Strictly preserved: Home / Blogs) -->
         <nav class="breadcrumbs" aria-label="Breadcrumb">
           <a href="<?= SITE_URL ?>/">Home</a>
           <span class="separator" aria-hidden="true">/</span>
-          <?php if (!empty($tagParam)): ?>
-            <a href="<?= SITE_URL ?>/blogs">Blogs</a>
-            <span class="separator" aria-hidden="true">/</span>
-            <span class="current-page">#<?= e(ltrim($tagParam, '#')) ?></span>
-          <?php else: ?>
-            <span class="current-page">Blogs</span>
-          <?php endif; ?>
+          <span class="current-page">Blogs</span>
         </nav>
 
         <div class="blog-hero-inner">
@@ -156,19 +153,11 @@ include CMS_ROOT . '/includes/blog-header.php';
           </div>
 
           <h1 id="blog-hero-title" class="blog-hero-title font-display">
-            <?php if (!empty($tagParam)): ?>
-              Articles Tagged #<?= e(ltrim($tagParam, '#')) ?>
-            <?php else: ?>
-              UGC Marketing Tips and Creator Trends
-            <?php endif; ?>
+            UGC Marketing Tips and <span class="highlight-mint">Creator Trends</span>
           </h1>
 
           <p class="blog-hero-desc">
-            <?php if (!empty($tagParam)): ?>
-              Curated perspectives and tactical deep dives on #<?= e(ltrim($tagParam, '#')) ?>. Explore creator frameworks, production workflows, and real performance data.
-            <?php else: ?>
-              Fresh ideas on UGC video, creator culture and the way brands tell their stories today. Our team shares practical UGC marketing tips, video ad trends and creator content strategies you can put to work right away.
-            <?php endif; ?>
+            Fresh ideas on UGC video, creator culture and the way brands tell their stories today. Our team shares practical UGC marketing tips, video ad trends and creator content strategies you can put to work right away.
           </p>
         </div>
       </div>
@@ -324,10 +313,10 @@ include CMS_ROOT . '/includes/blog-header.php';
         <div id="noBlogsFound" class="no-blogs-found" style="<?= (count($gridPosts) === 0) ? 'display: block;' : 'display: none;' ?>">
           <div class="no-blogs-icon" aria-hidden="true">&#128269;</div>
           <h3 class="no-blogs-title font-display">
-            <?= !empty($tagParam) ? 'No articles found tagged #' . e(ltrim($tagParam, '#')) : 'No articles found matching your criteria' ?>
+            <?= (!empty($tagParam) && count($gridPosts) === 0) ? 'No articles found tagged #' . e(ltrim($tagParam, '#')) : 'No articles found matching your criteria' ?>
           </h3>
           <p class="no-blogs-desc">
-            <?= !empty($tagParam) ? 'We couldn\'t find any published articles matching this hashtag filter.' : 'Try adjusting your search terms or selecting another category filter.' ?>
+            <?= (!empty($tagParam) && count($gridPosts) === 0) ? 'We couldn\'t find any published articles matching this hashtag filter.' : 'Try adjusting your search terms or selecting another category filter.' ?>
           </p>
           <a href="<?= SITE_URL ?>/blogs" class="btn btn-secondary">Reset All Filters &rarr;</a>
         </div>

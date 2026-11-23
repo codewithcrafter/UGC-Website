@@ -4,46 +4,84 @@ description: "Connect with MY UGC VIDEO. Start your creator-led video campaign, 
 canonical_url: "https://myugcvideo.in/contact"
 page_type: "contact"
 primary_keyword: "contact UGC video agency"
-last_updated: "2026-11-13"
+last_updated: "2026-11-23"
+
 ---
 
-# YOUR NEXT SCROLL-STOPPING VIDEO STARTS WITH A HELLO.
+_GET IN TOUCH_
 
-Connect with the creative strategy and production team at MY UGC VIDEO. Whether you need a test batch of high-converting Meta video ads, custom creator unboxing videos, or ongoing monthly video production, we are ready to bring your vision to life.
+# Your Next Scroll-Stopping Video Starts with a Hello.
+
+Got a new product, a campaign in progress or just a loose idea? Share it with us and we’ll point you to the UGC video style that suits your brand.
 
 ---
 
 ## Direct Creative Channels
 
-- **Official Email:** [hello@myugcvideo.in](mailto:hello@myugcvideo.in)  
-  *We review inquiries and respond within 24 business hours.*
-- **Studio Location:** Delhi NCR, India (Operating nationally with vetted creator talent across all major Indian cities).
-- **Working Hours:** Monday to Friday, 9:30 AM to 6:30 PM IST.
-- **WhatsApp Support:** Available for ongoing project briefs and active client campaign tracking.
+Connect directly with our creative directors and production team in Delhi-NCR.
+
+Email us
+[hello@myugcvideo.in](mailto:hello@myugcvideo.in)
+
+Campaign briefs & agency RFPs
+
+Call us
+[+91 98765 43210](tel:+919876543210)
+
+Mon–Fri, 9 AM – 7 PM IST
+
+WhatsApp
+[+91 98765 43210](https://wa.me/919876543210?text=Hi%20MY%20UGC%20VIDEO%20Team%2C%20I%20would%20like%20to%20discuss%20a%20UGC%20video%20project%20for%20our%20brand.)
+
+Fastest response for active campaigns
+
+Production Studio Hub
+
+Delhi-NCR, India
+
+In-studio filming & sample handover hub
+
+Follow Studio:
+[Instagram](https://instagram.com)
+[LinkedIn](https://linkedin.com)
+
+### Quick Inquiry
+
+Tell us about your requirements. We'll review your inquiry and reply within 24 business hours.
+
+By submitting, you agree to be contacted about your project. No spam, ever.
 
 ---
 
-## How to Work With Us
+### Want a quick reply? Chat with us on WhatsApp
 
-### For Brands & Advertisers
-Ready to scale your e-commerce brand with creator-led video?
-1. Submit your project requirements using our online onboarding inquiry form.
-2. Provide details on your product category, primary target audience, preferred video formats (Ads, Unboxings, Reviews, Testimonials), and estimated monthly video volume.
-3. Our creative strategists will audit your current creative assets and provide a bespoke production scope and creator shortlist within 1 business day.
+Message our coordination team to check creator availability, pricing and how long your video will take
 
-### For UGC Creators
-Are you an authentic on-camera creator with clean phone filming setups and strong storytelling skills?
-- Submit your portfolio and sample video links via our creator application channel (`/contact?type=creator`).
-- We partner with creators of all experience levels who have a genuine passion for authentic product demonstrations.
+[OPEN WHATSAPP CHAT](https://wa.me/919876543210?text=Hi%20MY%20UGC%20VIDEO%20Team%2C%20I%20would%20like%20to%20discuss%20a%20UGC%20video%20project%20for%20our%20brand.)
 
 ---
 
-## What Happens After You Reach Out
+_OUR LOCATION_
 
-1. **Discovery & Brief Review:** We analyze your product value proposition, customer objections, and campaign objectives.
-2. **Creator Matching & Casting:** We present shortlisted creators matching your exact customer demographic.
-3. **Script & Angle Formulation:** We draft 3-second hook variations and narrative angles for your approval.
-4. **Filming & Post-Production:** We handle product logistics, filming supervision, editing, and subtitle integration.
-5. **Asset Delivery:** You receive high-resolution, commercially licensed 9:16 vertical video assets ready for immediate launch.
+## Visit Our Office
 
-[Start Your Project](https://myugcvideo.in/contact) | [Explore Our Services](https://myugcvideo.in/services)
+Drop by our Delhi production hub for campaign briefings, creator auditions, or in-person sample handovers.
+
+Office Address
+
+Basement Floor, Ram Dutt Enclave, B-16, Block D, Ram Dutt Enclave, Uttam Nagar, New Delhi, Delhi, 110059, India.
+
+[Get Directions](https://www.google.com/maps/dir/?api=1&destination=28.623251%2C77.065872)
+
+---
+
+_LET’S GET STARTED_
+
+## READY TO START YOUR PROJECT?
+
+Tell us about your customers, your product and the kind of video you can picture. Our creative directors will suggest creators and an approach that suit what you’re trying to achieve.
+
+Start a Project Inquiry
+[Explore Our Services](https://myugcvideo.in/services)
+
+---

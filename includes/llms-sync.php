@@ -28,6 +28,8 @@ if (!defined('CMS_ROOT')) {
     define('CMS_ROOT', dirname(__DIR__));
 }
 
+require_once CMS_ROOT . '/includes/website-markdown-sync.php';
+
 /**
  * -------------------------------------------------------------------------
  * 1. Canonical Domain Resolution & Strict URL Validation
@@ -60,6 +62,64 @@ function getLlmCanonicalBaseUrl(): string {
 
     // Official production canonical domain (always HTTPS)
     return 'https://myugcvideo.in';
+}
+
+/**
+ * Single Centralized Canonical Markdown Public URL Generator
+ *
+ * Enforces strictly canonical public URLs across all markdown assets:
+ * - Core pages: https://myugcvideo.in/{slug}.md (e.g. /about.md, /services.md, /blogs.md, /contact.md)
+ * - Services:   https://myugcvideo.in/services/{slug}.md
+ * - Blog posts: https://myugcvideo.in/blog/{slug}.md
+ * - Other docs: https://myugcvideo.in/other/{slug}.md
+ * - llms.txt:   https://myugcvideo.in/llms.txt
+ * - Homepage:   Never exposed / returns null
+ *
+ * @param string $category   'pages' | 'services' | 'blogs' | 'other' | 'llm'
+ * @param string $filename   Filename or path (e.g. 'about.md', 'post-1-what-is-ugc.md', 'llms.txt')
+ * @param ?string $blogSlug  Optional published blog slug for blog posts
+ * @param bool $useLocalBase If true, uses SITE_URL instead of canonical production base
+ * @return ?string Canonical public URL, or null if invalid / non-public (e.g. homepage)
+ */
+function getCanonicalMarkdownPublicUrl(string $category, string $filename, ?string $blogSlug = null, bool $useLocalBase = false): ?string {
+    $base = $useLocalBase ? (defined('SITE_URL') ? rtrim(SITE_URL, '/') : getLlmCanonicalBaseUrl()) : getLlmCanonicalBaseUrl();
+    
+    $cleanFilename = basename($filename);
+    $slug = pathinfo($cleanFilename, PATHINFO_FILENAME);
+    $slugLower = strtolower($slug);
+    
+    // Strict prohibition: Homepage must never have a public markdown URL
+    if (in_array($slugLower, ['home', 'index', 'homepage']) || str_starts_with($slugLower, 'home-') || str_starts_with($slugLower, 'index-')) {
+        return null;
+    }
+    
+    if ($category === 'llm' || $cleanFilename === 'llms.txt') {
+        return $base . '/llms.txt';
+    }
+    
+    if ($category === 'pages' || $category === 'core') {
+        return $base . '/' . $slug . '.md';
+    }
+    
+    if ($category === 'services') {
+        return $base . '/services/' . $slug . '.md';
+    }
+    
+    if ($category === 'blogs' || $category === 'blog') {
+        if (!empty($blogSlug)) {
+            return $base . '/blog/' . urlencode($blogSlug) . '.md';
+        }
+        if (preg_match('/^post-\d+-(.+)$/i', $slug, $m)) {
+            return $base . '/blog/' . urlencode($m[1]) . '.md';
+        }
+        return $base . '/blog/' . urlencode($slug) . '.md';
+    }
+    
+    if ($category === 'other' || $category === 'docs') {
+        return $base . '/other/' . $slug . '.md';
+    }
+    
+    return $base . '/markdown/' . $category . '/' . $cleanFilename;
 }
 
 /**
@@ -203,37 +263,75 @@ function validatePublicSeoUrl(string $url, string $expectedType = 'any'): array 
         return ['valid' => true, 'clean_url' => $canonicalBase . '/blog/' . $slug, 'error' => null, 'type' => 'blog_post'];
     }
 
-    // Check Direct Markdown URLs: /blog/{slug}.md, /pages/{slug}.md, etc.
-    if (preg_match('#^/(blog|blogs|pages|services|other|docs)/([a-z0-9\-_\.]+)\.md$#i', $cleanPath, $mdm)) {
+    // Reject non-canonical duplicate /pages/ and /page/ markdown URLs
+    if (preg_match('#^/(?:pages|page)/([a-z0-9\-_\.]+)\.md$#i', $cleanPath, $pm)) {
+        return ['valid' => false, 'clean_url' => $trimmed, 'error' => "Non-canonical duplicate /pages/ path rejected. Canonical URL is /{$pm[1]}.md", 'type' => 'rejected_pages_alias'];
+    }
+
+    // Reject plural /blogs/{slug}.md as non-canonical (canonical is /blog/{slug}.md)
+    if (preg_match('#^/blogs/([a-z0-9\-_\.]+)\.md$#i', $cleanPath, $blm)) {
+        return ['valid' => false, 'clean_url' => $trimmed, 'error' => "Non-canonical plural /blogs/ path rejected. Canonical URL is /blog/{$blm[1]}.md", 'type' => 'rejected_blogs_plural_alias'];
+    }
+
+    // Check Root-Level Markdown URLs: /{slug}.md (Core Pages)
+    if (preg_match('#^/([a-z0-9\-_\.]+)\.md$#i', $cleanPath, $rm)) {
         if ($expectedType !== 'any' && $expectedType !== 'markdown') {
             return ['valid' => false, 'clean_url' => $trimmed, 'error' => "URL type mismatch: expected {$expectedType}, got markdown.", 'type' => 'markdown'];
         }
-        $section = strtolower($mdm[1]);
-        $subSlug = $mdm[2];
-        if ($section === 'blog' || $section === 'blogs') {
-            try {
-                $db = getDb();
-                $st = $db->prepare("SELECT id, status FROM blog_posts WHERE slug = :s AND status = 'published' AND (published_at IS NULL OR published_at <= NOW()) LIMIT 1");
-                $st->execute([':s' => $subSlug]);
-                $p = $st->fetch(PDO::FETCH_ASSOC);
-                if (!$p) {
-                    return ['valid' => false, 'clean_url' => $trimmed, 'error' => "Markdown represents a non-existent or unpublished blog (slug={$subSlug})", 'type' => 'draft_markdown'];
-                }
-            } catch (Throwable $e) {}
-        } else {
-            $folderMap = [
-                'pages' => 'pages',
-                'services' => 'services',
-                'other' => 'other',
-                'docs' => 'other'
-            ];
-            $dir = $folderMap[$section] ?? 'other';
-            $fullPath = CMS_ROOT . DIRECTORY_SEPARATOR . 'markdown' . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR . $subSlug . '.md';
-            if (!file_exists($fullPath)) {
-                return ['valid' => false, 'clean_url' => $trimmed, 'error' => "Markdown file does not exist on disk: {$cleanPath}", 'type' => 'missing_markdown'];
-            }
+        $slug = strtolower($rm[1]);
+        if (in_array($slug, ['home', 'index', 'homepage'])) {
+            return ['valid' => false, 'clean_url' => $trimmed, 'error' => "Homepage markdown is permanently excluded from public access: {$cleanPath}", 'type' => 'excluded_homepage_md'];
         }
-        return ['valid' => true, 'clean_url' => $canonicalBase . $cleanPath, 'error' => null, 'type' => 'markdown'];
+        $candidatePage = CMS_ROOT . DIRECTORY_SEPARATOR . 'markdown' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . $slug . '.md';
+        $candidateRoot = CMS_ROOT . DIRECTORY_SEPARATOR . $slug . '.md';
+        if (!file_exists($candidatePage) && !file_exists($candidateRoot)) {
+            return ['valid' => false, 'clean_url' => $trimmed, 'error' => "Root markdown file does not exist on disk: {$cleanPath}", 'type' => 'missing_markdown'];
+        }
+        return ['valid' => true, 'clean_url' => $canonicalBase . '/' . $slug . '.md', 'error' => null, 'type' => 'markdown'];
+    }
+
+    // Check Service Markdown URLs: /services/{slug}.md
+    if (preg_match('#^/services/([a-z0-9\-_\.]+)\.md$#i', $cleanPath, $sm)) {
+        if ($expectedType !== 'any' && $expectedType !== 'markdown') {
+            return ['valid' => false, 'clean_url' => $trimmed, 'error' => "URL type mismatch: expected {$expectedType}, got markdown.", 'type' => 'markdown'];
+        }
+        $slug = strtolower($sm[1]);
+        $candidate = CMS_ROOT . DIRECTORY_SEPARATOR . 'markdown' . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . $slug . '.md';
+        if (!file_exists($candidate)) {
+            return ['valid' => false, 'clean_url' => $trimmed, 'error' => "Service markdown file does not exist on disk: {$cleanPath}", 'type' => 'missing_markdown'];
+        }
+        return ['valid' => true, 'clean_url' => $canonicalBase . '/services/' . $slug . '.md', 'error' => null, 'type' => 'markdown'];
+    }
+
+    // Check Blog Markdown URLs: /blog/{slug}.md
+    if (preg_match('#^/blog/([a-z0-9\-_\.]+)\.md$#i', $cleanPath, $bm)) {
+        if ($expectedType !== 'any' && $expectedType !== 'markdown') {
+            return ['valid' => false, 'clean_url' => $trimmed, 'error' => "URL type mismatch: expected {$expectedType}, got markdown.", 'type' => 'markdown'];
+        }
+        $subSlug = strtolower($bm[1]);
+        try {
+            $db = getDb();
+            $st = $db->prepare("SELECT id, status FROM blog_posts WHERE slug = :s AND status = 'published' AND (published_at IS NULL OR published_at <= NOW()) LIMIT 1");
+            $st->execute([':s' => $subSlug]);
+            $p = $st->fetch(PDO::FETCH_ASSOC);
+            if (!$p) {
+                return ['valid' => false, 'clean_url' => $trimmed, 'error' => "Markdown represents a non-existent or unpublished blog (slug={$subSlug})", 'type' => 'draft_markdown'];
+            }
+        } catch (Throwable $e) {}
+        return ['valid' => true, 'clean_url' => $canonicalBase . '/blog/' . $subSlug . '.md', 'error' => null, 'type' => 'markdown'];
+    }
+
+    // Check Other / Documentation Markdown URLs: /other/{slug}.md
+    if (preg_match('#^/(?:other|docs)/([a-z0-9\-_\.]+)\.md$#i', $cleanPath, $om)) {
+        if ($expectedType !== 'any' && $expectedType !== 'markdown') {
+            return ['valid' => false, 'clean_url' => $trimmed, 'error' => "URL type mismatch: expected {$expectedType}, got markdown.", 'type' => 'markdown'];
+        }
+        $subSlug = strtolower($om[1]);
+        $candidate = CMS_ROOT . DIRECTORY_SEPARATOR . 'markdown' . DIRECTORY_SEPARATOR . 'other' . DIRECTORY_SEPARATOR . $subSlug . '.md';
+        if (!file_exists($candidate)) {
+            return ['valid' => false, 'clean_url' => $trimmed, 'error' => "Other markdown file does not exist on disk: {$cleanPath}", 'type' => 'missing_markdown'];
+        }
+        return ['valid' => true, 'clean_url' => $canonicalBase . '/other/' . $subSlug . '.md', 'error' => null, 'type' => 'markdown'];
     }
 
     // Check Markdown Docs: /markdown/...
@@ -662,6 +760,14 @@ function discoverPublicMarkdownFiles(): array {
                 continue;
             }
 
+            // Phase 3 Rule: Exclude homepage markdown permanently across all discovery & categories
+            $itemBase = strtolower(pathinfo($item, PATHINFO_FILENAME));
+            if (in_array($itemBase, ['home', 'index', 'homepage']) || 
+                str_starts_with($itemBase, 'home-') || 
+                str_starts_with($itemBase, 'index-')) {
+                continue;
+            }
+
             // Cross-check blog post markdown against DB published state
             if ($dirName === 'blogs' && preg_match('/^post-(\d+)-/i', $item, $m)) {
                 $postId = (int)$m[1];
@@ -712,6 +818,12 @@ function discoverPublicMarkdownFiles(): array {
                 }
             }
 
+            // Phase 3 Rule: Exclude homepage title variants
+            $lowerTitle = strtolower($title);
+            if (in_array($lowerTitle, ['home', 'homepage']) || str_starts_with($lowerTitle, 'home |') || str_starts_with($lowerTitle, 'homepage |')) {
+                continue;
+            }
+
             if (empty($description)) {
                 if (preg_match('/^>\s*(.+)$/m', $body, $bm)) {
                     $description = trim($bm[1]);
@@ -727,17 +839,9 @@ function discoverPublicMarkdownFiles(): array {
             }
 
             $relPath = $dirName . '/' . $item;
-            if ($dirName === 'blogs' && isset($postId) && isset($blogStatusMap[$postId]['slug'])) {
-                $publicUrl = $baseUrl . '/blog/' . $blogStatusMap[$postId]['slug'] . '.md';
-            } elseif ($dirName === 'pages') {
-                $publicUrl = $baseUrl . '/pages/' . $item;
-            } elseif ($dirName === 'services') {
-                $publicUrl = $baseUrl . '/services/' . $item;
-            } elseif ($dirName === 'other') {
-                $publicUrl = $baseUrl . '/other/' . $item;
-            } else {
-                $publicUrl = $baseUrl . '/markdown/' . $relPath;
-            }
+            $blogSlug = ($dirName === 'blogs' && isset($postId) && isset($blogStatusMap[$postId]['slug'])) ? $blogStatusMap[$postId]['slug'] : null;
+            $publicUrl = getCanonicalMarkdownPublicUrl($dirName, $item, $blogSlug, false);
+            if (!$publicUrl) continue;
 
             $titleKey = strtolower($title);
             if (isset($seenTitles[$titleKey])) continue;
@@ -1171,6 +1275,10 @@ function generateLlmsDocumentationText(): string {
     // Eligible Public Markdown Files (excluding blog post markdown already in ## Blog)
     foreach ($markdownFiles as $mf) {
         if ($mf['category'] === 'Editorial Articles' || preg_match('/^post-\d+-/i', $mf['filename'])) {
+            continue;
+        }
+        $lowerUrl = strtolower($mf['url']);
+        if (str_contains($lowerUrl, '/home.md') || str_contains($lowerUrl, '/index.md') || str_contains($lowerUrl, 'pages/home.md')) {
             continue;
         }
         $resourceItems[] = [
@@ -1702,6 +1810,11 @@ function runFullReconciliation(array $options = []): array {
             $robotsRes = ['status' => 'valid', 'message' => 'Dry run: robots.txt validated in-memory'];
             $searchRes = ['dry_run' => true, 'indexnow' => ['status' => 'skipped_dry_run'], 'google' => ['status' => 'skipped_dry_run']];
         } else {
+            // 0. Reconcile Website Content (Core pages, Services, Blogs) to Markdown
+            if (class_exists('WebsiteMarkdownSync')) {
+                WebsiteMarkdownSync::reconcileAll(!empty($options['force']));
+            }
+
             // 1. Synchronize llms.txt
             $llmsRes = syncLlmsTxt();
             if (!$llmsRes['success']) {
@@ -1803,6 +1916,46 @@ function runFullReconciliation(array $options = []): array {
     }
 }
 
+/**
+ * -------------------------------------------------------------------------
+ * 16. CRUD Synchronization Trigger: triggerLlmsSynchronization()
+ * -------------------------------------------------------------------------
+ * Master synchronization event handler triggered by Admin Panel actions
+ * (create_file, upload_file, save_file, rename_file, delete_file, reconcile_blogs).
+ * Guarantees immediate filesystem audit, atomic llms.txt & sitemap.xml update,
+ * blogs.md sync, and search engine notifications.
+ *
+ * @param string $action The admin action triggering synchronization
+ * @param array $changedUrls Optional list of affected URLs for IndexNow ping
+ * @return array Master reconciliation result
+ */
+function triggerLlmsSynchronization(string $action = 'auto', array $changedUrls = []): array {
+    $logDir = CMS_ROOT . DIRECTORY_SEPARATOR . 'logs';
+    if (!is_dir($logDir)) {
+        @mkdir($logDir, 0755, true);
+    }
+    $logFile = $logDir . DIRECTORY_SEPARATOR . 'llms_sync.log';
+    $ts = date('Y-m-d H:i:s');
+    @file_put_contents($logFile, "[{$ts}] Trigger action: {$action}\n", FILE_APPEND);
+
+    // 1. Sync blogs.md
+    if (function_exists('syncBlogsMd')) {
+        syncBlogsMd();
+    }
+
+    // 2. Run master reconciliation with force flag
+    $res = runFullReconciliation([
+        'force'        => true,
+        'action'       => $action,
+        'changed_urls' => $changedUrls
+    ]);
+
+    $statusStr = (!empty($res['success'])) ? 'SUCCESS' : ('FAILED: ' . ($res['error'] ?? 'Unknown error'));
+    @file_put_contents($logFile, "[{$ts}] Outcome: {$statusStr}\n", FILE_APPEND);
+
+    return $res;
+}
+
 
 /**
  * -------------------------------------------------------------------------
@@ -1887,27 +2040,24 @@ function generateBlogsMd(): string {
 }
 
 /**
- * Atomically write blogs.md to the project root.
+ * Atomically write blogs.md to both the project root and markdown/pages/blogs.md.
  *
  * @return array{success: bool, bytes: int, error: string}
  */
 function syncBlogsMd(): array {
     try {
         $content  = generateBlogsMd();
-        $destPath = CMS_ROOT . DIRECTORY_SEPARATOR . 'blogs.md';
-        $tmpPath  = $destPath . '.tmp.' . getmypid();
+        $destPath1 = CMS_ROOT . DIRECTORY_SEPARATOR . 'blogs.md';
+        $destPath2 = CMS_ROOT . DIRECTORY_SEPARATOR . 'markdown' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'blogs.md';
 
-        $bytes = file_put_contents($tmpPath, $content, LOCK_EX);
-        if ($bytes === false) {
-            return ['success' => false, 'bytes' => 0, 'error' => "Failed to write temp file: {$tmpPath}"];
+        $w1 = atomicWriteFile($destPath1, $content);
+        $w2 = atomicWriteFile($destPath2, $content);
+
+        if (!$w1 || !$w2) {
+            return ['success' => false, 'bytes' => 0, 'error' => "Failed to write blogs.md atomically."];
         }
 
-        if (!rename($tmpPath, $destPath)) {
-            @unlink($tmpPath);
-            return ['success' => false, 'bytes' => 0, 'error' => "Failed to rename temp file to {$destPath}"];
-        }
-
-        return ['success' => true, 'bytes' => $bytes, 'error' => ''];
+        return ['success' => true, 'bytes' => strlen($content), 'error' => ''];
     } catch (Throwable $e) {
         return ['success' => false, 'bytes' => 0, 'error' => $e->getMessage()];
     }

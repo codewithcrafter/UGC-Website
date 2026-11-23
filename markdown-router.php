@@ -61,117 +61,116 @@ if (preg_match('#^(blog|blogs|pages|page|services|service|other|docs)/([a-zA-Z0-
 $targetFile = null;
 $isAdmin = function_exists('isLoggedIn') && isLoggedIn();
 
+// Phase 3 Rule: Homepage must NEVER have a separate public .md file
+if (in_array(strtolower($slug), ['home', 'index', 'homepage'])) {
+    serveError(404, 'Markdown Document Not Found: The requested document does not exist.');
+}
+
+// Strict elimination of duplicate routes: /pages/*.md and /page/*.md are removed and return 404
+if ($prefix === 'pages' || $prefix === 'page') {
+    serveError(404, 'Markdown Document Not Found: The requested document does not exist.');
+}
+
 // 2. Resolve target file based on section or root alias
 if ($prefix === 'root') {
-    if ($slug === 'index' || $slug === 'home' || $slug === 'homepage') {
-        $candidate = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'index.md';
-        if (file_exists($candidate)) $targetFile = $candidate;
-    } elseif ($slug === 'services') {
+    // Only core website pages are accessible at root level
+    if ($slug === 'services') {
         $candidate = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'services.md';
         if (file_exists($candidate)) $targetFile = $candidate;
-    } elseif ($slug === 'blogs' || $slug === 'blog') {
+    } elseif ($slug === 'blogs') {
         $candidate = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'blogs.md';
-        if (file_exists($candidate)) $targetFile = $candidate;
-    } elseif (file_exists(MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . $slug . '.md')) {
-        $targetFile = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . $slug . '.md';
-    } elseif (file_exists(MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . $slug . '.md')) {
-        $targetFile = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . $slug . '.md';
-    } else {
-        // Fallback: check if it's a blog post slug directly at root
-        try {
-            $db = getDb();
-            $stmt = $db->prepare("SELECT id, slug, status, published_at FROM blog_posts WHERE slug = :slug LIMIT 1");
-            $stmt->execute([':slug' => $slug]);
-            $post = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if ($post) {
-                $isPublished = ($post['status'] === 'published' && (empty($post['published_at']) || strtotime($post['published_at']) <= time()));
-                if ($isPublished || $isAdmin) {
-                    $publicFile = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'blogs' . DIRECTORY_SEPARATOR . 'post-' . $post['id'] . '-' . $post['slug'] . '.md';
-                    if (file_exists($publicFile)) {
-                        $targetFile = $publicFile;
-                    }
-                }
-            }
-        } catch (Throwable $e) {}
-    }
-
-} elseif ($prefix === 'blog' || $prefix === 'blogs') {
-    if ($slug === 'index' || $slug === 'all' || $slug === 'blogs' || $slug === 'blog') {
-        $candidate = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'blogs.md';
-        if (file_exists($candidate)) $targetFile = $candidate;
-    } else {
-        // Look up blog post by slug in MySQL
-        try {
-            $db = getDb();
-            $stmt = $db->prepare("SELECT id, slug, status, published_at FROM blog_posts WHERE slug = :slug LIMIT 1");
-            $stmt->execute([':slug' => $slug]);
-            $post = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if (!$post) {
-                serveError(404, 'Blog Article Not Found: The requested article markdown does not exist.');
-            }
-
-            // Draft and publication schedule checks
-            $isPublished = ($post['status'] === 'published' && (empty($post['published_at']) || strtotime($post['published_at']) <= time()));
-            if (!$isPublished && !$isAdmin) {
-                serveError(404, 'Document Not Found: The requested document is not publicly available.');
-            }
-
-            // Locate physical file in markdown/blogs/ or markdown/staging/
-            $publicFile = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'blogs' . DIRECTORY_SEPARATOR . 'post-' . $post['id'] . '-' . $post['slug'] . '.md';
-            $stagingFile = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'staging' . DIRECTORY_SEPARATOR . 'post-' . $post['id'] . '-' . $post['slug'] . '.md';
-
-            if (file_exists($publicFile)) {
-                $targetFile = $publicFile;
-            } elseif (!$isPublished && $isAdmin && file_exists($stagingFile)) {
-                $targetFile = $stagingFile;
-            } else {
-                // Fallback search by post ID
-                $globPublic = glob(MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'blogs' . DIRECTORY_SEPARATOR . 'post-' . $post['id'] . '-*.md');
-                if (!empty($globPublic) && file_exists($globPublic[0])) {
-                    $targetFile = $globPublic[0];
-                } elseif (!$isPublished && $isAdmin) {
-                    $globStaging = glob(MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'staging' . DIRECTORY_SEPARATOR . '*post-' . $post['id'] . '-*.md');
-                    if (!empty($globStaging) && file_exists($globStaging[0])) {
-                        $targetFile = $globStaging[0];
-                    }
-                }
-            }
-        } catch (Throwable $e) {
-            serveError(500, 'Database error resolving markdown document.');
-        }
-    }
-
-} elseif ($prefix === 'pages' || $prefix === 'page') {
-    if ($slug === 'index' || $slug === 'home' || $slug === 'homepage') {
-        $candidate = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'index.md';
-        if (file_exists($candidate)) $targetFile = $candidate;
-    } elseif ($slug === 'services') {
-        $candidate = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'services.md';
-        if (file_exists($candidate)) $targetFile = $candidate;
-    } elseif ($slug === 'blogs' || $slug === 'blog') {
-        $candidate = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'blogs.md';
-        if (file_exists($candidate)) $targetFile = $candidate;
-    } else {
-        $candidate = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . $slug . '.md';
         if (file_exists($candidate)) {
             $targetFile = $candidate;
+        } elseif (file_exists(CMS_ROOT . DIRECTORY_SEPARATOR . 'blogs.md')) {
+            $targetFile = CMS_ROOT . DIRECTORY_SEPARATOR . 'blogs.md';
         }
+    } elseif ($slug === 'blog') {
+        // Canonical is /blogs.md
+        serveError(404, 'Markdown Document Not Found: The requested document does not exist.');
+    } elseif (file_exists(MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . $slug . '.md')) {
+        $targetFile = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . $slug . '.md';
+    }
+    // Note: Dedicated services and blog posts are NOT served at root to prevent duplicate URL aliases
+
+} elseif ($prefix === 'blog' || $prefix === 'blogs') {
+    // Redirect plural /blogs/{slug}.md to canonical singular /blog/{slug}.md
+    if ($prefix === 'blogs') {
+        if (in_array($slug, ['index', 'all', 'blogs', 'blog'])) {
+            header("Location: " . SITE_URL . "/blogs.md", true, 301);
+            exit;
+        }
+        header("Location: " . SITE_URL . "/blog/" . urlencode($slug) . ".md", true, 301);
+        exit;
+    }
+
+    if (in_array($slug, ['index', 'all', 'blogs', 'blog'])) {
+        serveError(404, 'Markdown Document Not Found: The requested document does not exist.');
+    }
+
+    // Look up blog post by slug in MySQL
+    try {
+        $db = getDb();
+        $stmt = $db->prepare("SELECT id, slug, status, published_at FROM blog_posts WHERE slug = :slug LIMIT 1");
+        $stmt->execute([':slug' => $slug]);
+        $post = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$post) {
+            serveError(404, 'Blog Article Not Found: The requested article markdown does not exist.');
+        }
+
+        // Draft and publication schedule checks
+        $isPublished = ($post['status'] === 'published' && (empty($post['published_at']) || strtotime($post['published_at']) <= time()));
+        if (!$isPublished && !$isAdmin) {
+            serveError(404, 'Document Not Found: The requested document is not publicly available.');
+        }
+
+        // Locate physical file in markdown/blogs/ or markdown/staging/
+        $publicFile = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'blogs' . DIRECTORY_SEPARATOR . 'post-' . $post['id'] . '-' . $post['slug'] . '.md';
+        $stagingFile = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'staging' . DIRECTORY_SEPARATOR . 'post-' . $post['id'] . '-' . $post['slug'] . '.md';
+
+        if (file_exists($publicFile)) {
+            $targetFile = $publicFile;
+        } elseif (!$isPublished && $isAdmin && file_exists($stagingFile)) {
+            $targetFile = $stagingFile;
+        } else {
+            // Fallback search by post ID
+            $globPublic = glob(MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'blogs' . DIRECTORY_SEPARATOR . 'post-' . $post['id'] . '-*.md');
+            if (!empty($globPublic) && file_exists($globPublic[0])) {
+                $targetFile = $globPublic[0];
+            } elseif (!$isPublished && $isAdmin) {
+                $globStaging = glob(MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'staging' . DIRECTORY_SEPARATOR . '*post-' . $post['id'] . '-*.md');
+                if (!empty($globStaging) && file_exists($globStaging[0])) {
+                    $targetFile = $globStaging[0];
+                }
+            }
+        }
+    } catch (Throwable $e) {
+        serveError(500, 'Database error resolving markdown document.');
     }
 
 } elseif ($prefix === 'services' || $prefix === 'service') {
-    if ($slug === 'index' || $slug === 'all' || $slug === 'services') {
-        $candidate = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'services.md';
-        if (file_exists($candidate)) $targetFile = $candidate;
-    } else {
-        $candidate = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . $slug . '.md';
-        if (file_exists($candidate)) {
-            $targetFile = $candidate;
-        }
+    // Redirect singular /service/{slug}.md to canonical plural /services/{slug}.md
+    if ($prefix === 'service') {
+        header("Location: " . SITE_URL . "/services/" . urlencode($slug) . ".md", true, 301);
+        exit;
+    }
+
+    if (in_array($slug, ['index', 'all', 'services'])) {
+        serveError(404, 'Markdown Document Not Found: The requested document does not exist.');
+    }
+
+    $candidate = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'services' . DIRECTORY_SEPARATOR . $slug . '.md';
+    if (file_exists($candidate)) {
+        $targetFile = $candidate;
     }
 
 } elseif ($prefix === 'other' || $prefix === 'docs') {
+    // Redirect /docs/{slug}.md to canonical /other/{slug}.md
+    if ($prefix === 'docs') {
+        header("Location: " . SITE_URL . "/other/" . urlencode($slug) . ".md", true, 301);
+        exit;
+    }
+
     $candidate = MARKDOWN_DIR . DIRECTORY_SEPARATOR . 'other' . DIRECTORY_SEPARATOR . $slug . '.md';
     if (file_exists($candidate)) {
         $targetFile = $candidate;

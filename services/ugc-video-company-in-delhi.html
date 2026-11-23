@@ -38,202 +38,223 @@
   <!-- Breadcrumb Schema -->
   <!-- Service Schema -->
   <!-- FAQ Schema -->
-                      <!-- Centralized Schema Manager JSON-LD -->
+                      
+  <!-- Centralized Dynamic Schema Manager JSON-LD -->
   <script type="application/ld+json">
-{
+  {
     "@context": "https://schema.org",
-    "@graph": [
+    "@type": "Service",
+    "@id": "https://myugcvideo.in/services/ugc-video-company-in-delhi#service",
+    "name": "UGC Video Service in Delhi",
+    "url": "https://myugcvideo.in/services/ugc-video-company-in-delhi",
+    "description": "UGC video company in Delhi NCR with local creators, a studio and Hinglish scripts. Fast shoots for D2C brands in Delhi, Gurgaon, Noida and Faridabad.",
+    "serviceType": "UGC Video Creation Services",
+    "provider": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in"
+    },
+    "areaServed": [
         {
-            "@type": "Service",
-            "@id": "https://myugcvideo.in/services/ugc-video-company-in-delhi#service",
-            "name": "UGC Video Service in Delhi",
-            "url": "https://myugcvideo.in/services/ugc-video-company-in-delhi",
-            "description": "UGC video company in Delhi NCR with local creators, a studio and Hinglish scripts. Fast shoots for D2C brands in Delhi, Gurgaon, Noida and Faridabad.",
-            "serviceType": "UGC Video Creation Services",
-            "provider": {
-                "@type": "Organization",
-                "name": "MY UGC VIDEO",
-                "url": "https://myugcvideo.in"
-            },
-            "areaServed": [
-                {
-                    "@type": "City",
-                    "name": "Delhi"
-                },
-                {
-                    "@type": "City",
-                    "name": "Gurgaon"
-                },
-                {
-                    "@type": "City",
-                    "name": "Noida"
-                },
-                {
-                    "@type": "City",
-                    "name": "Faridabad"
+            "@type": "City",
+            "name": "Delhi"
+        },
+        {
+            "@type": "City",
+            "name": "Gurgaon"
+        },
+        {
+            "@type": "City",
+            "name": "Noida"
+        },
+        {
+            "@type": "City",
+            "name": "Faridabad"
+        }
+    ],
+    "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "UGC Video Services in Delhi NCR",
+        "itemListElement": [
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "Local UGC Creator Videos"
                 }
-            ],
-            "hasOfferCatalog": {
-                "@type": "OfferCatalog",
-                "name": "UGC Video Services in Delhi NCR",
-                "itemListElement": [
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "Local UGC Creator Videos"
-                        }
-                    },
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "UGC Studio Shoots"
-                        }
-                    },
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "Hinglish UGC Video Scripts"
-                        }
-                    },
-                    {
-                        "@type": "Offer",
-                        "itemOffered": {
-                            "@type": "Service",
-                            "name": "D2C Brand Video Production"
-                        }
-                    }
-                ]
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "UGC Studio Shoots"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "Hinglish UGC Video Scripts"
+                }
+            },
+            {
+                "@type": "Offer",
+                "itemOffered": {
+                    "@type": "Service",
+                    "name": "D2C Brand Video Production"
+                }
+            }
+        ]
+    }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://myugcvideo.in/#organization",
+    "name": "MY UGC VIDEO",
+    "url": "https://myugcvideo.in/",
+    "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
+    "description": "MY UGC VIDEO is a performance-driven UGC video production agency and creator network connecting brands with authentic creators for UGC video ads, product videos, testimonials, unboxing videos, AI UGC content and social media video production.",
+    "email": "hello@myugcvideo.in",
+    "telephone": "+91 98765 43210",
+    "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Basement Floor, B-16, Block D, Ram Dutt Enclave, Uttam Nagar",
+        "addressLocality": "New Delhi",
+        "addressRegion": "Delhi",
+        "postalCode": "110059",
+        "addressCountry": {
+            "@type": "Country",
+            "name": "IN"
+        }
+    },
+    "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91 98765 43210",
+        "email": "hello@myugcvideo.in",
+        "contactType": "customer service",
+        "areaServed": {
+            "@type": "Country",
+            "name": "India"
+        },
+        "availableLanguage": [
+            "English",
+            "Hindi"
+        ]
+    },
+    "areaServed": {
+        "@type": "Country",
+        "name": "India"
+    }
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": "https://myugcvideo.in/services/ugc-video-company-in-delhi#breadcrumb",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://myugcvideo.in"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Services",
+            "item": "https://myugcvideo.in/services"
+        },
+        {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "UGC Video Service in Delhi",
+            "item": "https://myugcvideo.in/services/ugc-video-company-in-delhi"
+        }
+    ]
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "@id": "https://myugcvideo.in/services/ugc-video-company-in-delhi#faq",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "Where are your creators based within Delhi NCR?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "All over the region: Delhi, Gurgaon, Noida and nearby areas."
             }
         },
         {
-            "@type": "Organization",
-            "@id": "https://myugcvideo.in/#organization",
-            "name": "MY UGC VIDEO",
-            "url": "https://myugcvideo.in",
-            "image": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
-            "description": "Premier performance-driven UGC video production studio and creator network connecting brands with authentic creator-led video content.",
-            "email": "hello@myugcvideo.in",
-            "sameAs": [
-                "https://instagram.com",
-                "https://linkedin.com"
-            ],
-            "contactPoint": [
-                {
-                    "@type": "ContactPoint",
-                    "contactType": "customer service",
-                    "email": "hello@myugcvideo.in",
-                    "availableLanguage": [
-                        "English",
-                        "Hindi"
-                    ]
-                }
-            ],
-            "areaServed": [
-                {
-                    "@type": "Country",
-                    "name": "India"
-                }
-            ]
+            "@type": "Question",
+            "name": "Can our brand team visit the studio during production?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. Tell us when you'd like to come and we'll plan it around the shoot."
+            }
         },
         {
-            "@type": "BreadcrumbList",
-            "@id": "https://myugcvideo.in/services/ugc-video-company-in-delhi#breadcrumb",
-            "itemListElement": [
-                {
-                    "@type": "ListItem",
-                    "position": 1,
-                    "name": "Home",
-                    "item": "https://myugcvideo.in"
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 2,
-                    "name": "Services",
-                    "item": "https://myugcvideo.in/services"
-                },
-                {
-                    "@type": "ListItem",
-                    "position": 3,
-                    "name": "UGC Video Service in Delhi",
-                    "item": "https://myugcvideo.in/services/ugc-video-company-in-delhi"
-                }
-            ]
+            "@type": "Question",
+            "name": "How quickly can a UGC video company in Delhi turn content around for us?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Filming can be done in about 48 hours, since there's no sample shipping delay. Editing and revisions\r\n                come after that, and we'll share the dates once we have your brief."
+            }
         },
         {
-            "@type": "FAQPage",
-            "@id": "https://myugcvideo.in/services/ugc-video-company-in-delhi#faq",
-            "mainEntity": [
-                {
-                    "@type": "Question",
-                    "name": "Where are your creators based within Delhi NCR?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "All over the region: Delhi, Gurgaon, Noida and nearby areas."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Can our brand team visit the studio during production?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Yes. Tell us when you'd like to come and we'll plan it around the shoot."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "How quickly can a UGC video company in Delhi turn content around for us?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Filming can be done in about 48 hours, since there's no sample shipping delay. Editing and revisions\r\n                come after that, and we'll share the dates once we have your brief."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Do you produce content in Hindi and English?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Yes, in Hindi, Hinglish and English."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Can you handle product returns after filming?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Tell us in your brief if you want the sample back and we'll arrange it."
-                    }
-                }
-            ]
+            "@type": "Question",
+            "name": "Do you produce content in Hindi and English?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, in Hindi, Hinglish and English."
+            }
         },
         {
-            "@type": "WebPage",
-            "@id": "https://myugcvideo.in/services/ugc-video-company-in-delhi#webpage",
-            "url": "https://myugcvideo.in/services/ugc-video-company-in-delhi",
-            "name": "UGC Video Company in Delhi NCR | Creators & Studio | MY UGC VIDEO",
-            "description": "UGC video company in Delhi NCR with local creators, a studio and Hinglish scripts. Fast shoots for D2C brands in Delhi, Gurgaon, Noida and Faridabad.",
-            "publisher": {
-                "@type": "Organization",
-                "name": "MY UGC VIDEO",
-                "url": "https://myugcvideo.in"
-            },
-            "isPartOf": "https://myugcvideo.in/"
-        },
-        {
-            "@type": "Product",
-            "name": "UGC Video Service in Delhi",
-            "aggregateRating": {
-                "@type": "AggregateRating",
-                "ratingValue": "4.9",
-                "bestRating": "5",
-                "worstRating": "1",
-                "ratingCount": "1857",
-                "reviewCount": "1857"
+            "@type": "Question",
+            "name": "Can you handle product returns after filming?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Tell us in your brief if you want the sample back and we'll arrange it."
             }
         }
     ]
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://myugcvideo.in/services/ugc-video-company-in-delhi#webpage",
+    "url": "https://myugcvideo.in/services/ugc-video-company-in-delhi",
+    "name": "UGC Video Company in Delhi NCR | Creators & Studio | MY UGC VIDEO",
+    "description": "UGC video company in Delhi NCR with local creators, a studio and Hinglish scripts. Fast shoots for D2C brands in Delhi, Gurgaon, Noida and Faridabad.",
+    "publisher": {
+        "@type": "Organization",
+        "name": "MY UGC VIDEO",
+        "url": "https://myugcvideo.in"
+    },
+    "isPartOf": "https://myugcvideo.in/"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "UGC Video Service in Delhi",
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "bestRating": "5",
+        "worstRating": "1",
+        "ratingCount": "1857",
+        "reviewCount": "1857"
+    }
 }
   </script>
 </head>
@@ -440,7 +461,7 @@
           </div>
 
           <h1 id="service-hero-title" class="service-hero-title">
-            UGC Video Company in Delhi for Brands That Want to Grow Faster
+            UGC Video Company in Delhi for Brands That Want to <span class="highlight-mint">Grow Faster</span>
           </h1>
 
           <p class="service-hero-desc">
@@ -494,7 +515,7 @@
               <div class="quick-form-group">
                 <label for="qeName" class="quick-form-label">Name <span class="required">*</span></label>
                 <div class="quick-input-wrapper">
-                  <input type="text" id="qeName" name="name" class="quick-form-input" placeholder="Your Full Name" required autocomplete="name">
+                  <input type="text" id="qeName" name="name" class="quick-form-input" placeholder="e.g. Alex Morgan" required autocomplete="name">
                   <span class="quick-input-icon" aria-hidden="true">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                   </span>
@@ -506,7 +527,7 @@
               <div class="quick-form-group">
                 <label for="qeEmail" class="quick-form-label">Email <span class="required">*</span></label>
                 <div class="quick-input-wrapper">
-                  <input type="email" id="qeEmail" name="email" class="quick-form-input" placeholder="name@company.com" required autocomplete="email">
+                  <input type="email" id="qeEmail" name="email" class="quick-form-input" placeholder="alex@yourbrand.com" required autocomplete="email">
                   <span class="quick-input-icon" aria-hidden="true">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                   </span>
@@ -530,7 +551,7 @@
               <!-- Field 4: Message (Optional) -->
               <div class="quick-form-group">
                 <label for="qeMessage" class="quick-form-label">Message <span class="optional-tag">(Optional)</span></label>
-                <textarea id="qeMessage" name="message" class="quick-form-textarea" rows="2" placeholder="Tell us what you sell or your video goals..."></textarea>
+                <textarea id="qeMessage" name="message" class="quick-form-textarea" rows="2" placeholder="Tell us about your brand, project requirements, or any questions..."></textarea>
                 <div class="quick-form-error" id="qeMessageError"></div>
               </div>
 
@@ -1474,7 +1495,7 @@
           <form class="newsletter-form" action="#" method="POST" novalidate>
             <div class="newsletter-input-wrap">
               <label for="newsletterEmailServicePage" class="sr-only">Email address</label>
-              <input type="email" id="newsletterEmailServicePage" class="newsletter-input" placeholder="Your work email"
+              <input type="email" id="newsletterEmailServicePage" class="newsletter-input" placeholder="alex@yourbrand.com"
                 required>
             </div>
 

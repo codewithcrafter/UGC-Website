@@ -1,7 +1,7 @@
 ---
 id: 2
-title: "How Product Photography Shapes Online Shopping Today"
-slug: "product-photography-shapes-online"
+title: "Building a Consistent Brand Identity Through Content"
+slug: "brand-identity-through-content"
 status: "published"
 is_featured: 1
 category: "E-commerce"
@@ -9,17 +9,17 @@ tags: ["Branding","creator marketing","UGC video"]
 author: "The MY UGC VIDEO Editorial Team"
 author_role: "UGC Creative Studio"
 published_at: "2026-10-28T12:00:00+01:00"
-updated_at: "2026-11-17T13:38:32+01:00"
+updated_at: "2026-11-23T14:31:53+01:00"
 canonical_url: "https://myugcvideo.in/blog/brand-identity-through-content"
 featured_image: "https://myugcvideo.in/uploads/blogs/blog_20261113_064646_52d3326bf83e.png"
 featured_image_alt: "Brand moodboard with aesthetic typography swatches and neutral linen textures"
 reading_time: "7 Min Read"
 excerpt: "When someone shops online, they can't touch or try anything. Your visuals are all they have, so for them the image is the product. Here's how lifestyle photography closes the gap between what's on screen and what lands at their door."
-meta_title: "How to Build a Consistent Brand Identity Through Content | MY UGC VIDEO"
+meta_title: "Building a Consistent Brand Identity Through Content | MY UGC VIDEO"
 meta_description: "Learn how premium brands maintain aesthetic coherence and brand DNA while embracing diverse creator voices across TikTok, Instagram, and paid media."
 ---
 
-# How Product Photography Shapes Online Shopping Today
+# Building a Consistent Brand Identity Through Content
 
 > When someone shops online, they can't touch or try anything. Your visuals are all they have, so for them the image is the product. Here's how lifestyle photography closes the gap between what's on screen and what lands at their door.
 
