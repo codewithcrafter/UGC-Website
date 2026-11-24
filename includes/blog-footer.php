@@ -197,7 +197,7 @@ if (!defined('CMS_ROOT')) {
     </form>
   </div>
 
-  <script src="<?= SITE_URL ?>/js/main.js"></script>
+  <script src="<?= SITE_URL ?>/js/main.js?v=20261124"></script>
 </body>
 </html>
 

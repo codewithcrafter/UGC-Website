@@ -5,31 +5,46 @@
  * Contact Form Validation, and Newsletter Submissions.
  */
 
-document.addEventListener('DOMContentLoaded', () => {
-  updateHeaderHeight();
-  initStickyHeader();
-  initMobileNav();
-  initMobileDropdown();
-  initFaqAccordion();
-  initBlogFilters();
-  initContactForm();
-  initNewsletterForms();
-  setActiveNavLinks();
-  initInteractiveServicesDirectory();
-  initServicesSlider();
-  initDualInquiryForms();
-  initVideoModal();
-  initUgcCategoryTabs();
-  init3DVideoCarousel();
-  // initTestimonialSlider(); // Testimonials section removed from homepage
-  initHomepageHeroForm();
-  initHomepageInquiryForm();
-  initBlogTableOfContents();
-  initBlogStrategyCallForm();
-  initAnnouncementBar();
-  initFloatingCtasAndChatbot();
-  initContactPopup();
-});
+function initAllModules() {
+  const modules = [
+    updateHeaderHeight,
+    initStickyHeader,
+    initMobileNav,
+    initMobileDropdown,
+    initFaqAccordion,
+    initBlogFilters,
+    initContactForm,
+    initNewsletterForms,
+    setActiveNavLinks,
+    initInteractiveServicesDirectory,
+    initServicesSlider,
+    initDualInquiryForms,
+    initVideoModal,
+    initUgcCategoryTabs,
+    init3DVideoCarousel,
+    initHomepageHeroForm,
+    initHomepageInquiryForm,
+    initBlogTableOfContents,
+    initBlogStrategyCallForm,
+    initAnnouncementBar,
+    initFloatingCtasAndChatbot,
+    initContactPopup
+  ];
+
+  modules.forEach((fn) => {
+    try {
+      if (typeof fn === 'function') fn();
+    } catch (err) {
+      console.warn('[MY UGC VIDEO] Module init warning:', err);
+    }
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initAllModules);
+} else {
+  initAllModules();
+}
 
 /* --------------------------------------------------------------------------
    0. REAL-TIME RESPONSIVE HEADER HEIGHT SYNC
