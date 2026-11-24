@@ -46,7 +46,7 @@ $structuredData = $structuredData ?? null;
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="<?= SITE_URL ?>/css/style.css?v=20261124">
+  <link rel="stylesheet" href="<?= SITE_URL ?>/css/style.css?v=<?= getAssetVersion('css/style.css') ?>">
   <script>window.SITE_URL = "<?= SITE_URL ?>";</script>
 
   <?php if (!empty($structuredData)): ?>

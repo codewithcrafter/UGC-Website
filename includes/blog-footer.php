@@ -197,7 +197,7 @@ if (!defined('CMS_ROOT')) {
     </form>
   </div>
 
-  <script src="<?= SITE_URL ?>/js/main.js?v=20261124"></script>
+  <script src="<?= SITE_URL ?>/js/main.js?v=<?= getAssetVersion('js/main.js') ?>"></script>
 </body>
 </html>
 

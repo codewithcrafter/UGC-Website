@@ -21,7 +21,7 @@ if ($adminCount > 0) {
     <head>
       <meta charset="UTF-8">
       <title>Setup Locked — MY UGC VIDEO CMS</title>
-      <link rel="stylesheet" href="<?= SITE_URL ?>/admin/assets/admin.css">
+      <link rel="stylesheet" href="<?= SITE_URL ?>/admin/assets/admin.css?v=<?= getAssetVersion('admin/assets/admin.css') ?>">
     </head>
     <body class="login-body">
       <div class="login-card" style="text-align: center;">
@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="<?= SITE_URL ?>/admin/assets/admin.css">
+  <link rel="stylesheet" href="<?= SITE_URL ?>/admin/assets/admin.css?v=<?= getAssetVersion('admin/assets/admin.css') ?>">
 </head>
 <body class="login-body">
   <div class="login-card">

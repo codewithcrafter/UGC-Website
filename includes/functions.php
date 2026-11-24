@@ -1677,5 +1677,66 @@ function generateCleanCanonicalUrl(string $basePath, array $preserveParams = [])
     return $baseUrl;
 }
 
+/**
+ * Returns the automatic version string for a given local file relative to CMS_ROOT,
+ * based on its modification timestamp. Falls back to default if file is missing.
+ */
+function getAssetVersion(string $relativePath, string $fallback = '20261124'): string {
+    $fullPath = CMS_ROOT . '/' . ltrim($relativePath, '/\\');
+    if (file_exists($fullPath)) {
+        return (string) filemtime($fullPath);
+    }
+    return $fallback;
+}
+
+/**
+ * Automatically injects/updates version query strings on stylesheet links and script tags
+ * for local assets (style.css, main.js, quick-enquiry.js, admin.css) in HTML output.
+ */
+function injectDynamicAssetVersions(string $html): string {
+    // 1. Version style.css
+    $cssVer = getAssetVersion('css/style.css');
+    $html = preg_replace_callback(
+        '/(<link\b[^>]*\bhref=["\'])([^"\']*?css\/style\.css)(?:\?[^"\']*)?(["\'])/i',
+        function ($matches) use ($cssVer) {
+            return $matches[1] . $matches[2] . '?v=' . $cssVer . $matches[3];
+        },
+        $html
+    );
+
+    // 2. Version main.js
+    $jsVer = getAssetVersion('js/main.js');
+    $html = preg_replace_callback(
+        '/(<script\b[^>]*\bsrc=["\'])([^"\']*?js\/main\.js)(?:\?[^"\']*)?(["\'])/i',
+        function ($matches) use ($jsVer) {
+            return $matches[1] . $matches[2] . '?v=' . $jsVer . $matches[3];
+        },
+        $html
+    );
+
+    // 3. Version quick-enquiry.js
+    $qeVer = getAssetVersion('js/quick-enquiry.js');
+    $html = preg_replace_callback(
+        '/(<script\b[^>]*\bsrc=["\'])([^"\']*?js\/quick-enquiry\.js)(?:\?[^"\']*)?(["\'])/i',
+        function ($matches) use ($qeVer) {
+            return $matches[1] . $matches[2] . '?v=' . $qeVer . $matches[3];
+        },
+        $html
+    );
+
+    // 4. Version admin.css if present
+    $adminCssVer = getAssetVersion('admin/assets/admin.css');
+    $html = preg_replace_callback(
+        '/(<link\b[^>]*\bhref=["\'])([^"\']*?admin\/assets\/admin\.css)(?:\?[^"\']*)?(["\'])/i',
+        function ($matches) use ($adminCssVer) {
+            return $matches[1] . $matches[2] . '?v=' . $adminCssVer . $matches[3];
+        },
+        $html
+    );
+
+    return $html;
+}
+
+
 
 

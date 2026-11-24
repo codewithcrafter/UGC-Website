@@ -101,7 +101,10 @@ if ($pageKey) {
 // 5. Inject dynamic schemas into <head> (replacing any legacy static blocks)
 $finalHtml = injectDynamicSchemasIntoHtml($html, $dynamicSchemas);
 
-// 6. Set HTTP headers and output
+// 6. Inject dynamic asset versions for automatic cache-busting (filemtime-based)
+$finalHtml = injectDynamicAssetVersions($finalHtml);
+
+// 7. Set HTTP headers and output
 header('Content-Type: text/html; charset=UTF-8');
 header('Cache-Control: no-cache, must-revalidate, max-age=0');
 header('Pragma: no-cache');
