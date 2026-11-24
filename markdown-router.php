@@ -66,8 +66,28 @@ if (in_array(strtolower($slug), ['home', 'index', 'homepage'])) {
     serveError(404, 'Markdown Document Not Found: The requested document does not exist.');
 }
 
-// Strict elimination of duplicate routes: /pages/*.md and /page/*.md are removed and return 404
+// Legacy /pages/*.md and /page/*.md route handling:
+// 301 redirect canonical pages to root-level markdown, 404 for all others
 if ($prefix === 'pages' || $prefix === 'page') {
+    $cleanSlug = strtolower($slug);
+    $allowedRedirects = [
+        'about'    => '/about.md',
+        'services' => '/services.md',
+        'service'  => '/services.md',
+        'contact'  => '/contact.md',
+        'blogs'    => '/blogs.md',
+        'blog'     => '/blogs.md'
+    ];
+    if (isset($allowedRedirects[$cleanSlug])) {
+        $scriptDir = dirname($_SERVER['SCRIPT_NAME']);
+        $basePrefix = ($scriptDir === '/' || $scriptDir === '\\') ? '' : rtrim(str_replace('\\', '/', $scriptDir), '/');
+        $target = $basePrefix . $allowedRedirects[$cleanSlug];
+        if (!empty($_SERVER['QUERY_STRING'])) {
+            $target .= '?' . $_SERVER['QUERY_STRING'];
+        }
+        header("Location: " . $target, true, 301);
+        exit;
+    }
     serveError(404, 'Markdown Document Not Found: The requested document does not exist.');
 }
 

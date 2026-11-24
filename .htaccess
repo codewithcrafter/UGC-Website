@@ -44,6 +44,34 @@ AddType text/markdown; charset=UTF-8 .md
   RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/blogs/[^/\s]+\.php [NC]
   RewriteRule ^ %1/blogs? [R=301,L,NE]
 
+  # II. Redirect legacy /pages/* requests to clean canonical counterparts
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/pages/about(?:/|\.(?:html|php))?[\s?] [NC]
+  RewriteRule ^ %1/about [R=301,L,NE,QSA]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/pages/services?(?:/|\.(?:html|php))?[\s?] [NC]
+  RewriteRule ^ %1/services [R=301,L,NE,QSA]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/pages/contact(?:/|\.(?:html|php))?[\s?] [NC]
+  RewriteRule ^ %1/contact [R=301,L,NE,QSA]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/pages/blogs?(?:/|\.(?:html|php))?[\s?] [NC]
+  RewriteRule ^ %1/blogs [R=301,L,NE,QSA]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/pages/(?:home|index)(?:/|\.(?:html|php))?[\s?] [NC]
+  RewriteRule ^ %1/ [R=301,L,NE,QSA]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/pages/about\.md[\s?] [NC]
+  RewriteRule ^ %1/about.md [R=301,L,NE,QSA]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/pages/services?\.md[\s?] [NC]
+  RewriteRule ^ %1/services.md [R=301,L,NE,QSA]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/pages/contact\.md[\s?] [NC]
+  RewriteRule ^ %1/contact.md [R=301,L,NE,QSA]
+
+  RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s+([^?]*)/pages/blogs?\.md[\s?] [NC]
+  RewriteRule ^ %1/blogs.md [R=301,L,NE,QSA]
+
   # -------------------------------------------------------------------------
   # 2. Administrative Browser Page 301 Redirects (.php -> Clean URL)
   #    Evaluated first so admin index.php redirects to slash-free /admin/posts, etc.
