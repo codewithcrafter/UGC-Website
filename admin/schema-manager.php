@@ -72,7 +72,7 @@ function getApprovedPagesRegistry(): array {
             'url' => '/contact',
             'canonical' => $canonicalBase . '/contact',
             'group' => 'core',
-            'schemas' => ['AboutPage', 'WebPage', 'Organization', 'BreadcrumbList'],
+            'schemas' => ['WebPage', 'Organization', 'BreadcrumbList'],
             'description' => 'Project inquiry form, corporate contact channels, and agency inquiries.'
         ],
         // The 9 Approved Service Pages

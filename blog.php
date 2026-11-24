@@ -208,19 +208,19 @@ include CMS_ROOT . '/includes/blog-header.php';
 
                 <div class="strategy-form-group">
                   <label for="strat_name" class="strategy-label">Full Name <span class="req">*</span></label>
-                  <input type="text" id="strat_name" name="name" class="strategy-input" required placeholder="e.g. Alex Morgan" autocomplete="name">
+                  <input type="text" id="strat_name" name="name" class="strategy-input" required placeholder="e.g. John Doe" autocomplete="name">
                   <div class="field-error" id="stratNameError"></div>
                 </div>
 
                 <div class="strategy-form-group">
                   <label for="strat_email" class="strategy-label">Email Address <span class="req">*</span></label>
-                  <input type="email" id="strat_email" name="email" class="strategy-input" required placeholder="alex@yourbrand.com" autocomplete="email">
+                  <input type="email" id="strat_email" name="email" class="strategy-input" required placeholder="e.g. john@example.com" autocomplete="email">
                   <div class="field-error" id="stratEmailError"></div>
                 </div>
 
                 <div class="strategy-form-group">
                   <label for="strat_phone" class="strategy-label">Contact Number <span class="req">*</span></label>
-                  <input type="tel" id="strat_phone" name="phone" class="strategy-input" required placeholder="+91 98765 43210" autocomplete="tel">
+                  <input type="tel" id="strat_phone" name="phone" class="strategy-input" required placeholder="e.g. 00000 00000" autocomplete="tel">
                   <div class="field-error" id="stratPhoneError"></div>
                 </div>
 

@@ -33,7 +33,7 @@
   <link rel="stylesheet" href="css/style.css?v=20261124">
 
   <!-- JSON-LD Structured Data: ContactPage -->
-  
+
   <!-- Centralized Dynamic Schema Manager JSON-LD -->
   <script type="application/ld+json">
   {
@@ -402,7 +402,7 @@
                 <div class="contact-card-icon" aria-hidden="true">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                     <path
-                      d="M12 2a10 10 0 00-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1112 20z">
+                      d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 17.06c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.106 8.106 0 0 1-1.25-4.29c0-4.5 3.66-8.16 8.16-8.16 2.18 0 4.23.85 5.77 2.39a8.107 8.107 0 0 1 2.39 5.77c0 4.5-3.66 8.15-8.08 8.15zm4.47-6.11c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43s-.56-1.34-.76-1.84c-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1s.9 2.44 1.02 2.6c.12.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.44.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.17-.48-.29z">
                     </path>
                   </svg>
                 </div>
@@ -470,32 +470,35 @@
 
               <!-- Simplified Quick Inquiry Form -->
               <form id="contactForm" class="contact-form-editorial" novalidate>
-                <input type="text" name="website_hp" style="display:none !important;" tabindex="-1"
-                  autocomplete="off">
+                <input type="text" name="website_hp" style="display:none !important;" tabindex="-1" autocomplete="off">
                 <div id="formStatusAlert" class="form-status-alert" style="display: none;" role="alert"></div>
 
                 <div class="editorial-form-grid">
                   <div class="form-group">
                     <label for="fullName" class="form-label">Full Name <span class="req">*</span></label>
-                    <input type="text" id="fullName" name="name" class="form-control" placeholder="e.g. Alex Morgan" required autocomplete="name">
+                    <input type="text" id="fullName" name="name" class="form-control" placeholder="e.g. John Doe"
+                      required autocomplete="name">
                     <span class="form-error-msg"></span>
                   </div>
 
                   <div class="form-group">
                     <label for="workEmail" class="form-label">Email Address <span class="req">*</span></label>
-                    <input type="email" id="workEmail" name="email" class="form-control" placeholder="alex@yourbrand.com" required autocomplete="email">
+                    <input type="email" id="workEmail" name="email" class="form-control"
+                      placeholder="e.g. john@example.com" required autocomplete="email">
                     <span class="form-error-msg"></span>
                   </div>
 
                   <div class="form-group full-width" style="grid-column: 1 / -1;">
                     <label for="phoneNumber" class="form-label">Phone Number <span class="req">*</span></label>
-                    <input type="tel" id="phoneNumber" name="phone" class="form-control" placeholder="+91 98765 43210" required autocomplete="tel">
+                    <input type="tel" id="phoneNumber" name="phone" class="form-control" placeholder="e.g. 00000 00000"
+                      required autocomplete="tel">
                     <span class="form-error-msg"></span>
                   </div>
                 </div>
 
                 <div class="form-group" style="margin-top: 1.25rem;">
-                  <label for="messageInput" class="form-label">Message <span class="optional-tag" style="color: var(--text-muted, #718096); font-size: 0.85em; font-weight: 400;">(Optional)</span></label>
+                  <label for="messageInput" class="form-label">Message <span class="optional-tag"
+                      style="color: var(--text-muted, #718096); font-size: 0.85em; font-weight: 400;">(Optional)</span></label>
                   <textarea id="messageInput" name="message" class="form-control" rows="4"
                     placeholder="Tell us about your brand, project requirements, or any questions..."></textarea>
                   <span class="form-error-msg"></span>
@@ -534,7 +537,7 @@
             <div class="whatsapp-icon-badge" aria-hidden="true">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
                 <path
-                  d="M12 2a10 10 0 00-8.6 15l-1.3 4.8 4.9-1.3A10 10 0 1012 2zm0 18a8 8 0 01-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1112 20z">
+                  d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 17.06c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.106 8.106 0 0 1-1.25-4.29c0-4.5 3.66-8.16 8.16-8.16 2.18 0 4.23.85 5.77 2.39a8.107 8.107 0 0 1 2.39 5.77c0 4.5-3.66 8.15-8.08 8.15zm4.47-6.11c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43s-.56-1.34-.76-1.84c-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1s.9 2.44 1.02 2.6c.12.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.44.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.17-.48-.29z">
                 </path>
               </svg>
             </div>
@@ -575,8 +578,8 @@
 
         <div class="myugc-map-wrapper">
           <iframe class="myugc-google-map" title="MY UGC VIDEO Office Location - Uttam Nagar, New Delhi"
-            src="https://www.google.com/maps/embed?origin=mfe&pb=!1m3!2m1!1s28.623251,77.065872!6i19" loading="lazy" allowfullscreen
-            referrerpolicy="no-referrer-when-downgrade">
+            src="https://www.google.com/maps/embed?origin=mfe&pb=!1m3!2m1!1s28.623251,77.065872!6i19" loading="lazy"
+            allowfullscreen referrerpolicy="no-referrer-when-downgrade">
           </iframe>
         </div>
 
@@ -593,17 +596,15 @@
             <div class="myugc-address-text">
               <span class="myugc-address-label">Office Address</span>
               <p class="myugc-address-full">
-                Basement Floor, Ram Dutt Enclave, B-16, Block D,
-                Ram Dutt Enclave, Uttam Nagar, New Delhi, Delhi,
-                110059, India.
+                Basement Floor, Ram Dutt Enclave, B-16, Block D, Uttam Nagar East, Uttam Nagar, New Delhi, Delhi, 110059
               </p>
             </div>
           </div>
 
           <div class="myugc-directions-wrap">
-            <a href="https://www.google.com/maps/dir/?api=1&destination=28.623251%2C77.065872" target="_blank"
+            <a href="https://www.google.com/maps/dir/?api=1&destination=28.623314%2C77.065904" target="_blank"
               rel="noopener noreferrer" class="btn btn-primary myugc-directions-btn"
-              aria-label="Get Directions to MY UGC VIDEO Office on Google Maps">
+              aria-label="Get Directions to MY UGC VIDEO Office">
 
               <span>Get Directions</span>
 
@@ -653,25 +654,49 @@
           </p>
           <div class="footer-contact-info">
             <a href="mailto:hello@myugcvideo.in" class="footer-contact-link">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect width="20" height="16" x="2" y="4" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+              </svg>
               <span>hello@myugcvideo.in</span>
             </a>
             <a href="tel:+919876543210" class="footer-contact-link">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path
+                  d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
               <span>+91 98765 43210</span>
             </a>
           </div>
           <div class="footer-social-wrap">
             <span class="footer-social-label">Follow Us.</span>
             <div class="footer-social-links">
-              <a href="https://facebook.com" class="footer-social-icon" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Facebook">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+              <a href="https://facebook.com" class="footer-social-icon" target="_blank" rel="noopener noreferrer"
+                aria-label="Follow us on Facebook">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                </svg>
               </a>
-              <a href="https://instagram.com" class="footer-social-icon" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Instagram">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+              <a href="https://instagram.com" class="footer-social-icon" target="_blank" rel="noopener noreferrer"
+                aria-label="Follow us on Instagram">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                </svg>
               </a>
-              <a href="https://linkedin.com" class="footer-social-icon" target="_blank" rel="noopener noreferrer" aria-label="Follow us on LinkedIn">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+              <a href="https://linkedin.com" class="footer-social-icon" target="_blank" rel="noopener noreferrer"
+                aria-label="Follow us on LinkedIn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                  <rect width="4" height="12" x="2" y="9" />
+                  <circle cx="4" cy="4" r="2" />
+                </svg>
               </a>
             </div>
           </div>
@@ -713,8 +738,8 @@
           <form class="newsletter-form" action="#" method="POST" novalidate>
             <div class="newsletter-input-wrap">
               <label for="newsletterEmailFooter" class="sr-only">Email address</label>
-              <input type="email" id="newsletterEmailFooter" class="newsletter-input" placeholder="alex@yourbrand.com"
-                required>
+              <input type="email" id="newsletterEmailFooter" class="newsletter-input"
+                placeholder="e.g. john@example.com" required>
             </div>
             <button type="submit" class="newsletter-submit">Subscribe</button>
             <div class="newsletter-feedback" aria-live="polite"></div>

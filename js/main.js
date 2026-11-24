@@ -1126,45 +1126,186 @@ function initUgcCategoryTabs() {
 }
 
 /* --------------------------------------------------------------------------
-   12. VIDEO PREVIEW MODAL PLAYER
+   12. VIDEO & MEDIA PREVIEW MODAL PLAYER
+   Supports responsive media popup for Video Formats portfolio cards and
+   video triggers with automatic image/video mode detection, zero layout shift,
+   accessible keyboard navigation, and clean playback cleanup on dismissal.
    -------------------------------------------------------------------------- */
 function initVideoModal() {
   const modal = document.querySelector('#videoModal');
-  const triggers = document.querySelectorAll('.video-play-trigger');
-  if (!modal || !triggers.length) return;
+  if (!modal) return;
 
   const closeBtn = modal.querySelector('.video-modal-close-btn');
   const modalImg = modal.querySelector('#videoModalImg');
+  const modalVideo = modal.querySelector('#videoModalPlayer');
   const modalTitle = modal.querySelector('#videoModalTitle');
   const modalSub = modal.querySelector('#videoModalSub');
 
-  const openModal = (imgSrc, title, sub) => {
-    if (modalImg) modalImg.src = imgSrc;
-    if (modalTitle) modalTitle.textContent = title;
-    if (modalSub) modalSub.textContent = sub;
-    modal.classList.add('active');
+  let activeTriggerElement = null;
+
+  // Prevent layout shift during scroll locking
+  const lockScroll = () => {
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+  };
+
+  const unlockScroll = () => {
+    document.body.style.overflow = '';
+    document.documentElement.style.overflow = '';
+    document.body.style.paddingRight = '';
   };
 
   const closeModal = () => {
+    // 1. Reset and pause any playing video
+    if (modalVideo) {
+      modalVideo.pause();
+      modalVideo.currentTime = 0;
+      modalVideo.removeAttribute('src');
+      modalVideo.load();
+      modalVideo.style.display = 'none';
+    }
+
+    // 2. Clear image source to free memory
+    if (modalImg) {
+      modalImg.removeAttribute('src');
+      modalImg.style.display = 'none';
+    }
+
     modal.classList.remove('active');
-    document.body.style.overflow = '';
+    modal.setAttribute('aria-hidden', 'true');
+    unlockScroll();
+
+    // 3. Return focus to the trigger that opened the modal
+    if (activeTriggerElement && typeof activeTriggerElement.focus === 'function') {
+      activeTriggerElement.focus();
+    }
+    activeTriggerElement = null;
   };
 
-  triggers.forEach(trig => {
-    trig.addEventListener('click', (e) => {
+  const openMediaModal = (options, triggerEl) => {
+    activeTriggerElement = triggerEl || null;
+    const { imgSrc, videoSrc, title, sub } = options;
+
+    // Optional legacy captions (if present in DOM)
+    if (modalTitle) modalTitle.textContent = title || '';
+    if (modalSub) modalSub.textContent = sub || '';
+
+    // Check if an actual, valid video source exists
+    const hasValidVideo = typeof videoSrc === 'string' && videoSrc.trim().length > 0;
+
+    if (hasValidVideo) {
+      // VIDEO MODE:
+      if (modalImg) modalImg.style.display = 'none';
+      if (modalVideo) {
+        modalVideo.style.display = 'block';
+        if (imgSrc) modalVideo.poster = imgSrc;
+        modalVideo.src = videoSrc.trim();
+        modalVideo.load();
+        modalVideo.play().catch(() => {
+          // Autoplay may be deferred or blocked by browser policy; user can tap standard controls
+        });
+      }
+    } else {
+      // IMAGE MODE:
+      if (modalVideo) {
+        modalVideo.pause();
+        modalVideo.removeAttribute('src');
+        modalVideo.load();
+        modalVideo.style.display = 'none';
+      }
+      if (modalImg) {
+        modalImg.src = imgSrc || '';
+        modalImg.alt = title || 'Featured UGC Video Format Preview';
+        modalImg.style.display = 'block';
+      }
+    }
+
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    lockScroll();
+
+    // Move focus to close button for keyboard accessibility
+    if (closeBtn) {
+      setTimeout(() => closeBtn.focus(), 50);
+    }
+  };
+
+  // 1. Attach click listener to Video Formats Section 4 portfolio cards
+  const formatCards = document.querySelectorAll('.format-portfolio-card');
+  formatCards.forEach(card => {
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-haspopup', 'dialog');
+
+    const handleCardActivation = (e) => {
       e.preventDefault();
-      const imgSrc = trig.getAttribute('data-video-poster') || 'images/hero/hero-ugc-production.jpg';
-      const title = trig.getAttribute('data-video-title') || 'Featured UGC Creator Showcase';
-      const sub = trig.getAttribute('data-video-meta') || '9:16 Vertical Creator Video • High Conversion Direct-Response';
-      openModal(imgSrc, title, sub);
+      
+      const imgEl = card.querySelector('.format-portfolio-bg') || card.querySelector('img');
+      const triggerBtn = card.querySelector('.video-play-trigger');
+      
+      const imgSrc = (triggerBtn && triggerBtn.getAttribute('data-video-poster')) ||
+                     (imgEl && imgEl.getAttribute('src')) || '';
+      const videoSrc = card.getAttribute('data-video-src') ||
+                       (triggerBtn && triggerBtn.getAttribute('data-video-src')) || '';
+      const title = (triggerBtn && triggerBtn.getAttribute('data-video-title')) ||
+                    (card.querySelector('.format-caption-title') && card.querySelector('.format-caption-title').textContent.trim()) || '';
+      const sub = (triggerBtn && triggerBtn.getAttribute('data-video-meta')) || '';
+
+      openMediaModal({ imgSrc, videoSrc, title, sub }, card);
+    };
+
+    card.addEventListener('click', handleCardActivation);
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleCardActivation(e);
+      }
     });
   });
 
-  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  // 2. Attach click listener to standalone video play triggers
+  const triggers = document.querySelectorAll('.video-play-trigger');
+  triggers.forEach(trig => {
+    if (trig.closest('.format-portfolio-card')) {
+      trig.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const card = trig.closest('.format-portfolio-card');
+        const imgEl = card ? card.querySelector('.format-portfolio-bg') : null;
+        const imgSrc = trig.getAttribute('data-video-poster') || (imgEl && imgEl.getAttribute('src')) || '';
+        const videoSrc = (card && card.getAttribute('data-video-src')) || trig.getAttribute('data-video-src') || '';
+        const title = trig.getAttribute('data-video-title') || '';
+        const sub = trig.getAttribute('data-video-meta') || '';
+        openMediaModal({ imgSrc, videoSrc, title, sub }, trig);
+      });
+    } else {
+      trig.addEventListener('click', (e) => {
+        e.preventDefault();
+        const imgSrc = trig.getAttribute('data-video-poster') || '';
+        const videoSrc = trig.getAttribute('data-video-src') || '';
+        const title = trig.getAttribute('data-video-title') || '';
+        const sub = trig.getAttribute('data-video-meta') || '';
+        openMediaModal({ imgSrc, videoSrc, title, sub }, trig);
+      });
+    }
+  });
+
+  // 3. Dismissal handlers
+  if (closeBtn) {
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeModal();
+    });
+  }
 
   modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeModal();
+    if (e.target === modal || e.target.classList.contains('video-modal-backdrop')) {
+      closeModal();
+    }
   });
 
   document.addEventListener('keydown', (e) => {
@@ -1173,7 +1314,6 @@ function initVideoModal() {
     }
   });
 }
-
 /* --------------------------------------------------------------------------
    13. 3D-STYLE VERTICAL VIDEO CAROUSEL (PORTFOLIO SECTION)
    -------------------------------------------------------------------------- */
@@ -2677,12 +2817,19 @@ function openContactPopup(force = false) {
 
   document.body.appendChild(overlay);
 
+  // Setup responsive mobile keyboard handling
+  setupPopupKeyboardHandling(overlay);
+
   // Trigger smooth entrance animation in next frame
   requestAnimationFrame(() => {
     overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
-    const firstInput = overlay.querySelector('#popupFullName');
-    if (firstInput) firstInput.focus();
+    // Only auto-focus first input on desktop viewports; preserve keyboard closed on mobile (STATE A)
+    const isMobile = window.innerWidth <= 600;
+    if (!isMobile) {
+      const firstInput = overlay.querySelector('#popupFullName');
+      if (firstInput) firstInput.focus();
+    }
   });
 
   // Setup close events
@@ -2739,6 +2886,84 @@ function openContactPopup(force = false) {
 function handlePopupKeydown(e) {
   if (e.key === 'Escape') {
     closeContactPopup();
+  }
+}
+
+function setupPopupKeyboardHandling(overlay) {
+  const card = overlay.querySelector('.contact-popup-card');
+  const form = overlay.querySelector('#popupInquiryForm');
+  if (!card || !form) return;
+
+  const isMobile = () => window.innerWidth <= 600;
+  let isKeyboardOpen = false;
+
+  function setKeyboardState(open, targetInput = null) {
+    if (!isMobile()) return;
+    if (open === isKeyboardOpen) {
+      if (open && targetInput) {
+        setTimeout(() => {
+          targetInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 80);
+      }
+      return;
+    }
+    isKeyboardOpen = open;
+
+    if (open) {
+      overlay.classList.add('keyboard-open');
+      card.classList.add('keyboard-open');
+      if (window.visualViewport) {
+        overlay.style.setProperty('--visual-viewport-height', `${window.visualViewport.height}px`);
+      }
+      if (targetInput) {
+        setTimeout(() => {
+          targetInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+      }
+    } else {
+      overlay.classList.remove('keyboard-open');
+      card.classList.remove('keyboard-open');
+      overlay.style.removeProperty('--visual-viewport-height');
+      card.scrollTop = 0;
+    }
+  }
+
+  form.addEventListener('focusin', (e) => {
+    if (e.target && e.target.matches('input:not([type="hidden"]), textarea')) {
+      if (isMobile()) {
+        setKeyboardState(true, e.target);
+      }
+    }
+  });
+
+  form.addEventListener('focusout', (e) => {
+    if (!isMobile()) return;
+    setTimeout(() => {
+      const active = document.activeElement;
+      if (!active || !form.contains(active) || !active.matches('input, textarea')) {
+        setKeyboardState(false);
+      }
+    }, 150);
+  });
+
+  if (window.visualViewport) {
+    const initialViewportHeight = window.visualViewport.height;
+    const onViewportResize = () => {
+      if (!isMobile() || !document.body.contains(overlay)) return;
+      const currentHeight = window.visualViewport.height;
+      const heightDiff = initialViewportHeight - currentHeight;
+      const active = document.activeElement;
+      const isInputFocused = active && form.contains(active) && active.matches('input, textarea');
+
+      if (heightDiff > 140 && isInputFocused) {
+        overlay.style.setProperty('--visual-viewport-height', `${currentHeight}px`);
+        setKeyboardState(true, active);
+      } else if (heightDiff < 60 && !isInputFocused) {
+        setKeyboardState(false);
+      }
+    };
+
+    window.visualViewport.addEventListener('resize', onViewportResize);
   }
 }
 

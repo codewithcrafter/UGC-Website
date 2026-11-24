@@ -835,6 +835,7 @@
       flex-direction: column;
       justify-content: space-between;
       transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+      cursor: pointer;
     }
 
     .format-portfolio-card:hover {
@@ -851,11 +852,137 @@
       object-fit: cover;
       display: block;
       z-index: 1;
-      transition: transform 0.4s ease;
     }
 
     .format-portfolio-card:hover .format-portfolio-bg {
-      transform: scale(1.05);
+      transform: none !important;
+    }
+
+    /* -------------------------------------------------------------------------
+       VIDEO FORMATS MEDIA POPUP / MODAL (PREMIUM & FULLY RESPONSIVE)
+       ------------------------------------------------------------------------- */
+    .video-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 23, 19, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 100000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.24s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: env(safe-area-inset-top, 1.5rem) env(safe-area-inset-right, 1.5rem) env(safe-area-inset-bottom, 1.5rem) env(safe-area-inset-left, 1.5rem);
+      box-sizing: border-box;
+      touch-action: pan-y;
+    }
+
+    .video-modal-backdrop.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .video-modal-dialog {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      max-width: min(92vw, 840px);
+      max-height: min(88vh, 920px);
+      background: #001713;
+      border: 1px solid rgba(49, 83, 77, 0.6);
+      border-radius: var(--radius-lg, 16px);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.9), 0 0 40px rgba(0, 191, 165, 0.18);
+      overflow: hidden;
+      outline: none;
+      transform: scale(0.96);
+      transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .video-modal-backdrop.active .video-modal-dialog {
+      transform: scale(1);
+    }
+
+    .video-modal-media-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: inherit;
+      background: #001713;
+      overflow: hidden;
+    }
+
+    .video-modal-media-element {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: min(90vw, 800px);
+      max-height: min(84vh, 860px);
+      object-fit: contain;
+      border-radius: inherit;
+    }
+
+    .video-modal-video {
+      background: #000;
+      width: 100%;
+    }
+
+    .video-modal-close-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(0, 23, 19, 0.88);
+      border: 1px solid rgba(0, 191, 165, 0.4);
+      color: #D9E5DF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 30;
+      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+      padding: 0;
+    }
+
+    .video-modal-close-btn:hover,
+    .video-modal-close-btn:focus-visible {
+      background: #00BFA5;
+      color: #001713;
+      border-color: #36D9B0;
+      transform: scale(1.08);
+      outline: none;
+    }
+
+    @media (max-width: 600px) {
+      .video-modal-backdrop {
+        padding: 0.65rem;
+      }
+      .video-modal-dialog {
+        max-width: 96vw;
+        max-height: 92vh;
+        border-radius: 12px;
+      }
+      .video-modal-media-element {
+        max-width: 95vw;
+        max-height: 86vh;
+      }
+      .video-modal-close-btn {
+        top: 8px;
+        right: 8px;
+        width: 36px;
+        height: 36px;
+      }
     }
 
     .format-portfolio-overlay {
@@ -2044,7 +2171,7 @@
                 <div class="quick-form-group">
                   <label for="qeName" class="quick-form-label">Name <span class="required">*</span></label>
                   <div class="quick-input-wrapper">
-                    <input type="text" id="qeName" name="name" class="quick-form-input" placeholder="e.g. Alex Morgan"
+                    <input type="text" id="qeName" name="name" class="quick-form-input" placeholder="e.g. John Doe"
                       required autocomplete="name">
                     <span class="quick-input-icon" aria-hidden="true">
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -2062,7 +2189,7 @@
                   <label for="qeEmail" class="quick-form-label">Email <span class="required">*</span></label>
                   <div class="quick-input-wrapper">
                     <input type="email" id="qeEmail" name="email" class="quick-form-input"
-                      placeholder="alex@yourbrand.com" required autocomplete="email">
+                      placeholder="e.g. john@example.com" required autocomplete="email">
                     <span class="quick-input-icon" aria-hidden="true">
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2">
@@ -2080,7 +2207,7 @@
                   <div class="quick-input-wrapper">
                     <span class="quick-input-prefix">+91</span>
                     <input type="tel" id="qePhone" name="phone" class="quick-form-input quick-phone-input"
-                      placeholder="98765 43210" required autocomplete="tel" maxlength="15">
+                      placeholder="e.g. 00000 00000" required autocomplete="tel" maxlength="15">
                     <span class="quick-input-icon" aria-hidden="true">
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2">
@@ -2436,7 +2563,7 @@
         <div class="formats-portfolio-grid">
 
           <!-- Format 1: Product Demonstrations -->
-          <div class="format-portfolio-card camera-focus-media">
+          <div class="format-portfolio-card camera-focus-media" data-video-src="">
             <img src="images/services/service-product-videos.jpg"
               alt="Macro product demonstration showing texture and formula application" class="format-portfolio-bg"
               width="380" height="590" loading="lazy">
@@ -2465,7 +2592,7 @@
           </div>
 
           <!-- Format 2: Unboxing & First Impressions -->
-          <div class="format-portfolio-card camera-focus-media">
+          <div class="format-portfolio-card camera-focus-media" data-video-src="">
             <img src="images/services/service-unboxing.jpg" alt="First-person sensory packaging unboxing reveal"
               class="format-portfolio-bg" width="380" height="590" loading="lazy">
             <div class="format-portfolio-overlay">
@@ -2493,7 +2620,7 @@
           </div>
 
           <!-- Format 3: Problem-Solution Hooks -->
-          <div class="format-portfolio-card camera-focus-media">
+          <div class="format-portfolio-card camera-focus-media" data-video-src="">
             <img src="images/services/service-problem-solution.jpg"
               alt="Problem solution direct response hook demonstrating product utility" class="format-portfolio-bg"
               width="380" height="590" loading="lazy">
@@ -2522,7 +2649,7 @@
           </div>
 
           <!-- Format 4: Everyday Lifestyle Integration -->
-          <div class="format-portfolio-card camera-focus-media">
+          <div class="format-portfolio-card camera-focus-media" data-video-src="">
             <img src="images/services/service-lifestyle.jpg"
               alt="Lifestyle creator incorporating product into domestic routine" class="format-portfolio-bg"
               width="380" height="590" loading="lazy">
@@ -2551,7 +2678,7 @@
           </div>
 
           <!-- Format 5: Authentic Creator Testimonials -->
-          <div class="format-portfolio-card camera-focus-media">
+          <div class="format-portfolio-card camera-focus-media" data-video-src="">
             <img src="images/services/service-testimonial.jpg"
               alt="Creator sharing honest conversational review in domestic interior" class="format-portfolio-bg"
               width="380" height="590" loading="lazy">
@@ -2580,7 +2707,7 @@
           </div>
 
           <!-- Format 6: AI-Assisted Creative Variants -->
-          <div class="format-portfolio-card camera-focus-media">
+          <div class="format-portfolio-card camera-focus-media" data-video-src="">
             <img src="images/services/service-ai-ugc.jpg" alt="AI virtual presenter testing dynamic regional hooks"
               class="format-portfolio-bg" width="380" height="590" loading="lazy">
             <div class="format-portfolio-overlay">
@@ -3198,23 +3325,19 @@
   <!-- =========================================================================
        GLOBAL VIDEO PREVIEW MODAL PLAYER
        ========================================================================= -->
-  <div class="video-modal-backdrop" id="videoModal" role="dialog" aria-modal="true" aria-label="Video Showcase Player">
+  <div class="video-modal-backdrop" id="videoModal" role="dialog" aria-modal="true" aria-label="Media Preview" aria-hidden="true">
     <div class="video-modal-dialog">
-      <button class="video-modal-close-btn" aria-label="Close Video Preview">&times;</button>
+      <button class="video-modal-close-btn" aria-label="Close media preview" type="button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
       <div class="video-modal-media-wrap">
-        <img id="videoModalImg" src="images/services/service-ugc-creation.jpg" alt="Video Preview Reel"
-          class="video-modal-poster">
-        <div class="video-modal-badge-overlay">
-          <span class="creator-rec-tag"><span class="creator-rec-dot"></span> 9:16 VERTICAL MASTER</span>
-        </div>
-      </div>
-      <div class="video-modal-caption-bar">
-        <div id="videoModalTitle"
-          style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">
-          Featured UGC Video Showcase</div>
-        <div id="videoModalSub"
-          style="font-family: var(--font-body); font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;">
-          Direct-Response Vertical Video Format</div>
+        <img id="videoModalImg" src="" alt="Video Format Preview" class="video-modal-media-element video-modal-poster" loading="lazy">
+        <video id="videoModalPlayer" class="video-modal-media-element video-modal-video" controls playsinline preload="metadata" style="display: none;">
+          Your browser does not support HTML5 video.
+        </video>
       </div>
     </div>
   </div>
@@ -3295,7 +3418,7 @@
           <form class="newsletter-form" action="#" method="POST" novalidate>
             <div class="newsletter-input-wrap">
               <label for="newsletterEmailFooter" class="sr-only">Email address</label>
-              <input type="email" id="newsletterEmailFooter" class="newsletter-input" placeholder="alex@yourbrand.com"
+              <input type="email" id="newsletterEmailFooter" class="newsletter-input" placeholder="e.g. john@example.com"
                 required>
             </div>
             <button type="submit" class="newsletter-submit">Subscribe</button>

@@ -463,7 +463,7 @@
                     <label for="heroLeadName" class="hero-form-label">Full Name <span
                         class="required-star">*</span></label>
                     <input type="text" id="heroLeadName" name="name" class="hero-form-input"
-                      placeholder="e.g. Alex Morgan" required autocomplete="name">
+                      placeholder="e.g. John Doe" required autocomplete="name">
                     <span class="hero-field-error" aria-live="polite"></span>
                   </div>
 
@@ -472,7 +472,7 @@
                     <label for="heroLeadEmail" class="hero-form-label">Work Email <span
                         class="required-star">*</span></label>
                     <input type="email" id="heroLeadEmail" name="email" class="hero-form-input"
-                      placeholder="alex@yourbrand.com" required autocomplete="email">
+                      placeholder="e.g. john@example.com" required autocomplete="email">
                     <span class="hero-field-error" aria-live="polite"></span>
                   </div>
 
@@ -1421,104 +1421,93 @@
           </p>
         </div>
 
-        <!-- Digital Magazine Layout: 1 Large Featured Article + 2 Smaller Supporting Articles Stacked -->
+        <!-- Editorial 3-Card Digital Magazine Grid Layout -->
         <div class="journal-magazine-layout">
 
-          <!-- Left Column: Large Featured Article -->
-          <article class="journal-featured-card" data-category="brand-stories">
-            <div class="journal-featured-media camera-focus-media">
+          <!-- Card 1: Brand Stories -->
+          <article class="journal-card journal-featured-card" data-category="brand-stories">
+            <div class="journal-card-media journal-featured-media camera-focus-media">
               <img src="images/blogs/blog-10.jpg"
-                alt="Creative director organizing brand visual assets and video style guidelines" width="620"
-                height="380" loading="lazy">
-              <span class="category-pill-badge">Brand Stories</span>
+                alt="Creative director organizing brand visual assets and video style guidelines" width="600"
+                height="375" loading="lazy">
             </div>
-            <div class="journal-featured-body">
-              <div class="blog-meta-compact">
-                <span>October 29, 2026</span>
-                <span>&bull;</span>
-                <span>8 Min Read</span>
+            <div class="journal-card-body journal-featured-body">
+              <div class="journal-card-meta blog-meta-compact">
+                <span class="category-pill-badge category-pill">Brand Stories</span>
+                <span class="meta-dot" aria-hidden="true">&bull;</span>
+                <span class="journal-card-date">October 29, 2026</span>
+                <span class="meta-dot" aria-hidden="true">&bull;</span>
+                <span class="journal-card-read">8 Min Read</span>
               </div>
-              <h3 class="journal-featured-title font-display">
+              <h3 class="journal-card-title journal-featured-title font-display">
                 <a href="blog/brand-identity-through-content">How to Keep Your Brand Look Consistent Across Creators</a>
               </h3>
-              <p class="journal-featured-excerpt">
+              <p class="journal-card-excerpt journal-featured-excerpt">
                 Learn how to keep your brand identity steady while working with different creators on Instagram
                 and paid ads.
               </p>
-              <div class="blog-card-footer">
-                <span class="blog-card-author">By MY UGC VIDEO</span>
+              <div class="journal-card-footer blog-card-footer">
+                <span class="journal-card-author blog-card-author">By MY UGC VIDEO</span>
                 <a href="blog/brand-identity-through-content" class="slider-link-action">Read Article &rarr;</a>
               </div>
             </div>
           </article>
 
-          <!-- Right Column: Two Supporting Articles Stacked -->
-          <div class="journal-side-stack">
-
-            <!-- Supporting Article 1: Instagram and TikTok Strategy -->
-            <article class="journal-side-card" data-category="marketing-tips">
-              <div class="journal-side-media camera-focus-media">
-                <img src="images/blogs/blog-9.jpg"
-                  alt="Content strategist analyzing TikTok analytics dashboard and retention curves" width="240"
-                  height="170" loading="lazy">
-                <span class="category-pill-badge">Marketing Tips</span>
+          <!-- Card 2: Marketing Tips -->
+          <article class="journal-card journal-side-card" data-category="marketing-tips">
+            <div class="journal-card-media journal-side-media camera-focus-media">
+              <img src="images/blogs/blog-9.jpg"
+                alt="Content strategist analyzing TikTok analytics dashboard and retention curves" width="600"
+                height="375" loading="lazy">
+            </div>
+            <div class="journal-card-body journal-side-body">
+              <div class="journal-card-meta blog-meta-compact">
+                <span class="category-pill-badge category-pill">Marketing Tips</span>
+                <span class="meta-dot" aria-hidden="true">&bull;</span>
+                <span class="journal-card-date">October 28, 2026</span>
+                <span class="meta-dot" aria-hidden="true">&bull;</span>
+                <span class="journal-card-read">9 Min Read</span>
               </div>
-              <div class="journal-side-body">
-                <div class="blog-meta-compact">
-                  <span>October 28, 2026</span>
-                  <span>&bull;</span>
-                  <span>9 Min Read</span>
-                </div>
-                <h3 class="journal-side-title font-display">
-                  <a href="blog/ugc-instagram-tiktok-strategy">A Simple UGC Strategy for Instagram and TikTok
-
-                  </a>
-                </h3>
-                <p class="journal-side-excerpt">
-                  See how video works differently on TikTok, Reels and YouTube Shorts, and how to plan for each one.
-                </p>
-                <div class="blog-card-footer">
-                  <span class="blog-card-author">By MY UGC VIDEO</span>
-                  <a href="blog/ugc-instagram-tiktok-strategy" class="slider-link-action">Read Article &rarr;</a>
-                </div>
+              <h3 class="journal-card-title journal-side-title font-display">
+                <a href="blog/ugc-instagram-tiktok-strategy">A Simple UGC Strategy for Instagram and TikTok</a>
+              </h3>
+              <p class="journal-card-excerpt journal-side-excerpt">
+                See how video works differently on TikTok, Reels and YouTube Shorts, and how to plan for each one.
+              </p>
+              <div class="journal-card-footer blog-card-footer">
+                <span class="journal-card-author blog-card-author">By MY UGC VIDEO</span>
+                <a href="blog/ugc-instagram-tiktok-strategy" class="slider-link-action">Read Article &rarr;</a>
               </div>
-            </article>
+            </div>
+          </article>
 
-            <!-- Supporting Article 2: Psychology of Authenticity -->
-            <article class="journal-side-card" data-category="ugc-trends">
-              <div class="journal-side-media camera-focus-media">
-                <img src="images/blogs/blog-8.jpg"
-                  alt="Shopper engaging with authentic consumer reviews on smartphone screen" width="240" height="170"
-                  loading="lazy">
-                <span class="category-pill-badge">UGC Trends
-
-                </span>
+          <!-- Card 3: UGC Trends -->
+          <article class="journal-card journal-side-card" data-category="ugc-trends">
+            <div class="journal-card-media journal-side-media camera-focus-media">
+              <img src="images/blogs/blog-8.jpg"
+                alt="Shopper engaging with authentic consumer reviews on smartphone screen" width="600"
+                height="375" loading="lazy">
+            </div>
+            <div class="journal-card-body journal-side-body">
+              <div class="journal-card-meta blog-meta-compact">
+                <span class="category-pill-badge category-pill">UGC Trends</span>
+                <span class="meta-dot" aria-hidden="true">&bull;</span>
+                <span class="journal-card-date">October 27, 2026</span>
+                <span class="meta-dot" aria-hidden="true">&bull;</span>
+                <span class="journal-card-read">10 Min Read</span>
               </div>
-              <div class="journal-side-body">
-                <div class="blog-meta-compact">
-                  <span>October 27, 2026</span>
-                  <span>&bull;</span>
-                  <span>10 Min Read</span>
-                </div>
-                <h3 class="journal-side-title font-display">
-                  <a href="blog/authentic-content-and-buying-decisions">Why Real People Sell Better Than Ads
-
-                  </a>
-                </h3>
-                <p class="journal-side-excerpt">
-                  Understand why viewers trust everyday people more than brand ads, and what that means for your videos.
-
-
-                </p>
-                <div class="blog-card-footer">
-                  <span class="blog-card-author">By MY UGC VIDEO</span>
-                  <a href="blog/authentic-content-and-buying-decisions" class="slider-link-action">Read Article
-                    &rarr;</a>
-                </div>
+              <h3 class="journal-card-title journal-side-title font-display">
+                <a href="blog/authentic-content-and-buying-decisions">Why Real People Sell Better Than Ads</a>
+              </h3>
+              <p class="journal-card-excerpt journal-side-excerpt">
+                Understand why viewers trust everyday people more than brand ads, and what that means for your videos.
+              </p>
+              <div class="journal-card-footer blog-card-footer">
+                <span class="journal-card-author blog-card-author">By MY UGC VIDEO</span>
+                <a href="blog/authentic-content-and-buying-decisions" class="slider-link-action">Read Article &rarr;</a>
               </div>
-            </article>
-
-          </div>
+            </div>
+          </article>
 
         </div>
 
@@ -1574,7 +1563,7 @@
 
                   <div class="form-group">
                     <label for="inquiryName" class="form-label">Your Name <span class="required">*</span></label>
-                    <input type="text" id="inquiryName" name="name" class="form-input" placeholder="e.g. Alex Morgan"
+                    <input type="text" id="inquiryName" name="name" class="form-input" placeholder="e.g. John Doe"
                       required>
                     <span class="form-error-msg" aria-live="polite"></span>
                   </div>
@@ -1582,7 +1571,7 @@
                   <div class="form-group">
                     <label for="inquiryEmail" class="form-label">Work Email <span class="required">*</span></label>
                     <input type="email" id="inquiryEmail" name="email" class="form-input"
-                      placeholder="alex@yourbrand.com" required>
+                      placeholder="e.g. john@example.com" required>
                     <span class="form-error-msg" aria-live="polite"></span>
                   </div>
 
@@ -1773,7 +1762,7 @@
           <form class="newsletter-form" action="#" method="POST" novalidate>
             <div class="newsletter-input-wrap">
               <label for="newsletterEmailFooter" class="sr-only">Email address</label>
-              <input type="email" id="newsletterEmailFooter" class="newsletter-input" placeholder="alex@yourbrand.com"
+              <input type="email" id="newsletterEmailFooter" class="newsletter-input" placeholder="e.g. john@example.com"
                 required>
             </div>
             <button type="submit" class="newsletter-submit">Subscribe</button>

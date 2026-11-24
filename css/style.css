@@ -11055,186 +11055,216 @@ section.hero .container>div>div>div[style*="position: relative"]:focus-visible::
   color: var(--accent-mint);
 }
 
-/* --- 7. THE CREATOR JOURNAL (COMPACT DIGITAL MAGAZINE LAYOUT) --- */
+/* --- 7. THE CREATOR JOURNAL (PREMIUM EDITORIAL DIGITAL MAGAZINE 3-CARD LAYOUT) --- */
 .creator-journal-section {
   border-bottom: 1px solid var(--border-subtle);
   background: var(--bg-primary);
-  padding: clamp(2.5rem, 4vw, 3.75rem) 0;
+  padding: clamp(2.5rem, 4.5vw, 4.25rem) 0;
 }
 
+/* 3-Column Balanced Editorial Row on Desktop */
 .journal-magazine-layout {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: clamp(1rem, 1.75vw, 1.5rem);
-  max-width: 980px;
-  margin: 0 auto clamp(1.75rem, 3vw, 2.25rem) auto;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(1.25rem, 2vw, 1.75rem);
+  max-width: 1200px;
+  margin: 0 auto clamp(2rem, 3.5vw, 2.75rem) auto;
   align-items: stretch;
 }
 
-/* Medium-Sized Featured Blog Article (Left) */
-.journal-featured-card {
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-card);
-  border: 1px solid var(--border-medium);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: 0 10px 25px rgba(0, 23, 19, 0.45);
-  transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
-}
-
-.journal-featured-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--accent-emerald);
-  box-shadow: 0 18px 45px rgba(0, 23, 19, 0.7), 0 0 20px rgba(0, 191, 165, 0.12);
-}
-
-.journal-featured-media {
-  position: relative;
-  width: 100%;
-  height: auto;
-  min-height: 0;
-  aspect-ratio: auto;
-  background: transparent !important;
-  background-color: transparent !important;
-  overflow: hidden;
-  display: block;
-}
-
-.journal-featured-media img {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  display: block;
-  background: transparent !important;
-  object-fit: unset !important;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.journal-featured-card:hover .journal-featured-media img {
-  transform: scale(1.04);
-}
-
-.journal-featured-body {
-  padding: 1.25rem 1.35rem;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-.journal-featured-title {
-  font-size: clamp(1.1rem, 1.45vw, 1.28rem);
-  font-weight: 800;
-  line-height: 1.3;
-  color: var(--text-primary);
-  margin: 0.4rem 0 0.5rem 0;
-}
-
-.journal-featured-title a {
-  color: inherit;
-  text-decoration: none;
-  transition: color var(--transition-fast);
-}
-
-.journal-featured-title a:hover {
-  color: var(--accent-mint);
-}
-
-.journal-featured-excerpt {
-  font-size: 0.88rem;
-  line-height: 1.55;
-  color: var(--text-secondary);
-  margin-bottom: 0.85rem;
-  flex: 1;
-}
-
-/* Supporting Blog Articles Stack (Right) */
-.journal-side-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  justify-content: space-between;
-}
-
+/* Unified Editorial Blog Card */
+.journal-card,
+.journal-featured-card,
 .journal-side-card {
-  display: grid;
-  grid-template-columns: 140px 1fr;
-  gap: 1rem;
-  align-items: center;
-  background: var(--bg-card);
-  border: 1px solid var(--border-medium);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: 0 8px 20px rgba(0, 23, 19, 0.4);
-  transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
-  flex: 1;
+  display: flex !important;
+  flex-direction: column !important;
+  background: var(--bg-card, #00221E) !important;
+  border: 1px solid rgba(49, 83, 77, 0.45) !important;
+  border-radius: var(--radius-lg, 16px) !important;
+  overflow: hidden !important;
+  box-shadow: 0 10px 30px rgba(0, 23, 19, 0.45) !important;
+  transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal) !important;
+  height: 100% !important;
+  box-sizing: border-box !important;
 }
 
+.journal-card:hover,
+.journal-featured-card:hover,
 .journal-side-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--accent-emerald);
-  box-shadow: 0 14px 35px rgba(0, 23, 19, 0.65), 0 0 16px rgba(0, 191, 165, 0.1);
+  transform: translateY(-5px) !important;
+  border-color: rgba(0, 191, 165, 0.45) !important;
+  box-shadow: 0 18px 42px rgba(0, 23, 19, 0.7), 0 0 20px rgba(0, 191, 165, 0.12) !important;
 }
 
+/* 1. Blog Image (16:10 Proportional Media Container) */
+.journal-card-media,
+.journal-featured-media,
 .journal-side-media {
-  position: relative;
-  width: 100%;
-  height: auto;
-  min-height: 0;
-  background: transparent !important;
-  background-color: transparent !important;
-  overflow: hidden;
-  display: block;
+  position: relative !important;
+  width: 100% !important;
+  aspect-ratio: 16 / 10 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  background: #001e1a !important;
+  border-radius: 16px 16px 0 0 !important;
+  display: block !important;
 }
 
+.journal-card-media img,
+.journal-featured-media img,
 .journal-side-media img {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  object-fit: cover !important;
+  object-position: center !important;
   background: transparent !important;
-  object-fit: unset !important;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
+.journal-card:hover .journal-card-media img,
+.journal-featured-card:hover .journal-featured-media img,
 .journal-side-card:hover .journal-side-media img {
-  transform: scale(1.04);
+  transform: scale(1.05) !important;
 }
 
+/* Card Body Layout */
+.journal-card-body,
+.journal-featured-body,
 .journal-side-body {
-  padding: 0.85rem 1rem 0.85rem 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  padding: 1.5rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 !important;
+  box-sizing: border-box !important;
 }
 
+/* 2. Category & Publication Date (Editorial Metadata Row) */
+.journal-card-meta,
+.journal-card-body .blog-meta-compact {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  flex-wrap: wrap !important;
+  font-size: 0.78rem !important;
+  color: var(--text-muted, #72968f) !important;
+  margin-bottom: 0.65rem !important;
+  line-height: 1.4 !important;
+}
+
+.journal-card-meta .category-pill-badge,
+.journal-card-meta .category-pill {
+  position: static !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  background: rgba(54, 217, 176, 0.08) !important;
+  border: 1px solid rgba(54, 217, 176, 0.28) !important;
+  color: var(--accent-mint, #36D9B0) !important;
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  padding: 0.22rem 0.58rem !important;
+  border-radius: 4px !important;
+  letter-spacing: 0.03em !important;
+  text-transform: capitalize !important;
+  line-height: 1.2 !important;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast) !important;
+}
+
+.journal-card:hover .journal-card-meta .category-pill-badge,
+.journal-card:hover .journal-card-meta .category-pill {
+  background: rgba(54, 217, 176, 0.16) !important;
+  border-color: rgba(54, 217, 176, 0.45) !important;
+}
+
+.journal-card-date,
+.journal-card-read {
+  font-size: 0.78rem !important;
+  color: var(--text-muted, #72968f) !important;
+  font-weight: 500 !important;
+}
+
+.journal-card-meta .meta-dot {
+  color: rgba(49, 83, 77, 0.75) !important;
+  font-size: 0.75rem !important;
+}
+
+/* 3. Blog Title */
+.journal-card-title,
+.journal-featured-title,
 .journal-side-title {
-  font-size: 0.98rem;
-  font-weight: 800;
-  line-height: 1.3;
-  color: var(--text-primary);
-  margin: 0.3rem 0 0.35rem 0;
-}
-
-.journal-side-title a {
-  color: inherit;
-  text-decoration: none;
-  transition: color var(--transition-fast);
-}
-
-.journal-side-title a:hover {
-  color: var(--accent-mint);
-}
-
-.journal-side-excerpt {
-  font-size: 0.82rem;
-  line-height: 1.45;
-  color: var(--text-secondary);
-  margin-bottom: 0.5rem;
+  font-family: var(--font-heading) !important;
+  font-size: clamp(1.12rem, 1.35vw, 1.25rem) !important;
+  font-weight: 700 !important;
+  line-height: 1.34 !important;
+  color: var(--text-primary, #fff) !important;
+  margin: 0.4rem 0 0.75rem 0 !important;
+  min-height: 3.2rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.journal-card-title a,
+.journal-featured-title a,
+.journal-side-title a {
+  color: inherit !important;
+  text-decoration: none !important;
+  transition: color var(--transition-fast) !important;
+}
+
+.journal-card-title a:hover,
+.journal-featured-title a:hover,
+.journal-side-title a:hover {
+  color: var(--accent-mint, #36D9B0) !important;
+}
+
+/* 4. Short Description / Excerpt */
+.journal-card-excerpt,
+.journal-featured-excerpt,
+.journal-side-excerpt {
+  font-family: var(--font-body) !important;
+  font-size: 0.88rem !important;
+  line-height: 1.55 !important;
+  color: var(--text-secondary, rgba(217, 229, 223, 0.75)) !important;
+  margin-bottom: 1.25rem !important;
+  flex: 1 !important;
+}
+
+/* 5 & 6. Footer (Author Info & Read Article Action) */
+.journal-card-footer,
+.journal-card-body .blog-card-footer {
+  margin-top: auto !important;
+  padding-top: 1rem !important;
+  border-top: 1px solid rgba(49, 83, 77, 0.35) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+.journal-card-author,
+.journal-card-body .blog-card-author {
+  font-size: 0.75rem !important;
+  color: var(--text-muted, #72968f) !important;
+  font-weight: 500 !important;
+}
+
+.journal-card-footer .slider-link-action {
+  font-size: 0.84rem !important;
+  font-weight: 700 !important;
+  color: var(--accent-mint, #36D9B0) !important;
+  text-decoration: none !important;
+  transition: transform var(--transition-fast), color var(--transition-fast) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.3rem !important;
+}
+
+.journal-card-footer .slider-link-action:hover {
+  transform: translateX(3px) !important;
+  color: #fff !important;
 }
 
 /* --- 8. HOMEPAGE RESPONSIVE BREAKPOINTS --- */
@@ -11341,13 +11371,11 @@ section.hero .container>div>div>div[style*="position: relative"]:focus-visible::
     max-width: 680px;
   }
 
+  /* Journal maintains 3 columns on standard laptop / 1024px */
   .journal-magazine-layout {
-    grid-template-columns: 1fr;
-    max-width: 680px;
-  }
-
-  .journal-side-card {
-    grid-template-columns: 160px 1fr;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.15rem;
+    max-width: 980px;
   }
 }
 
@@ -11389,17 +11417,20 @@ section.hero .container>div>div>div[style*="position: relative"]:focus-visible::
     display: none;
   }
 
-  .journal-side-card {
-    grid-template-columns: 1fr;
+  /* Journal side-card unified into journal-card */
+}
+
+/* Tablet Breakpoint (681px - 880px): 2 columns */
+@media (max-width: 880px) and (min-width: 681px) {
+  .journal-magazine-layout {
+    grid-template-columns: repeat(2, 1fr) !important;
+    max-width: 720px !important;
+    gap: 1.25rem !important;
   }
 
-  .journal-side-body {
-    padding: 1.25rem;
-  }
-
-  .journal-side-media {
-    min-height: 180px;
-    aspect-ratio: 16/9;
+  .journal-magazine-layout .journal-card:last-child {
+    grid-column: auto !important;
+    max-width: 100% !important;
   }
 }
 
@@ -11407,6 +11438,49 @@ section.hero .container>div>div>div[style*="position: relative"]:focus-visible::
   .hero-homepage {
     padding-top: clamp(6.75rem, 8vw + 3.25rem, 7.5rem);
     padding-bottom: clamp(2.5rem, 5vw, 3.5rem);
+  }
+
+  .journal-magazine-layout {
+    grid-template-columns: 1fr !important;
+    max-width: 440px !important;
+    gap: 1.25rem !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  .journal-magazine-layout .journal-card:last-child {
+    grid-column: auto !important;
+    max-width: 100% !important;
+  }
+
+  .journal-card-body,
+  .journal-featured-body,
+  .journal-side-body {
+    padding: 1.25rem 1.15rem !important;
+  }
+
+  .journal-card-meta,
+  .journal-card-body .blog-meta-compact {
+    gap: 0.35rem !important;
+    font-size: 0.74rem !important;
+  }
+
+  .journal-card-meta .category-pill-badge,
+  .journal-card-meta .category-pill {
+    padding: 0.18rem 0.5rem !important;
+    font-size: 0.68rem !important;
+  }
+
+  .journal-card-date,
+  .journal-card-read {
+    font-size: 0.72rem !important;
+  }
+
+  .journal-card-title,
+  .journal-featured-title,
+  .journal-side-title {
+    font-size: 1.15rem !important;
+    min-height: auto !important;
   }
 }
 
@@ -16026,54 +16100,184 @@ section.hero .container>div>div>div[style*="position: relative"]:focus-visible::
   border-radius: 10px;
 }
 
-/* Responsive Media Queries */
-@media (max-width: 580px) {
-  .popup-form-grid {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-
-  .contact-popup-card {
-    padding: 1.35rem 1.15rem;
-    border-radius: 16px;
-  }
-
-  .contact-popup-close {
-    top: 0.95rem;
-    right: 0.95rem;
-    width: 34px;
-    height: 34px;
-  }
-}
-
-@media (max-width: 480px) {
+/* Responsive Media Queries — UGC Inquiry Popup Mobile Optimization */
+@media (max-width: 600px) {
   .contact-popup-overlay {
-    padding: 0.75rem;
+    padding: 12px;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
   }
 
   .contact-popup-container {
-    max-height: calc(100dvh - 1.5rem);
+    width: calc(100% - 24px);
+    max-width: 420px;
+    height: auto;
+    max-height: 90vh;
+    max-height: 90dvh;
+    max-height: min(90dvh, 760px);
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   .contact-popup-card {
-    padding: 1.25rem 1rem;
-    max-height: calc(100dvh - 1.5rem);
-    border-radius: 14px;
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    max-height: 90vh;
+    max-height: 90dvh;
+    max-height: min(90dvh, 760px);
+    border-radius: 18px;
+    padding: 20px;
+    box-sizing: border-box;
+    /* STATE A: Normal Popup (Keyboard Closed) — No vertical scrolling, no scrollbar */
+    overflow-y: hidden;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
 
-  .contact-popup-title {
-    font-size: 1.3rem;
+  .contact-popup-card::-webkit-scrollbar {
+    display: none;
   }
 
   .contact-popup-close {
-    top: 0.85rem;
-    right: 0.85rem;
-    width: 32px;
-    height: 32px;
+    top: 14px;
+    right: 14px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    z-index: 20;
   }
-}
 
-@media (max-width: 380px) {
+  .contact-popup-header {
+    margin-bottom: 0.65rem;
+  }
+
+  .contact-popup-badge {
+    font-size: 0.65rem;
+    padding: 0.22rem 0.65rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .contact-popup-title {
+    font-size: clamp(1.15rem, 3.8vw, 1.35rem);
+    line-height: 1.22;
+    margin: 0 0 0.25rem 0;
+  }
+
+  .contact-popup-desc {
+    font-size: 0.76rem;
+    line-height: 1.36;
+    margin: 0 auto;
+    max-width: 380px;
+  }
+
+  .popup-form-grid {
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
+  }
+
+  .contact-popup-form .form-group {
+    margin-bottom: 0;
+  }
+
+  .contact-popup-form .form-label {
+    font-size: 0.74rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .popup-field-header {
+    margin-bottom: 0.2rem;
+  }
+
+  .popup-char-counter {
+    font-size: 0.7rem;
+  }
+
+  /* Mandated 56px input height */
+  .popup-input-wrapper .form-control:not(textarea) {
+    height: 56px;
+    min-height: 56px;
+    border-radius: 10px;
+    padding: 0.72rem 2.35rem 0.72rem 0.85rem;
+    font-size: 0.88rem;
+  }
+
+  .popup-input-wrapper textarea.form-control {
+    height: 56px;
+    min-height: 50px;
+    max-height: 75px;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.84rem;
+    border-radius: 10px;
+    resize: none;
+  }
+
+  .popup-form-footer {
+    margin-top: 0.65rem;
+    gap: 0.45rem;
+  }
+
+  .popup-submit-btn {
+    padding: 0.82rem 1.25rem !important;
+    font-size: 0.88rem !important;
+    border-radius: 10px !important;
+  }
+
+  .form-privacy-note {
+    font-size: 0.68rem;
+    line-height: 1.3;
+  }
+
+  /* STATE B — Mobile Keyboard Open (activated via .keyboard-open) */
+  .contact-popup-overlay.keyboard-open {
+    align-items: flex-start;
+    padding-top: max(env(safe-area-inset-top, 8px), 8px);
+    padding-bottom: 8px;
+  }
+
+  .contact-popup-overlay.keyboard-open .contact-popup-container {
+    max-height: calc(var(--visual-viewport-height, 100dvh) - 16px);
+    height: calc(var(--visual-viewport-height, 100dvh) - 16px);
+  }
+
+  .contact-popup-overlay.keyboard-open .contact-popup-card {
+    max-height: calc(var(--visual-viewport-height, 100dvh) - 16px);
+    height: auto;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    display: block;
+  }
+
+  .contact-popup-overlay.keyboard-open .contact-popup-card::-webkit-scrollbar {
+    display: block;
+    width: 4px;
+  }
+
+  .contact-popup-overlay.keyboard-open .contact-popup-card::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .contact-popup-overlay.keyboard-open .contact-popup-card::-webkit-scrollbar-thumb {
+    background: rgba(54, 217, 176, 0.4);
+    border-radius: 4px;
+  }
+
+  .contact-popup-overlay.keyboard-open .contact-popup-close {
+    position: sticky;
+    top: 0;
+    float: right;
+    margin-bottom: -36px;
+    z-index: 30;
+  }
+
   .popup-view-success .success-actions {
     flex-direction: column;
     width: 100%;
@@ -16084,21 +16288,106 @@ section.hero .container>div>div>div[style*="position: relative"]:focus-visible::
   }
 }
 
-@media (max-width: 340px) {
+/* Compact adaptation for short mobile viewports (height <= 620px) to guarantee zero-scroll in STATE A */
+@media (max-height: 620px) and (max-width: 600px) {
   .contact-popup-overlay {
-    padding: 0.5rem;
+    padding: 8px;
   }
 
   .contact-popup-card {
-    padding: 1rem 0.75rem;
+    padding: 14px 16px;
+    border-radius: 18px;
+  }
+
+  .contact-popup-header {
+    margin-bottom: 0.35rem;
+  }
+
+  .contact-popup-badge {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.5rem;
+    margin-bottom: 0.2rem;
   }
 
   .contact-popup-title {
-    font-size: 1.18rem;
+    font-size: 1.08rem;
+    line-height: 1.2;
+    margin-bottom: 0.15rem;
   }
 
   .contact-popup-desc {
-    font-size: 0.78rem;
-    margin-bottom: 0.85rem;
+    font-size: 0.72rem;
+    line-height: 1.28;
+    margin-bottom: 0.3rem;
+  }
+
+  .popup-form-grid {
+    gap: 0.3rem;
+  }
+
+  .contact-popup-form .form-label {
+    font-size: 0.7rem;
+    margin-bottom: 0.15rem;
+  }
+
+  .popup-field-header {
+    margin-bottom: 0.15rem;
+  }
+
+  /* Keep mandated 56px input height */
+  .popup-input-wrapper .form-control:not(textarea) {
+    height: 56px;
+    min-height: 56px;
+    padding: 0.65rem 2.2rem 0.65rem 0.8rem;
+  }
+
+  .popup-input-wrapper textarea.form-control {
+    height: 48px;
+    min-height: 44px;
+    padding: 0.45rem 0.75rem;
+  }
+
+  .popup-form-footer {
+    margin-top: 0.35rem;
+    gap: 0.25rem;
+  }
+
+  .popup-submit-btn {
+    padding: 0.72rem 1.15rem !important;
+    font-size: 0.84rem !important;
+  }
+
+  .form-privacy-note {
+    font-size: 0.64rem;
+    line-height: 1.2;
+  }
+}
+
+/* Landscape mobile or very short viewports (height <= 480px) */
+@media (max-height: 480px) and (orientation: landscape) {
+  .contact-popup-overlay {
+    padding: 6px;
+    align-items: flex-start;
+  }
+
+  .contact-popup-container {
+    max-height: calc(100dvh - 12px);
+  }
+
+  .contact-popup-card {
+    max-height: calc(100dvh - 12px);
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding: 14px 18px;
+    display: block;
+  }
+
+  .contact-popup-header {
+    margin-bottom: 0.35rem;
+  }
+
+  .contact-popup-desc {
+    display: none;
   }
 }
