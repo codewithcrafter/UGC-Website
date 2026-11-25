@@ -1230,18 +1230,34 @@ function generateLlmsDocumentationText(): string {
         $lines[] = "";
     }
 
-    // 3. Services (Verified Dedicated Service Pages)
-    if (!empty($servicePages)) {
+    // 3. Services (Main Services Listing + Verified Dedicated Service Pages)
+    $servicesListingPage = null;
+    $blogsListingPage = null;
+    foreach ($corePages as $cp) {
+        if ($cp['file'] === 'services.html') {
+            $servicesListingPage = $cp;
+        } elseif ($cp['file'] === 'blogs.php') {
+            $blogsListingPage = $cp;
+        }
+    }
+
+    if ($servicesListingPage || !empty($servicePages)) {
         $lines[] = "## Services";
+        if ($servicesListingPage) {
+            $lines[] = "- [" . $servicesListingPage['title'] . "](" . $servicesListingPage['url'] . "): " . $servicesListingPage['description'];
+        }
         foreach ($servicePages as $sp) {
             $lines[] = "- [" . $sp['title'] . "](" . $sp['url'] . "): " . $sp['description'];
         }
         $lines[] = "";
     }
 
-    // 4. Blog (Published Editorial & Insights)
-    if (!empty($blogArticles)) {
+    // 4. Blog (Main Blogs Listing + Published Editorial & Insights)
+    if ($blogsListingPage || !empty($blogArticles)) {
         $lines[] = "## Blog";
+        if ($blogsListingPage) {
+            $lines[] = "- [" . $blogsListingPage['title'] . "](" . $blogsListingPage['url'] . "): " . $blogsListingPage['description'];
+        }
         foreach ($blogArticles as $art) {
             $lines[] = "- [" . $art['title'] . "](" . $art['url'] . "): " . $art['description'];
         }

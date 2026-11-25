@@ -34,6 +34,7 @@
 
   <!-- JSON-LD Structured Data: CollectionPage -->
                     
+  
   <!-- Centralized Dynamic Schema Manager JSON-LD -->
   <script type="application/ld+json">
   {
@@ -43,7 +44,10 @@
     "url": "https://myugcvideo.in/blogs",
     "name": "The Creator Journal — UGC Insights, Trends & Strategy",
     "description": "Explore in-depth articles on UGC video strategy, creator management, paid social performance, and e-commerce content marketing from MY UGC VIDEO.",
-    "mainEntityOfPage": "https://myugcvideo.in/blogs"
+    "mainEntityOfPage": "https://myugcvideo.in/blogs",
+    "isPartOf": {
+        "@id": "https://myugcvideo.in/#website"
+    }
 }
   </script>
   <script type="application/ld+json">
@@ -54,12 +58,9 @@
     "url": "https://myugcvideo.in/blogs",
     "name": "The Creator Journal — UGC Insights, Trends & Strategy",
     "description": "Explore in-depth articles on UGC video strategy, creator management, paid social performance, and e-commerce content marketing from MY UGC VIDEO.",
-    "publisher": {
-        "@type": "Organization",
-        "name": "MY UGC VIDEO",
-        "url": "https://myugcvideo.in"
-    },
-    "isPartOf": "https://myugcvideo.in/"
+    "isPartOf": {
+        "@id": "https://myugcvideo.in/#website"
+    }
 }
   </script>
   <script type="application/ld+json">
@@ -89,10 +90,6 @@
         "telephone": "+91 98765 43210",
         "email": "hello@myugcvideo.in",
         "contactType": "customer service",
-        "areaServed": {
-            "@type": "Country",
-            "name": "India"
-        },
         "availableLanguage": [
             "English",
             "Hindi"

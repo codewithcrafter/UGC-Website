@@ -1753,6 +1753,8 @@
 
   <!-- Structured Data: CollectionPage & Service -->
 
+  
+  
   <!-- Centralized Dynamic Schema Manager JSON-LD -->
   <script type="application/ld+json">
   {
@@ -1781,10 +1783,6 @@
         "telephone": "+91 98765 43210",
         "email": "hello@myugcvideo.in",
         "contactType": "customer service",
-        "areaServed": {
-            "@type": "Country",
-            "name": "India"
-        },
         "availableLanguage": [
             "English",
             "Hindi"
@@ -1822,13 +1820,16 @@
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "@id": "https://myugcvideo.in/services#faq",
+    "url": "https://myugcvideo.in/services",
+    "name": "Frequently Asked Questions | MY UGC VIDEO Services",
+    "inLanguage": "en-IN",
     "mainEntity": [
         {
             "@type": "Question",
             "name": "What commercial usage rights do you provide?",
             "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "You can use the finished videos in paid ads on Meta, TikTok, YouTube and Google. The exact platforms\r\n                and duration are in your project agreement, so read that before signing. [ADD YOUR REAL TERMS]"
+                "text": "You can use the finished videos in paid ads on Meta, TikTok, YouTube and Google. The exact platforms and duration are in your project agreement, so read that before signing."
             }
         },
         {
@@ -1836,7 +1837,7 @@
             "name": "How long does production take?",
             "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Most projects take about 7 to 12 business days, from brief to final video. A big batch or slow feedback\r\n                can add time."
+                "text": "Most projects take about 7 to 12 business days, from brief to final video. A big batch or slow feedback can add time."
             }
         },
         {
@@ -1844,7 +1845,7 @@
             "name": "How do you select creators?",
             "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "We look at your product, your audience and the platform. Then we shortlist creators whose style and\r\n                followers suit it, and who are free on your dates."
+                "text": "We look at your product, your audience and the platform. Then we shortlist creators whose style and followers suit it, and who are free on your dates."
             }
         },
         {
@@ -1860,7 +1861,7 @@
             "name": "What aspect ratios are delivered?",
             "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "9:16, 4:5, 1:1 and 16:9, as MP4 files. Captions can be burned in, and we can send separate SRT subtitle\r\n                files too."
+                "text": "9:16, 4:5, 1:1 and 16:9, as MP4 files. Captions can be burned in, and we can send separate SRT subtitle files too."
             }
         },
         {
@@ -1868,7 +1869,7 @@
             "name": "How are revisions handled?",
             "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Send all your feedback together and we'll make the changes. [ADD YOUR REAL REVISION LIMIT, like 2\r\n                rounds]"
+                "text": "Send all your feedback together and we'll make the changes."
             }
         }
     ]
@@ -1882,12 +1883,9 @@
     "url": "https://myugcvideo.in/services",
     "name": "UGC Video Production Services Directory",
     "description": "Explore our comprehensive suite of user-generated content video production services, from performance video ads to unboxings and reviews.",
-    "publisher": {
-        "@type": "Organization",
-        "name": "MY UGC VIDEO",
-        "url": "https://myugcvideo.in"
-    },
-    "isPartOf": "https://myugcvideo.in/"
+    "isPartOf": {
+        "@id": "https://myugcvideo.in/#website"
+    }
 }
   </script>
 </head>
@@ -3368,7 +3366,7 @@
         </svg>
       </button>
       <div class="video-modal-media-wrap">
-        <img id="videoModalImg" src="" alt="Video Format Preview" class="video-modal-media-element video-modal-poster"
+        <img id="videoModalImg" src="images/services/service-product-videos.jpg" alt="Video Format Preview" class="video-modal-media-element video-modal-poster"
           loading="lazy">
         <video id="videoModalPlayer" class="video-modal-media-element video-modal-video" controls playsinline
           preload="metadata" style="display: none;">

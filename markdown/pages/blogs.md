@@ -9,14 +9,14 @@ Last updated: 2026-11-25
 
 ---
 
-## [Building a Consistent Brand Identity Through Content](https://myugcvideo.in/blog/product-photography-shapes-online)
+## [Building a Consistent Brand Identity Through Content](https://myugcvideo.in/blog/building-a-consistent-brand-identity-through-content)
 
 Learn how premium brands maintain aesthetic coherence and brand DNA while embracing diverse creator voices across TikTok, Instagram, and paid media.
 
 - **Category:** E-commerce
 - **Published:** 2026-10-28
 - **Last Updated:** 2026-11-25
-- **URL:** https://myugcvideo.in/blog/product-photography-shapes-online
+- **URL:** https://myugcvideo.in/blog/building-a-consistent-brand-identity-through-content
 
 ---
 

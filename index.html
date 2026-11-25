@@ -35,6 +35,10 @@
   <!-- JSON-LD Structured Data: Organization & Agency -->
   
   
+  
+  
+  
+  
   <!-- Centralized Dynamic Schema Manager JSON-LD -->
   <script type="application/ld+json">
   {
@@ -43,6 +47,8 @@
     "@id": "https://myugcvideo.in/#ugc-video-service",
     "name": "UGC Video Production Services",
     "url": "https://myugcvideo.in/",
+    "description": "MY UGC VIDEO provides professional UGC video production services, including UGC video ads, AI UGC videos, product demonstrations, unboxing videos, testimonials, and video editing for brands.",
+    "serviceType": "UGC Video Production",
     "areaServed": {
         "@type": "Country",
         "name": "India"
@@ -154,10 +160,6 @@
         "telephone": "+91 98765 43210",
         "email": "hello@myugcvideo.in",
         "contactType": "customer service",
-        "areaServed": {
-            "@type": "Country",
-            "name": "India"
-        },
         "availableLanguage": [
             "English",
             "Hindi"
@@ -172,29 +174,23 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "WebPage",
-    "@id": "https://myugcvideo.in/#webpage",
-    "url": "https://myugcvideo.in/",
-    "name": "MY UGC VIDEO — Premier UGC Video Production Agency",
-    "description": "High-performing user-generated content video ads, product demonstrations, and creator-led marketing campaigns.",
-    "publisher": {
-        "@type": "Organization",
-        "name": "MY UGC VIDEO",
-        "url": "https://myugcvideo.in"
-    },
-    "isPartOf": "https://myugcvideo.in/"
+    "@type": "VideoObject",
+    "@id": "https://myugcvideo.in/#video-showcase",
+    "name": "Creator-Led Video Production | UGC Video Showcase",
+    "description": "Watch our creator-led video production showcase featuring authentic 9:16 vertical UGC videos created for direct-to-consumer brand campaigns.",
+    "thumbnailUrl": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
+    "inLanguage": "en-IN"
 }
   </script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "VideoObject",
-    "@id": "https://myugcvideo.in/#video-showcase",
-    "name": "Creator-Led Video Production — UGC Video Showcase",
-    "description": "Watch our creator-led video production preview showcasing authentic 9:16 vertical UGC video content crafted for direct-to-consumer brand campaigns.",
-    "thumbnailUrl": [
-        "https://myugcvideo.in/images/hero/hero-ugc-production.jpg"
-    ]
+    "@type": "WebPage",
+    "@id": "https://myugcvideo.in/#webpage",
+    "url": "https://myugcvideo.in/",
+    "name": "MY UGC VIDEO | Premier UGC Video Production Agency",
+    "description": "MY UGC VIDEO provides user-generated content (UGC) video production services, including UGC video ads, product demonstrations, and creator-led marketing campaigns.",
+    "inLanguage": "en-IN"
 }
   </script>
 </head>
@@ -422,7 +418,7 @@
 
             <div class="hero-cta-group">
               <a href="contact" class="btn btn-primary btn-lg">HIRE UGC CREATORS</a>
-              <a href="contact.html?type=creator" class="btn btn-secondary btn-lg">BECOME A CREATOR</a>
+              <a href="contact?type=creator" class="btn btn-secondary btn-lg">BECOME A CREATOR</a>
             </div>
           </div>
 
@@ -1543,7 +1539,7 @@
 
             <div class="about-cta-actions">
               <a href="#project-inquiry" class="btn btn-primary btn-lg">START YOUR PROJECT</a>
-              <a href="contact.html?type=creator" class="btn btn-secondary btn-lg">JOIN AS CREATOR</a>
+              <a href="contact?type=creator" class="btn btn-secondary btn-lg">JOIN AS CREATOR</a>
             </div>
           </div>
 

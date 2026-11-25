@@ -34,6 +34,7 @@
 
   <!-- JSON-LD Structured Data -->
                       
+  
   <!-- Centralized Dynamic Schema Manager JSON-LD -->
   <script type="application/ld+json">
   {
@@ -45,9 +46,7 @@
     "description": "UGC unboxing videos from real creators across India. ASMR, gift and first-reaction unboxings for Shopify, ads and festive campaigns.",
     "serviceType": "UGC Unboxing Video Creation",
     "provider": {
-        "@type": "Organization",
-        "name": "MY UGC VIDEO",
-        "url": "https://myugcvideo.in"
+        "@id": "https://myugcvideo.in/#organization"
     },
     "areaServed": {
         "@type": "Country",
@@ -123,10 +122,6 @@
         "telephone": "+91 98765 43210",
         "email": "hello@myugcvideo.in",
         "contactType": "customer service",
-        "areaServed": {
-            "@type": "Country",
-            "name": "India"
-        },
         "availableLanguage": [
             "English",
             "Hindi"
@@ -222,12 +217,9 @@
     "url": "https://myugcvideo.in/services/ugc-unboxing-videos-company",
     "name": "UGC Unboxing Videos for Brands in India | MY UGC VIDEO",
     "description": "UGC unboxing videos from real creators across India. ASMR, gift and first-reaction unboxings for Shopify, ads and festive campaigns.",
-    "publisher": {
-        "@type": "Organization",
-        "name": "MY UGC VIDEO",
-        "url": "https://myugcvideo.in"
-    },
-    "isPartOf": "https://myugcvideo.in/"
+    "isPartOf": {
+        "@id": "https://myugcvideo.in/#website"
+    }
 }
   </script>
   <script type="application/ld+json">

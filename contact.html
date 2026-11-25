@@ -34,6 +34,7 @@
 
   <!-- JSON-LD Structured Data: ContactPage -->
 
+  
   <!-- Centralized Dynamic Schema Manager JSON-LD -->
   <script type="application/ld+json">
   {
@@ -43,7 +44,10 @@
     "url": "https://myugcvideo.in/contact",
     "name": "Contact MY UGC VIDEO",
     "description": "Contact channels and project inquiry form for MY UGC VIDEO production agency.",
-    "mainEntityOfPage": "https://myugcvideo.in/contact"
+    "mainEntityOfPage": "https://myugcvideo.in/contact",
+    "isPartOf": {
+        "@id": "https://myugcvideo.in/#website"
+    }
 }
   </script>
   <script type="application/ld+json">
@@ -54,12 +58,9 @@
     "url": "https://myugcvideo.in/contact",
     "name": "Contact MY UGC VIDEO",
     "description": "Contact channels and project inquiry form for MY UGC VIDEO production agency.",
-    "publisher": {
-        "@type": "Organization",
-        "name": "MY UGC VIDEO",
-        "url": "https://myugcvideo.in"
-    },
-    "isPartOf": "https://myugcvideo.in/"
+    "isPartOf": {
+        "@id": "https://myugcvideo.in/#website"
+    }
 }
   </script>
   <script type="application/ld+json">
@@ -89,10 +90,6 @@
         "telephone": "+91 98765 43210",
         "email": "hello@myugcvideo.in",
         "contactType": "customer service",
-        "areaServed": {
-            "@type": "Country",
-            "name": "India"
-        },
         "availableLanguage": [
             "English",
             "Hindi"
@@ -578,7 +575,7 @@
 
         <div class="myugc-map-wrapper">
           <iframe class="myugc-google-map" title="MY UGC VIDEO Office Location - Uttam Nagar, New Delhi"
-            src="https://www.google.com/maps/embed?origin=mfe&pb=!1m3!2m1!1s28.623251,77.065872!6i19" loading="lazy"
+            src="https://maps.google.com/maps?q=28.623251,77.065872&z=17&output=embed" loading="lazy"
             allowfullscreen referrerpolicy="no-referrer-when-downgrade">
           </iframe>
         </div>
