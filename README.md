@@ -84,8 +84,8 @@ D:\ADITYA\UGC Website/
     ├── working-with-ugc-creators.html          # Sourcing, briefs, contracts, and collaboration
     ├── product-photography-guide.html          # Contextual product photography on PDP conversion
     ├── authentic-content-and-buying-decisions.html # Behavioral economics, mirror neurons & Pratfall effect
-    ├── ugc-instagram-tiktok-strategy.html      # Algorithmic strategies for TikTok, Reels & Shorts
-    └── brand-identity-through-content.html     # Brand guardrails and creator diversity
+    ├── ugc-instagram-strategy.html      # Algorithmic strategies for TikTok, Reels & Shorts
+    └── product-photography-shapes-online.html     # Brand guardrails and creator diversity
 ```
 
 ---
@@ -173,8 +173,8 @@ Every blog article is fully styled in the strict 6-color palette and contains se
 6. **How Brands Can Work Effectively With UGC Creators** (`blogs/working-with-ugc-creators.html`)
 7. **The Role of Product Photography in Modern E-commerce: Lighting, Styling, and Context** (`blogs/product-photography-guide.html`)
 8. **The Psychology of Authenticity: How UGC Directly Influences Consumer Purchasing** (`blogs/authentic-content-and-buying-decisions.html`)
-9. **UGC Content Strategy for Instagram and TikTok: Mastering Vertical Algorithms** (`blogs/ugc-instagram-tiktok-strategy.html`)
-10. **How to Build a Consistent Brand Identity Through Content While Embracing Creator Diversity** (`blogs/brand-identity-through-content.html`)
+9. **UGC Content Strategy for Instagram and TikTok: Mastering Vertical Algorithms** (`blogs/ugc-instagram-strategy.html`)
+10. **How to Build a Consistent Brand Identity Through Content While Embracing Creator Diversity** (`blogs/product-photography-shapes-online.html`)
 
 ---
 

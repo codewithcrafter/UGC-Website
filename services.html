@@ -821,6 +821,7 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 2rem;
+      align-items: stretch;
     }
 
     .format-portfolio-card {
@@ -830,12 +831,17 @@
       background: var(--color-deep-forest);
       border: 1px solid var(--color-muted-sage);
       box-shadow: 0 16px 40px rgba(0, 23, 19, 0.7);
-      aspect-ratio: 9 / 14;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
       transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
       cursor: pointer;
+    }
+
+    .format-portfolio-card::before {
+      content: '';
+      grid-area: 1 / 1;
+      padding-top: 155.5556%;
+      pointer-events: none;
     }
 
     .format-portfolio-card:hover {
@@ -968,15 +974,18 @@
       .video-modal-backdrop {
         padding: 0.65rem;
       }
+
       .video-modal-dialog {
         max-width: 96vw;
         max-height: 92vh;
         border-radius: 12px;
       }
+
       .video-modal-media-element {
         max-width: 95vw;
         max-height: 86vh;
       }
+
       .video-modal-close-btn {
         top: 8px;
         right: 8px;
@@ -986,13 +995,15 @@
     }
 
     .format-portfolio-overlay {
-      position: absolute;
-      inset: 0;
+      grid-area: 1 / 1;
+      position: relative;
+      min-width: 0;
       background: linear-gradient(180deg, rgba(0, 23, 19, 0.7) 0%, rgba(0, 23, 19, 0.2) 35%, rgba(0, 23, 19, 0.92) 80%);
       z-index: 2;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      gap: 1.15rem;
       padding: 1.35rem;
     }
 
@@ -1000,6 +1011,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
     }
 
     .format-tag-badge {
@@ -1011,6 +1024,18 @@
       padding: 0.25rem 0.65rem;
       border-radius: 4px;
       letter-spacing: 0.04em;
+      line-height: 1.3;
+      max-width: 100%;
+    }
+
+    .format-portfolio-card .video-format-pill {
+      position: static;
+      bottom: auto;
+      right: auto;
+      flex-shrink: 0;
+      white-space: nowrap;
+      padding: 0.25rem 0.65rem;
+      line-height: 1.3;
     }
 
     .format-center-trigger {
@@ -1024,6 +1049,7 @@
       border: 1px solid rgba(49, 83, 77, 0.5);
       border-radius: var(--radius-sm);
       padding: 1rem 1.15rem;
+      min-width: 0;
     }
 
     .format-caption-title {
@@ -1032,12 +1058,15 @@
       font-weight: 700;
       color: var(--color-soft-white);
       margin-bottom: 0.35rem;
+      overflow-wrap: break-word;
     }
 
     .format-caption-desc {
       font-size: 0.825rem;
       line-height: 1.5;
       color: var(--text-secondary);
+      margin: 0;
+      overflow-wrap: break-word;
     }
 
     /* SECTION 5: FULL-FUNNEL CREATIVE ARCHITECTURE */
@@ -1723,7 +1752,7 @@
   </style>
 
   <!-- Structured Data: CollectionPage & Service -->
-  
+
   <!-- Centralized Dynamic Schema Manager JSON-LD -->
   <script type="application/ld+json">
   {
@@ -2004,7 +2033,8 @@
         <span class="brand-subtitle">UGC Creative Agency</span>
       </div>
       <button class="drawer-close-btn" aria-label="Close navigation menu">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
@@ -2017,8 +2047,10 @@
       <div class="mobile-dropdown-wrap">
         <div class="mobile-nav-link-row">
           <a href="services" class="mobile-nav-link active">Services</a>
-          <button type="button" class="mobile-dropdown-arrow-btn" aria-label="Toggle Services submenu" aria-expanded="false">
-            <svg class="dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <button type="button" class="mobile-dropdown-arrow-btn" aria-label="Toggle Services submenu"
+            aria-expanded="false">
+            <svg class="dropdown-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
           </button>
@@ -2293,8 +2325,8 @@
           <!-- 01. UGC Video Creation Services -->
           <article class="service-grid-card">
             <div class="service-card-media camera-focus-media">
-              <img src="images/services/service-ugc-creation.jpg" alt="UGC Video Creation Services" width="400"
-                height="250" loading="lazy">
+              <img src="images/services/service-ugc-creation.jpg" alt="UGC Video Creation Services" width="1200"
+                height="896" loading="lazy">
               <span class="service-card-num-badge font-display">01</span>
             </div>
             <div class="service-card-content">
@@ -2313,7 +2345,7 @@
           <!-- 02. UGC Video Ads -->
           <article class="service-grid-card">
             <div class="service-card-media camera-focus-media">
-              <img src="images/services/service-ads.jpg" alt="UGC Video Ads" width="400" height="250" loading="lazy">
+              <img src="images/services/service-ads.jpg" alt="UGC Video Ads" width="1000" height="1498" loading="lazy">
               <span class="service-card-num-badge font-display">02</span>
             </div>
             <div class="service-card-content">
@@ -2332,7 +2364,7 @@
           <!-- 03. AI UGC Video Creation -->
           <article class="service-grid-card">
             <div class="service-card-media camera-focus-media">
-              <img src="images/services/service-ai-ugc.jpg" alt="AI UGC Video Creation" width="400" height="250"
+              <img src="images/services/service-ai-ugc.jpg" alt="AI UGC Video Creation" width="1000" height="1250"
                 loading="lazy">
               <span class="service-card-num-badge font-display">03</span>
             </div>
@@ -2352,7 +2384,7 @@
           <!-- 04. UGC Product Video -->
           <article class="service-grid-card">
             <div class="service-card-media camera-focus-media">
-              <img src="images/services/service-product-videos.jpg" alt="UGC Product Video" width="400" height="250"
+              <img src="images/services/service-product-videos.jpg" alt="UGC Product Video" width="1000" height="1500"
                 loading="lazy">
               <span class="service-card-num-badge font-display">04</span>
             </div>
@@ -2372,7 +2404,7 @@
           <!-- 05. UGC Product Reviews Videos -->
           <article class="service-grid-card">
             <div class="service-card-media camera-focus-media">
-              <img src="images/services/service-review.jpg" alt="UGC Product Reviews Videos" width="400" height="250"
+              <img src="images/services/service-review.jpg" alt="UGC Product Reviews Videos" width="1000" height="1250"
                 loading="lazy">
               <span class="service-card-num-badge font-display">05</span>
             </div>
@@ -2392,7 +2424,7 @@
           <!-- 06. UGC Video Company in Delhi -->
           <article class="service-grid-card">
             <div class="service-card-media camera-focus-media">
-              <img src="images/services/service-delhi-ugc.jpg" alt="UGC Video Company in Delhi" width="400" height="250"
+              <img src="images/services/service-delhi-ugc.jpg" alt="UGC Video Company in Delhi" width="1200" height="896"
                 loading="lazy">
               <span class="service-card-num-badge font-display">06</span>
             </div>
@@ -2411,7 +2443,7 @@
           <!-- 07. UGC Unboxing Videos -->
           <article class="service-grid-card">
             <div class="service-card-media camera-focus-media">
-              <img src="images/services/service-unboxing.jpg" alt="UGC Unboxing Videos" width="400" height="250"
+              <img src="images/services/service-unboxing.jpg" alt="UGC Unboxing Videos" width="1000" height="667"
                 loading="lazy">
               <span class="service-card-num-badge font-display">07</span>
             </div>
@@ -2430,7 +2462,7 @@
           <!-- 08. UGC Testimonial Videos -->
           <article class="service-grid-card">
             <div class="service-card-media camera-focus-media">
-              <img src="images/services/service-testimonial.jpg" alt="UGC Testimonial Videos" width="400" height="250"
+              <img src="images/services/service-testimonial.jpg" alt="UGC Testimonial Videos" width="1000" height="1498"
                 loading="lazy">
               <span class="service-card-num-badge font-display">08</span>
             </div>
@@ -2449,7 +2481,7 @@
           <!-- 09. UGC Video Editing Service -->
           <article class="service-grid-card">
             <div class="service-card-media camera-focus-media">
-              <img src="images/services/service-video.jpg" alt="UGC Video Editing Service" width="400" height="250"
+              <img src="images/services/service-video.jpg" alt="UGC Video Editing Service" width="1000" height="1499"
                 loading="lazy">
               <span class="service-card-num-badge font-display">09</span>
             </div>
@@ -2551,7 +2583,7 @@
 
         <div class="section-header-flex">
           <div>
-            <span class="eyebrow">VIDEO FORMATS</span>
+            <span class="eyebrow">UGC VIDEO STYLES</span>
             <h2 id="showcase-title" class="font-display">Six Styles We Make Most</h2>
           </div>
           <p style="max-width: 520px; color: var(--text-secondary); line-height: 1.65; margin: 0;">
@@ -2566,7 +2598,7 @@
           <div class="format-portfolio-card camera-focus-media" data-video-src="">
             <img src="images/services/service-product-videos.jpg"
               alt="Macro product demonstration showing texture and formula application" class="format-portfolio-bg"
-              width="380" height="590" loading="lazy">
+              width="1000" height="1500" loading="lazy">
             <div class="format-portfolio-overlay">
               <div class="format-top-tags">
                 <span class="format-tag-badge">DEMONSTRATION </span>
@@ -2594,7 +2626,7 @@
           <!-- Format 2: Unboxing & First Impressions -->
           <div class="format-portfolio-card camera-focus-media" data-video-src="">
             <img src="images/services/service-unboxing.jpg" alt="First-person sensory packaging unboxing reveal"
-              class="format-portfolio-bg" width="380" height="590" loading="lazy">
+              class="format-portfolio-bg" width="1000" height="667" loading="lazy">
             <div class="format-portfolio-overlay">
               <div class="format-top-tags">
                 <span class="format-tag-badge">UNBOXING </span>
@@ -2681,7 +2713,7 @@
           <div class="format-portfolio-card camera-focus-media" data-video-src="">
             <img src="images/services/service-testimonial.jpg"
               alt="Creator sharing honest conversational review in domestic interior" class="format-portfolio-bg"
-              width="380" height="590" loading="lazy">
+              width="1000" height="1498" loading="lazy">
             <div class="format-portfolio-overlay">
               <div class="format-top-tags">
                 <span class="format-tag-badge">TESTIMONIAL </span>
@@ -2709,7 +2741,7 @@
           <!-- Format 6: AI-Assisted Creative Variants -->
           <div class="format-portfolio-card camera-focus-media" data-video-src="">
             <img src="images/services/service-ai-ugc.jpg" alt="AI virtual presenter testing dynamic regional hooks"
-              class="format-portfolio-bg" width="380" height="590" loading="lazy">
+              class="format-portfolio-bg" width="1000" height="1250" loading="lazy">
             <div class="format-portfolio-overlay">
               <div class="format-top-tags">
                 <span class="format-tag-badge">AI UGC</span>
@@ -3325,17 +3357,21 @@
   <!-- =========================================================================
        GLOBAL VIDEO PREVIEW MODAL PLAYER
        ========================================================================= -->
-  <div class="video-modal-backdrop" id="videoModal" role="dialog" aria-modal="true" aria-label="Media Preview" aria-hidden="true">
+  <div class="video-modal-backdrop" id="videoModal" role="dialog" aria-modal="true" aria-label="Media Preview"
+    aria-hidden="true">
     <div class="video-modal-dialog">
       <button class="video-modal-close-btn" aria-label="Close media preview" type="button">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
         </svg>
       </button>
       <div class="video-modal-media-wrap">
-        <img id="videoModalImg" src="" alt="Video Format Preview" class="video-modal-media-element video-modal-poster" loading="lazy">
-        <video id="videoModalPlayer" class="video-modal-media-element video-modal-video" controls playsinline preload="metadata" style="display: none;">
+        <img id="videoModalImg" src="" alt="Video Format Preview" class="video-modal-media-element video-modal-poster"
+          loading="lazy">
+        <video id="videoModalPlayer" class="video-modal-media-element video-modal-video" controls playsinline
+          preload="metadata" style="display: none;">
           Your browser does not support HTML5 video.
         </video>
       </div>
@@ -3358,25 +3394,49 @@
           </p>
           <div class="footer-contact-info">
             <a href="mailto:hello@myugcvideo.in" class="footer-contact-link">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect width="20" height="16" x="2" y="4" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+              </svg>
               <span>hello@myugcvideo.in</span>
             </a>
             <a href="tel:+919876543210" class="footer-contact-link">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path
+                  d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+              </svg>
               <span>+91 98765 43210</span>
             </a>
           </div>
           <div class="footer-social-wrap">
             <span class="footer-social-label">Follow Us.</span>
             <div class="footer-social-links">
-              <a href="https://facebook.com" class="footer-social-icon" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Facebook">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+              <a href="https://facebook.com" class="footer-social-icon" target="_blank" rel="noopener noreferrer"
+                aria-label="Follow us on Facebook">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                </svg>
               </a>
-              <a href="https://instagram.com" class="footer-social-icon" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Instagram">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+              <a href="https://instagram.com" class="footer-social-icon" target="_blank" rel="noopener noreferrer"
+                aria-label="Follow us on Instagram">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                </svg>
               </a>
-              <a href="https://linkedin.com" class="footer-social-icon" target="_blank" rel="noopener noreferrer" aria-label="Follow us on LinkedIn">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+              <a href="https://linkedin.com" class="footer-social-icon" target="_blank" rel="noopener noreferrer"
+                aria-label="Follow us on LinkedIn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                  <rect width="4" height="12" x="2" y="9" />
+                  <circle cx="4" cy="4" r="2" />
+                </svg>
               </a>
             </div>
           </div>
@@ -3418,8 +3478,8 @@
           <form class="newsletter-form" action="#" method="POST" novalidate>
             <div class="newsletter-input-wrap">
               <label for="newsletterEmailFooter" class="sr-only">Email address</label>
-              <input type="email" id="newsletterEmailFooter" class="newsletter-input" placeholder="e.g. john@example.com"
-                required>
+              <input type="email" id="newsletterEmailFooter" class="newsletter-input"
+                placeholder="e.g. john@example.com" required>
             </div>
             <button type="submit" class="newsletter-submit">Subscribe</button>
             <div class="newsletter-feedback" aria-live="polite"></div>

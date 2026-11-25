@@ -174,7 +174,7 @@ include CMS_ROOT . '/includes/blog-header.php';
       <div class="container">
         <div class="featured-blog-card">
           <div class="featured-blog-media">
-            <img src="<?= e($featImg) ?>" alt="<?= e($featuredPost['featured_image_alt'] ?: $featuredPost['title']) ?>" width="700" height="460" loading="eager">
+            <img src="<?= e($featImg) ?>" alt="<?= e($featuredPost['featured_image_alt'] ?: $featuredPost['title']) ?>" <?= getImageDimensionAttrs(!empty($featuredPost['featured_image']) ? $featuredPost['featured_image'] : 'images/blogs/blog-1.jpg') ?> loading="eager">
             <span class="featured-badge font-display">FEATURED ARTICLE</span>
           </div>
           <div class="featured-blog-body">
@@ -273,7 +273,7 @@ include CMS_ROOT . '/includes/blog-header.php';
           ?>
           <article class="blog-card" data-category="<?= e($catSlug) ?>" data-keywords="<?= e($keywords) ?>">
             <div class="blog-card-media">
-              <img src="<?= e($postImg) ?>" alt="<?= e($post['featured_image_alt'] ?: $post['title']) ?>" width="400" height="250" loading="lazy">
+              <img src="<?= e($postImg) ?>" alt="<?= e($post['featured_image_alt'] ?: $post['title']) ?>" <?= getImageDimensionAttrs(!empty($post['featured_image']) ? $post['featured_image'] : 'images/blogs/blog-1.jpg') ?> loading="lazy">
               <span class="category-pill-badge"><?= e($post['category_name'] ?? 'UGC') ?></span>
             </div>
             <div class="blog-card-body">

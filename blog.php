@@ -253,7 +253,7 @@ include CMS_ROOT . '/includes/blog-header.php';
             <!-- Featured Blog Image (Exact width of article prose below it) -->
             <?php if (!empty($post['featured_image'])): ?>
             <div class="article-hero-media">
-              <img src="<?= e($featuredImgUrl) ?>" alt="<?= e($post['featured_image_alt'] ?: $post['title']) ?>" width="1200" height="675" loading="eager">
+              <img src="<?= e($featuredImgUrl) ?>" alt="<?= e($post['featured_image_alt'] ?: $post['title']) ?>" <?= getImageDimensionAttrs($post['featured_image']) ?> loading="eager">
             </div>
             <?php endif; ?>
 
@@ -398,7 +398,7 @@ include CMS_ROOT . '/includes/blog-header.php';
           ?>
           <article class="blog-card" style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); overflow: hidden; display: flex; flex-direction: column;">
             <div class="blog-card-media">
-              <img src="<?= e($relImg) ?>" alt="<?= e($rel['featured_image_alt'] ?: $rel['title']) ?>" loading="lazy">
+              <img src="<?= e($relImg) ?>" alt="<?= e($rel['featured_image_alt'] ?: $rel['title']) ?>" <?= getImageDimensionAttrs(!empty($rel['featured_image']) ? $rel['featured_image'] : 'images/blogs/blog-1.jpg') ?> loading="lazy">
               <span class="category-pill-badge"><?= e($rel['category_name'] ?? 'UGC') ?></span>
             </div>
             <div class="blog-card-body" style="padding: 1.75rem 1.5rem; display: flex; flex-direction: column; flex-grow: 1;">

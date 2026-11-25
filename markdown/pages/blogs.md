@@ -5,29 +5,29 @@ Published blog articles from MY UGC VIDEO — a UGC video production company hel
 Website: https://myugcvideo.in/
 Blogs: https://myugcvideo.in/blogs
 Total published articles: 10
-Last updated: 2026-11-23
+Last updated: 2026-11-25
 
 ---
 
-## [Building a Consistent Brand Identity Through Content](https://myugcvideo.in/blog/brand-identity-through-content)
+## [Building a Consistent Brand Identity Through Content](https://myugcvideo.in/blog/product-photography-shapes-online)
 
 Learn how premium brands maintain aesthetic coherence and brand DNA while embracing diverse creator voices across TikTok, Instagram, and paid media.
 
 - **Category:** E-commerce
 - **Published:** 2026-10-28
-- **Last Updated:** 2026-11-23
-- **URL:** https://myugcvideo.in/blog/brand-identity-through-content
+- **Last Updated:** 2026-11-25
+- **URL:** https://myugcvideo.in/blog/product-photography-shapes-online
 
 ---
 
-## [UGC Content Strategy for Instagram and TikTok](https://myugcvideo.in/blog/ugc-instagram-tiktok-strategy)
+## [UGC Content Strategy for Instagram and TikTok](https://myugcvideo.in/blog/ugc-instagram-strategy)
 
 Master platform-specific vertical video strategy: algorithmic retention mechanics on TikTok, aesthetic dynamics on Instagram Reels, and search intent on YouTube Shorts.
 
 - **Category:** Social Strategy
 - **Published:** 2026-10-27
-- **Last Updated:** 2026-11-23
-- **URL:** https://myugcvideo.in/blog/ugc-instagram-tiktok-strategy
+- **Last Updated:** 2026-11-25
+- **URL:** https://myugcvideo.in/blog/ugc-instagram-strategy
 
 ---
 

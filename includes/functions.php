@@ -80,37 +80,17 @@ function sanitizeHtmlContent(string $html): string {
 function getPostBySlug(string $slug, bool $publishedOnly = true): ?array {
     $db = getDb();
     
-    // Legacy slug alias dictionary for seamless backwards compatibility
-    $slugAliases = [
-        'product-photography-shapes-online' => 'brand-identity-through-content',
-        'ugc-instagram-strategy'            => 'ugc-instagram-tiktok-strategy'
-    ];
-    $lookupSlugs = [$slug];
-    if (isset($slugAliases[$slug])) {
-        $lookupSlugs[] = $slugAliases[$slug];
-    }
-    $revKey = array_search($slug, $slugAliases);
-    if ($revKey !== false) {
-        $lookupSlugs[] = $revKey;
-    }
-    $lookupSlugs = array_unique($lookupSlugs);
-
-    $inPlaceholders = implode(',', array_fill(0, count($lookupSlugs), '?'));
-    
     $sql = "SELECT p.*, c.name AS category_name, c.slug AS category_slug 
             FROM blog_posts p 
             LEFT JOIN categories c ON p.category_id = c.id 
-            WHERE (p.slug IN ($inPlaceholders) OR p.canonical_url LIKE ?)";
+            WHERE (p.slug = ? OR p.canonical_url LIKE ?)";
     
     if ($publishedOnly) {
         $sql .= " AND p.status = 'published'";
     }
 
-    $params = array_values($lookupSlugs);
-    $params[] = "%/blog/{$slug}";
-
     $stmt = $db->prepare($sql);
-    $stmt->execute($params);
+    $stmt->execute([$slug, "%/blog/{$slug}"]);
     $post = $stmt->fetch();
     return $post ?: null;
 }
@@ -1736,6 +1716,46 @@ function injectDynamicAssetVersions(string $html): string {
 
     return $html;
 }
+
+/**
+ * Returns intrinsic HTML width and height attributes for a local image path or URL
+ * (e.g. 'width="1000" height="667"'), cached per request.
+ */
+function getImageDimensionAttrs(?string $imagePathOrUrl): string {
+    static $cache = [];
+    $raw = trim((string) $imagePathOrUrl);
+    if ($raw === '') {
+        return '';
+    }
+
+    $rel = $raw;
+    if (preg_match('#^https?://#i', $raw)) {
+        $parsedPath = parse_url($raw, PHP_URL_PATH) ?: '';
+        $sitePath = defined('SITE_URL') ? (parse_url(SITE_URL, PHP_URL_PATH) ?: '') : '';
+        if ($sitePath !== '' && str_starts_with($parsedPath, $sitePath)) {
+            $parsedPath = substr($parsedPath, strlen($sitePath));
+        }
+        $rel = $parsedPath;
+    }
+
+    $rel = ltrim(urldecode($rel), '/\\');
+    $rel = preg_replace('#^(\.\./)+#', '', $rel);
+
+    if (isset($cache[$rel])) {
+        return $cache[$rel];
+    }
+
+    $fullPath = CMS_ROOT . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $rel);
+    if ($rel !== '' && file_exists($fullPath) && is_file($fullPath)) {
+        $info = @getimagesize($fullPath);
+        if (is_array($info) && !empty($info[0]) && !empty($info[1])) {
+            return $cache[$rel] = 'width="' . (int) $info[0] . '" height="' . (int) $info[1] . '"';
+        }
+    }
+
+    return $cache[$rel] = '';
+}
+
 
 
 

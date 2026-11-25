@@ -36,9 +36,9 @@
             "source_file": "blogs.php",
             "markdown_file": "markdown/pages/blogs.md",
             "canonical_url": "https://myugcvideo.in/blogs.md",
-            "hash": "78e895d648774f476dbab0ddc91488de3ed1a8fc3d847ac5cb032146439eef51",
-            "bytes": 4693,
-            "synced_at": "2026-11-23T10:11:23+01:00"
+            "hash": "1dbee6dcbec2e8e8e0d3da6a730c2410d067de0743318c0b4b8cf89ffe4f4ccb",
+            "bytes": 4685,
+            "synced_at": "2026-11-25T05:53:44+01:00"
         },
         "services/ai-ugc-video-creation-company": {
             "status": "synced",
@@ -131,7 +131,7 @@
             "synced_at": "2026-11-23T10:11:23+01:00"
         }
     },
-    "last_updated": "2026-11-23T10:11:23+01:00",
+    "last_updated": "2026-11-25T05:53:44+01:00",
     "reconciliation": {
         "last_run": "2026-11-23T10:11:24+01:00",
         "total_pages": 13,

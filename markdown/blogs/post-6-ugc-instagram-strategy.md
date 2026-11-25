@@ -1,7 +1,7 @@
 ---
 id: 6
 title: "UGC Content Strategy for Instagram and TikTok"
-slug: "ugc-instagram-tiktok-strategy"
+slug: "ugc-instagram-strategy"
 status: "published"
 is_featured: 0
 category: "Social Strategy"
@@ -9,8 +9,8 @@ tags: ["creator marketing","Social Strategy","UGC video"]
 author: "MY UGC VIDEO Editorial Team"
 author_role: "UGC Creative Studio"
 published_at: "2026-10-27T08:00:00+01:00"
-updated_at: "2026-11-23T14:31:53+01:00"
-canonical_url: "https://myugcvideo.in/blog/ugc-instagram-tiktok-strategy"
+updated_at: "2026-11-25T10:23:44+01:00"
+canonical_url: "https://myugcvideo.in/blog/ugc-instagram-strategy"
 featured_image: "https://myugcvideo.in/images/blogs/blog-9.jpg"
 featured_image_alt: "Vertical mobile phone screen displaying mobile social media interface"
 reading_time: "8 Min Read"

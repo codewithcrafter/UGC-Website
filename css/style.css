@@ -13707,7 +13707,7 @@ section.hero .container>div>div>div[style*="position: relative"]:focus-visible::
   width: 100%;
   height: auto;
   aspect-ratio: 16 / 9;
-  object-fit: cover;
+  object-fit: cover !important;
   display: block;
   border-radius: 14px;
 }

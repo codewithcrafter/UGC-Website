@@ -1,7 +1,7 @@
 ---
 id: 2
 title: "Building a Consistent Brand Identity Through Content"
-slug: "brand-identity-through-content"
+slug: "product-photography-shapes-online"
 status: "published"
 is_featured: 1
 category: "E-commerce"
@@ -9,8 +9,8 @@ tags: ["Branding","creator marketing","UGC video"]
 author: "The MY UGC VIDEO Editorial Team"
 author_role: "UGC Creative Studio"
 published_at: "2026-10-28T12:00:00+01:00"
-updated_at: "2026-11-23T14:31:53+01:00"
-canonical_url: "https://myugcvideo.in/blog/brand-identity-through-content"
+updated_at: "2026-11-25T10:23:44+01:00"
+canonical_url: "https://myugcvideo.in/blog/product-photography-shapes-online"
 featured_image: "https://myugcvideo.in/uploads/blogs/blog_20261113_064646_52d3326bf83e.png"
 featured_image_alt: "Brand moodboard with aesthetic typography swatches and neutral linen textures"
 reading_time: "7 Min Read"
