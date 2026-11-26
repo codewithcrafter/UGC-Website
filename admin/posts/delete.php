@@ -22,6 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $del = $db->prepare("DELETE FROM blog_posts WHERE id = :id");
             $del->execute([':id' => $postId]);
 
+            // Clean up blog-specific page_schemas records (only blog-{slug})
+            if (function_exists('deleteBlogPageSchemas')) {
+                deleteBlogPageSchemas($post['slug'] ?? '');
+            }
+
             // Clean up associated markdown and schema files (public and staging)
             if (function_exists('removeBlogPostArtifacts')) {
                 removeBlogPostArtifacts($postId, $post['slug'] ?? null);

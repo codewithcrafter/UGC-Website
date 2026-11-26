@@ -2067,13 +2067,13 @@ function updateLiveSchema() {
   const chipFaqLabel = document.getElementById('chipFaqLabel');
   const chipFaqIcon = document.getElementById('chipFaqIcon');
   if (validFaqs.length > 0) {
-    chipFaq.classList.add('active');
-    chipFaqIcon.innerHTML = '&#10003;';
-    chipFaqLabel.textContent = `FAQPage (${validFaqs.length} FAQs)`;
+    if (chipFaq) chipFaq.classList.add('active');
+    if (chipFaqIcon) chipFaqIcon.innerHTML = '&#10003;';
+    if (chipFaqLabel) chipFaqLabel.textContent = `FAQPage (${validFaqs.length} FAQs)`;
   } else {
-    chipFaq.classList.remove('active');
-    chipFaqIcon.innerHTML = '&bull;';
-    chipFaqLabel.textContent = 'FAQPage (0 FAQs)';
+    if (chipFaq) chipFaq.classList.remove('active');
+    if (chipFaqIcon) chipFaqIcon.innerHTML = '&bull;';
+    if (chipFaqLabel) chipFaqLabel.textContent = 'FAQPage (0 FAQs)';
   }
 
   const badge = document.getElementById('schemaStatusBadge');

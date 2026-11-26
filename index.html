@@ -33,12 +33,6 @@
   <link rel="stylesheet" href="css/style.css?v=1795509431">
 
   <!-- JSON-LD Structured Data: Organization & Agency -->
-  
-  
-  
-  
-  
-  
   <!-- Centralized Dynamic Schema Manager JSON-LD -->
   <script type="application/ld+json">
   {
@@ -47,8 +41,6 @@
     "@id": "https://myugcvideo.in/#ugc-video-service",
     "name": "UGC Video Production Services",
     "url": "https://myugcvideo.in/",
-    "description": "MY UGC VIDEO provides professional UGC video production services, including UGC video ads, AI UGC videos, product demonstrations, unboxing videos, testimonials, and video editing for brands.",
-    "serviceType": "UGC Video Production",
     "areaServed": {
         "@type": "Country",
         "name": "India"
@@ -174,23 +166,93 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "VideoObject",
-    "@id": "https://myugcvideo.in/#video-showcase",
-    "name": "Creator-Led Video Production | UGC Video Showcase",
-    "description": "Watch our creator-led video production showcase featuring authentic 9:16 vertical UGC videos created for direct-to-consumer brand campaigns.",
-    "thumbnailUrl": "https://myugcvideo.in/images/hero/hero-ugc-production.jpg",
-    "inLanguage": "en-IN"
-}
-  </script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
     "@type": "WebPage",
     "@id": "https://myugcvideo.in/#webpage",
     "url": "https://myugcvideo.in/",
     "name": "MY UGC VIDEO | Premier UGC Video Production Agency",
     "description": "MY UGC VIDEO provides user-generated content (UGC) video production services, including UGC video ads, product demonstrations, and creator-led marketing campaigns.",
     "inLanguage": "en-IN"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "A Morning Routine with a Daily Supplement",
+    "description": "A creator shows how the supplement fits into a normal morning.",
+    "duration": "PT50S"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "Night Skincare, Start to Finish",
+    "description": "Close shots of texture, lather and how skin looks after washing.",
+    "duration": "PT1M4S"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "The First Sip, Honest Reaction",
+    "description": "The pour, the ice and the creator’s real first reaction.",
+    "duration": "PT54S"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "Headphones Unboxing and Setup",
+    "description": "Opening the box, pairing in seconds and an honest comfort review.",
+    "duration": "PT1M0S"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "One Outfit, Day to Night",
+    "description": "Quick outfit changes that show fit, fabric and how to style it.",
+    "duration": "PT56S"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "Hydrating Serum on Skin",
+    "description": "Tested in daylight to show the finish, the non-sticky feel and the glow.",
+    "duration": "PT1M8S"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "Close-Up Product Demonstration",
+    "description": "Hands-on product walkthrough showing real texture, detail and everyday use.",
+    "duration": "PT58S"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "Creator Honest Review & Reaction",
+    "description": "Straight-to-camera creator review sharing real experience and results.",
+    "duration": "PT51S"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "First-Impression Unboxing Reel",
+    "description": "Fast-paced parcel reveal capturing genuine unboxing excitement.",
+    "duration": "PT1M1S"
 }
   </script>
 </head>
@@ -670,13 +732,10 @@
             <article class="portfolio-3d-card" data-category="wellness" data-index="0" aria-label="Wellness Video">
               <div class="portfolio-card-inner">
                 <div class="portfolio-video-wrapper">
-                  <video class="portfolio-3d-video" poster="images/portfolio/portfolio-wellness.jpg" playsinline
+                  <video class="portfolio-3d-video" playsinline
                     webkit-playsinline disablepictureinpicture controlslist="nofullscreen nodownload noremoteplayback"
-                    muted loop preload="metadata">
+                    muted loop data-video-src="assets/videos/optimized/video-01.mp4" preload="none">
                   </video>
-                  <img src="images/portfolio/portfolio-wellness.jpg"
-                    alt="Creator showing daily wellness supplement routine in bright kitchen"
-                    class="portfolio-3d-poster" width="400" height="711" loading="lazy">
                   <div class="portfolio-play-status" aria-label="Toggle Play/Pause">
                     <svg class="play-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
                       <polygon points="6 3 20 12 6 21 6 3"></polygon>
@@ -697,6 +756,18 @@
                     <p class="portfolio-card-sub">A creator shows how the supplement fits into a normal morning.</p>
                   </div>
                 </div>
+                <button type="button" class="portfolio-sound-btn" aria-label="Unmute video" aria-pressed="false">
+                  <svg class="sound-off-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                  </svg>
+                  <svg class="sound-on-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                  </svg>
+                </button>
               </div>
             </article>
 
@@ -704,13 +775,10 @@
             <article class="portfolio-3d-card" data-category="skincare" data-index="1" aria-label="Skincare Video">
               <div class="portfolio-card-inner">
                 <div class="portfolio-video-wrapper">
-                  <video class="portfolio-3d-video" poster="images/portfolio/portfolio-skincare.jpg" playsinline
+                  <video class="portfolio-3d-video" playsinline
                     webkit-playsinline disablepictureinpicture controlslist="nofullscreen nodownload noremoteplayback"
-                    muted loop preload="metadata">
+                    muted loop data-video-src="assets/videos/optimized/video-02.mp4" preload="none">
                   </video>
-                  <img src="images/portfolio/portfolio-skincare.jpg"
-                    alt="Cleanse and glow nighttime skincare routine application" class="portfolio-3d-poster"
-                    width="400" height="711" loading="lazy">
                   <div class="portfolio-play-status" aria-label="Toggle Play/Pause">
                     <svg class="play-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
                       <polygon points="6 3 20 12 6 21 6 3"></polygon>
@@ -731,6 +799,18 @@
                     <p class="portfolio-card-sub">Close shots of texture, lather and how skin looks after washing.</p>
                   </div>
                 </div>
+                <button type="button" class="portfolio-sound-btn" aria-label="Unmute video" aria-pressed="false">
+                  <svg class="sound-off-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                  </svg>
+                  <svg class="sound-on-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                  </svg>
+                </button>
               </div>
             </article>
 
@@ -738,13 +818,10 @@
             <article class="portfolio-3d-card" data-category="beverage" data-index="2" aria-label="Beverage Video">
               <div class="portfolio-card-inner">
                 <div class="portfolio-video-wrapper">
-                  <video class="portfolio-3d-video" poster="images/portfolio/portfolio-beverage.jpg" playsinline
+                  <video class="portfolio-3d-video" playsinline
                     webkit-playsinline disablepictureinpicture controlslist="nofullscreen nodownload noremoteplayback"
-                    muted loop preload="metadata">
+                    muted loop data-video-src="assets/videos/optimized/video-03.mp4" preload="none">
                   </video>
-                  <img src="images/portfolio/portfolio-beverage.jpg"
-                    alt="Sensory beverage pour with ice cubes and dynamic condensation in sunlight"
-                    class="portfolio-3d-poster" width="400" height="711" loading="lazy">
                   <div class="portfolio-play-status" aria-label="Toggle Play/Pause">
                     <svg class="play-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
                       <polygon points="6 3 20 12 6 21 6 3"></polygon>
@@ -765,6 +842,18 @@
                     <p class="portfolio-card-sub">The pour, the ice and the creator’s real first reaction.</p>
                   </div>
                 </div>
+                <button type="button" class="portfolio-sound-btn" aria-label="Unmute video" aria-pressed="false">
+                  <svg class="sound-off-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                  </svg>
+                  <svg class="sound-on-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                  </svg>
+                </button>
               </div>
             </article>
 
@@ -772,13 +861,10 @@
             <article class="portfolio-3d-card" data-category="technology" data-index="3" aria-label="Technology Video">
               <div class="portfolio-card-inner">
                 <div class="portfolio-video-wrapper">
-                  <video class="portfolio-3d-video" poster="images/portfolio/portfolio-tech.jpg" playsinline
+                  <video class="portfolio-3d-video" playsinline
                     webkit-playsinline disablepictureinpicture controlslist="nofullscreen nodownload noremoteplayback"
-                    muted loop preload="metadata">
+                    muted loop data-video-src="assets/videos/optimized/video-04.mp4" preload="none">
                   </video>
-                  <img src="images/portfolio/portfolio-tech.jpg"
-                    alt="Creator unboxing premium wireless headphones on modern wooden desk" class="portfolio-3d-poster"
-                    width="400" height="711" loading="lazy">
                   <div class="portfolio-play-status" aria-label="Toggle Play/Pause">
                     <svg class="play-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
                       <polygon points="6 3 20 12 6 21 6 3"></polygon>
@@ -799,6 +885,18 @@
                     <p class="portfolio-card-sub">Opening the box, pairing in seconds and an honest comfort review.</p>
                   </div>
                 </div>
+                <button type="button" class="portfolio-sound-btn" aria-label="Unmute video" aria-pressed="false">
+                  <svg class="sound-off-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                  </svg>
+                  <svg class="sound-on-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                  </svg>
+                </button>
               </div>
             </article>
 
@@ -806,13 +904,10 @@
             <article class="portfolio-3d-card" data-category="lifestyle" data-index="4" aria-label="Lifestyle Video">
               <div class="portfolio-card-inner">
                 <div class="portfolio-video-wrapper">
-                  <video class="portfolio-3d-video" poster="images/portfolio/portfolio-fashion.jpg" playsinline
+                  <video class="portfolio-3d-video" playsinline
                     webkit-playsinline disablepictureinpicture controlslist="nofullscreen nodownload noremoteplayback"
-                    muted loop preload="metadata">
+                    muted loop data-video-src="assets/videos/optimized/video-05.mp4" preload="none">
                   </video>
-                  <img src="images/portfolio/portfolio-fashion.jpg"
-                    alt="Fashion creator trying on aesthetic streetwear outfit in modern urban apartment"
-                    class="portfolio-3d-poster" width="400" height="711" loading="lazy">
                   <div class="portfolio-play-status" aria-label="Toggle Play/Pause">
                     <svg class="play-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
                       <polygon points="6 3 20 12 6 21 6 3"></polygon>
@@ -833,6 +928,18 @@
                     <p class="portfolio-card-sub">Quick outfit changes that show fit, fabric and how to style it.</p>
                   </div>
                 </div>
+                <button type="button" class="portfolio-sound-btn" aria-label="Unmute video" aria-pressed="false">
+                  <svg class="sound-off-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                  </svg>
+                  <svg class="sound-on-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                  </svg>
+                </button>
               </div>
             </article>
 
@@ -840,13 +947,10 @@
             <article class="portfolio-3d-card" data-category="beauty" data-index="5" aria-label="Beauty Video">
               <div class="portfolio-card-inner">
                 <div class="portfolio-video-wrapper">
-                  <video class="portfolio-3d-video" poster="images/portfolio/portfolio-beauty.jpg" playsinline
+                  <video class="portfolio-3d-video" playsinline
                     webkit-playsinline disablepictureinpicture controlslist="nofullscreen nodownload noremoteplayback"
-                    muted loop preload="metadata">
+                    muted loop data-video-src="assets/videos/optimized/video-06.mp4" preload="none">
                   </video>
-                  <img src="images/portfolio/portfolio-beauty.jpg"
-                    alt="Beauty creator testing multi-shade cheek tint and lip glow" class="portfolio-3d-poster"
-                    width="400" height="711" loading="lazy">
                   <div class="portfolio-play-status" aria-label="Toggle Play/Pause">
                     <svg class="play-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
                       <polygon points="6 3 20 12 6 21 6 3"></polygon>
@@ -868,6 +972,144 @@
                       glow.</p>
                   </div>
                 </div>
+                <button type="button" class="portfolio-sound-btn" aria-label="Unmute video" aria-pressed="false">
+                  <svg class="sound-off-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                  </svg>
+                  <svg class="sound-on-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                  </svg>
+                </button>
+              </div>
+            </article>
+            <!-- Card 6: Product Demo -->
+            <article class="portfolio-3d-card" data-category="demonstration" data-index="6" aria-label="Product Demo Video">
+              <div class="portfolio-card-inner">
+                <div class="portfolio-video-wrapper">
+                  <video class="portfolio-3d-video" playsinline
+                    webkit-playsinline disablepictureinpicture controlslist="nofullscreen nodownload noremoteplayback"
+                    muted loop data-video-src="assets/videos/optimized/video-07.mp4" preload="none">
+                  </video>
+                  <div class="portfolio-play-status" aria-label="Toggle Play/Pause">
+                    <svg class="play-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                    </svg>
+                    <svg class="pause-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+                      <rect x="6" y="4" width="4" height="16"></rect>
+                      <rect x="14" y="4" width="4" height="16"></rect>
+                    </svg>
+                  </div>
+                </div>
+                <div class="portfolio-card-overlay">
+                  <div class="portfolio-top-tags">
+                    <span class="portfolio-category-pill">Product Demo</span>
+                    <span class="portfolio-meta-badge">SAMPLE WORK &bull; 9:16</span>
+                  </div>
+                  <div class="portfolio-card-info">
+                    <h3 class="portfolio-card-title font-display">Close-Up Product Demonstration</h3>
+                    <p class="portfolio-card-sub">Hands-on product walkthrough showing real texture, detail and everyday use.</p>
+                  </div>
+                </div>
+                <button type="button" class="portfolio-sound-btn" aria-label="Unmute video" aria-pressed="false">
+                  <svg class="sound-off-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                  </svg>
+                  <svg class="sound-on-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                  </svg>
+                </button>
+              </div>
+            </article>
+            <!-- Card 7: Testimonial -->
+            <article class="portfolio-3d-card" data-category="testimonial" data-index="7" aria-label="Testimonial Video">
+              <div class="portfolio-card-inner">
+                <div class="portfolio-video-wrapper">
+                  <video class="portfolio-3d-video" playsinline
+                    webkit-playsinline disablepictureinpicture controlslist="nofullscreen nodownload noremoteplayback"
+                    muted loop data-video-src="assets/videos/optimized/video-08.mp4" preload="none">
+                  </video>
+                  <div class="portfolio-play-status" aria-label="Toggle Play/Pause">
+                    <svg class="play-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                    </svg>
+                    <svg class="pause-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+                      <rect x="6" y="4" width="4" height="16"></rect>
+                      <rect x="14" y="4" width="4" height="16"></rect>
+                    </svg>
+                  </div>
+                </div>
+                <div class="portfolio-card-overlay">
+                  <div class="portfolio-top-tags">
+                    <span class="portfolio-category-pill">Testimonial</span>
+                    <span class="portfolio-meta-badge">SAMPLE WORK &bull; 9:16</span>
+                  </div>
+                  <div class="portfolio-card-info">
+                    <h3 class="portfolio-card-title font-display">Creator Honest Review &amp; Reaction</h3>
+                    <p class="portfolio-card-sub">Straight-to-camera creator review sharing real experience and results.</p>
+                  </div>
+                </div>
+                <button type="button" class="portfolio-sound-btn" aria-label="Unmute video" aria-pressed="false">
+                  <svg class="sound-off-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                  </svg>
+                  <svg class="sound-on-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                  </svg>
+                </button>
+              </div>
+            </article>
+            <!-- Card 8: Unboxing -->
+            <article class="portfolio-3d-card" data-category="unboxing" data-index="8" aria-label="Unboxing Video">
+              <div class="portfolio-card-inner">
+                <div class="portfolio-video-wrapper">
+                  <video class="portfolio-3d-video" playsinline
+                    webkit-playsinline disablepictureinpicture controlslist="nofullscreen nodownload noremoteplayback"
+                    muted loop data-video-src="assets/videos/optimized/video-09.mp4" preload="none">
+                  </video>
+                  <div class="portfolio-play-status" aria-label="Toggle Play/Pause">
+                    <svg class="play-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                    </svg>
+                    <svg class="pause-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
+                      <rect x="6" y="4" width="4" height="16"></rect>
+                      <rect x="14" y="4" width="4" height="16"></rect>
+                    </svg>
+                  </div>
+                </div>
+                <div class="portfolio-card-overlay">
+                  <div class="portfolio-top-tags">
+                    <span class="portfolio-category-pill">Unboxing</span>
+                    <span class="portfolio-meta-badge">SAMPLE WORK &bull; 9:16</span>
+                  </div>
+                  <div class="portfolio-card-info">
+                    <h3 class="portfolio-card-title font-display">First-Impression Unboxing Reel</h3>
+                    <p class="portfolio-card-sub">Fast-paced parcel reveal capturing genuine unboxing excitement.</p>
+                  </div>
+                </div>
+                <button type="button" class="portfolio-sound-btn" aria-label="Unmute video" aria-pressed="false">
+                  <svg class="sound-off-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                  </svg>
+                  <svg class="sound-on-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                  </svg>
+                </button>
               </div>
             </article>
           </div>
@@ -893,6 +1135,12 @@
               data-slide="4"></button>
             <button class="portfolio-carousel-dot" role="tab" aria-label="Slide 6" aria-selected="false"
               data-slide="5"></button>
+            <button class="portfolio-carousel-dot" role="tab" aria-label="Slide 7" aria-selected="false"
+              data-slide="6"></button>
+            <button class="portfolio-carousel-dot" role="tab" aria-label="Slide 8" aria-selected="false"
+              data-slide="7"></button>
+            <button class="portfolio-carousel-dot" role="tab" aria-label="Slide 9" aria-selected="false"
+              data-slide="8"></button>
           </div>
         </div>
 

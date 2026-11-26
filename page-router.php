@@ -92,7 +92,12 @@ if ($html === false) {
     exit;
 }
 
-// 4. Retrieve dynamic active schemas from database for this specific page
+// 4. Inject dynamic homepage blog cards if serving homepage
+if ($pageKey === 'homepage' && function_exists('injectDynamicHomepageJournalCards')) {
+    $html = injectDynamicHomepageJournalCards($html);
+}
+
+// 5. Retrieve dynamic active schemas from database for this specific page
 $dynamicSchemas = '';
 if ($pageKey) {
     $dynamicSchemas = renderDynamicPageSchemas($pageKey);

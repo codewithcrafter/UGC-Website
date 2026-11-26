@@ -4,7 +4,7 @@ description: "Discover MY UGC VIDEO — a premier platform bridging ambitious br
 canonical_url: "https://myugcvideo.in/about"
 page_type: "about"
 primary_keyword: "about UGC video agency"
-last_updated: "2026-11-25"
+last_updated: "2026-11-26"
 
 ---
 

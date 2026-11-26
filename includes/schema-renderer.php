@@ -715,6 +715,20 @@ function renderDynamicPageSchemas(string $pageKey): string {
     $output = "\n  <!-- Centralized Dynamic Schema Manager JSON-LD -->\n";
     $seenIds = [];
 
+    $hasWebSiteOnPage = false;
+    foreach ($schemas as $chkS) {
+        $chkDec = json_decode(trim($chkS['schema_data'] ?? ''), true);
+        if (is_array($chkDec)) {
+            $chkList = isset($chkDec['@graph']) && is_array($chkDec['@graph']) ? $chkDec['@graph'] : [$chkDec];
+            foreach ($chkList as $ci) {
+                if (is_array($ci) && (($ci['@type'] ?? '') === 'WebSite')) {
+                    $hasWebSiteOnPage = true;
+                    break 2;
+                }
+            }
+        }
+    }
+
     foreach ($schemas as $s) {
         $rawJson = trim($s['schema_data'] ?? '');
         if ($rawJson === '') {
@@ -741,10 +755,51 @@ function renderDynamicPageSchemas(string $pageKey): string {
         }
 
         foreach ($itemsToRender as $item) {
+            $item = normalizeSchemaEntity($item, $pageKey);
+
             // Duplicate protection on @type and @id to ensure different schema types (e.g. AboutPage and WebPage) both render independently
             $type = $item['@type'] ?? '';
+            $typeKey = is_array($type) ? implode(',', $type) : (string)$type;
             $id = $item['@id'] ?? '';
-            $entityKey = $type . '::' . $id;
+            $entityKey = $typeKey . '::' . $id;
+
+            // Remove unintended standalone CreativeWork entities
+            if ($typeKey === 'CreativeWork') {
+                continue;
+            }
+
+            // Prevent phantom CreativeWork nodes in validators from dangling isPartOf -> #website when WebSite is not on this page
+            if (!$hasWebSiteOnPage && isset($item['isPartOf']['@id']) && str_ends_with((string)$item['isPartOf']['@id'], '/#website')) {
+                unset($item['isPartOf']);
+            }
+
+            // Enforce VideoObject rules: only on homepage/services and only when complete
+            if ($typeKey === 'VideoObject') {
+                if (!in_array($pageKey, ['homepage', 'services'], true) || !isCompleteVideoObjectSchema($item)) {
+                    continue;
+                }
+            }
+
+            // On blog-listing, preserve saved Schema Manager properties while refreshing live blog items
+            if ($pageKey === 'blog-listing' && $typeKey === 'ItemList') {
+                $liveItemList = buildBlogListingItemListSchema();
+                if ($liveItemList) {
+                    $item['@type'] = 'ItemList';
+                    if (empty($item['@id'])) {
+                        $item['@id'] = $liveItemList['@id'];
+                    }
+                    if (empty($item['name'])) {
+                        $item['name'] = $liveItemList['name'];
+                    }
+                    if (empty($item['url'])) {
+                        $item['url'] = $liveItemList['url'];
+                    }
+                    $item['numberOfItems']   = $liveItemList['numberOfItems'];
+                    $item['itemListElement'] = $liveItemList['itemListElement'];
+                    $id = $item['@id'];
+                    $entityKey = $typeKey . '::' . $id;
+                }
+            }
 
             if ($entityKey !== '::' && isset($seenIds[$entityKey])) {
                 continue;
@@ -762,6 +817,49 @@ function renderDynamicPageSchemas(string $pageKey): string {
             // Script-closing protection
             $cleanJson = str_replace('</script>', '<\/script>', $cleanJson);
 
+            $output .= "  <script type=\"application/ld+json\">\n  " . $cleanJson . "\n  </script>\n";
+        }
+    }
+
+    // Append Services Listing ItemList if not already emitted
+    if ($pageKey === 'services' && !isset($seenIds['ItemList::https://myugcvideo.in/services#itemlist'])) {
+        $svcList = buildServicesListingItemListSchema();
+        if ($svcList) {
+            $seenIds['ItemList::' . ($svcList['@id'] ?? '')] = true;
+            $cleanJson = str_replace('</script>', '<\/script>', json_encode($svcList, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+            $output .= "  <script type=\"application/ld+json\">\n  " . $cleanJson . "\n  </script>\n";
+        }
+    }
+
+    // Append WebPage entity on Blog Detail pages if not already in page_schemas
+    if (str_starts_with($pageKey, 'blog-') && $pageKey !== 'blog-listing') {
+        $hasWebPage = false;
+        foreach (array_keys($seenIds) as $sk) {
+            if (str_starts_with($sk, 'WebPage::')) {
+                $hasWebPage = true;
+                break;
+            }
+        }
+        if (!$hasWebPage) {
+            $blogWp = buildBlogDetailWebPageSchema(substr($pageKey, 5));
+            if ($blogWp) {
+                $cleanJson = str_replace('</script>', '<\/script>', json_encode($blogWp, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+                $output .= "  <script type=\"application/ld+json\">\n  " . $cleanJson . "\n  </script>\n";
+            }
+        }
+    }
+
+    // Append published, complete Multi-VideoObject entities for homepage and services only
+    if (in_array($pageKey, ['homepage', 'services'], true)) {
+        foreach (getPublishedManagedVideoObjects($pageKey) as $vObj) {
+            $vKey = !empty($vObj['@id'])
+                ? ('VideoObject::' . $vObj['@id'])
+                : ('VideoObject::hash::' . md5((string)json_encode($vObj)));
+            if (isset($seenIds[$vKey])) {
+                continue;
+            }
+            $seenIds[$vKey] = true;
+            $cleanJson = str_replace('</script>', '<\/script>', json_encode($vObj, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
             $output .= "  <script type=\"application/ld+json\">\n  " . $cleanJson . "\n  </script>\n";
         }
     }
@@ -831,17 +929,19 @@ function resolvePageKeyFromUrl(string $urlOrPath): ?string {
  * @return string Modified HTML content
  */
 function injectDynamicSchemasIntoHtml(string $html, string $dynamicSchemasHtml): string {
-    // 1. Remove existing Centralized Schema block comment and any enclosed scripts
-    $html = preg_replace('/<!-- Centralized (?:Dynamic )?Schema Manager JSON-LD -->\s*(?:<script type=[\'"]application\/ld\+json[\'"][^>]*>.*?<\/script>\s*)*/is', '', $html);
+    // 1. Remove existing Centralized Schema block comment, its leading indentation, and any enclosed scripts
+    $html = preg_replace('/[ \t]*<!-- Centralized (?:Dynamic )?Schema Manager JSON-LD -->\s*(?:<script\s+type=[\'"]application\/ld\+json[\'"][^>]*>.*?<\/script>\s*)*/is', '', $html);
 
     // 2. Remove any legacy/static application/ld+json scripts inside <head> to avoid duplicates
     if (preg_match('/<head\b[^>]*>(.*?)<\/head>/is', $html, $matches)) {
         $headContent = $matches[1];
         // Strip out existing JSON-LD scripts from <head>
-        $cleanedHead = preg_replace('/<script\s+type=[\'"]application\/ld\+json[\'"][^>]*>.*?<\/script>\s*/is', '', $headContent);
-        
+        $cleanedHead = preg_replace('/[ \t]*<script\s+type=[\'"]application\/ld\+json[\'"][^>]*>.*?<\/script>\s*/is', '', $headContent);
+        // Trim trailing whitespace/blank lines so repeated syncs never accumulate empty lines
+        $cleanedHead = rtrim($cleanedHead);
+
         // Append our dynamic schemas right before </head>
-        $dynamicInsertion = (!empty($dynamicSchemasHtml)) ? "\n  " . trim($dynamicSchemasHtml) . "\n" : "";
+        $dynamicInsertion = (!empty($dynamicSchemasHtml)) ? "\n  " . trim($dynamicSchemasHtml) . "\n" : "\n";
         $replacementHead = $cleanedHead . $dynamicInsertion;
 
         // Reconstruct HTML head
@@ -972,6 +1072,356 @@ function getCentralizedOrganizationSchema(): array {
             ]
         ]
     ];
+}
+
+/**
+ * Normalize legacy/demo/.html/.php URLs in schema fields to clean canonical production URLs.
+ */
+function cleanCanonicalSchemaUrl(string $url): string {
+    $url = trim($url);
+    if ($url === '') return '';
+    $url = str_ireplace(['https://demo.myugcvideo.in', 'http://demo.myugcvideo.in', 'http://myugcvideo.in'], 'https://myugcvideo.in', $url);
+    $frag = '';
+    if (str_contains($url, '#')) {
+        [$url, $frag] = explode('#', $url, 2);
+        $frag = '#' . $frag;
+    }
+    $url = preg_replace('#/index\.html$#i', '/', $url);
+    $url = preg_replace('#/(about|services|contact)\.html$#i', '/$1', $url);
+    $url = preg_replace('#/blogs\.(?:html|php)$#i', '/blogs', $url);
+    $url = preg_replace('#/blogs/([a-z0-9\-_]+?)(?:\.html|\.php)?$#i', '/blog/$1', $url);
+    $url = preg_replace('#/blog/([a-z0-9\-_]+?)\.(?:html|php)$#i', '/blog/$1', $url);
+    $url = preg_replace('#/services/([a-z0-9\-_]+?)\.(?:html|php)$#i', '/services/$1', $url);
+    return $url . $frag;
+}
+
+/**
+ * Deduplicate areaServed arrays/objects cleanly.
+ */
+function deduplicateAreaServed($areaServed) {
+    if (!is_array($areaServed)) return $areaServed;
+    if (isset($areaServed['@type']) || isset($areaServed['name'])) {
+        return $areaServed;
+    }
+    $seen = [];
+    $out = [];
+    foreach ($areaServed as $a) {
+        $key = is_array($a) ? strtolower(trim((string)($a['name'] ?? json_encode($a)))) : strtolower(trim((string)$a));
+        if ($key !== '' && !isset($seen[$key])) {
+            $seen[$key] = true;
+            $out[] = $a;
+        }
+    }
+    return count($out) === 1 ? $out[0] : $out;
+}
+
+/**
+ * Normalize schema entity relationships, publisher references, canonical URLs, and areaServed.
+ * Preserves all manually edited Organization/custom properties.
+ */
+/**
+ * Recursively strip any 'publisher' property from a schema array.
+ */
+function stripPublisherRecursive(array $data): array {
+    unset($data['publisher']);
+    foreach ($data as $k => $v) {
+        if (is_array($v)) {
+            $data[$k] = stripPublisherRecursive($v);
+        }
+    }
+    return $data;
+}
+
+function normalizeSchemaEntity(array $item, string $pageKey = ''): array {
+    $item = stripPublisherRecursive($item);
+
+    if (!empty($item['@id']) && is_string($item['@id'])) {
+        $item['@id'] = cleanCanonicalSchemaUrl($item['@id']);
+    }
+    if (!empty($item['url']) && is_string($item['url'])) {
+        $item['url'] = cleanCanonicalSchemaUrl($item['url']);
+    }
+
+    $type = $item['@type'] ?? '';
+    $types = is_array($type) ? $type : [$type];
+
+    if (in_array('Organization', $types, true)) {
+        if (isset($item['areaServed'])) {
+            $item['areaServed'] = deduplicateAreaServed($item['areaServed']);
+        }
+        if (isset($item['contactPoint']) && is_array($item['contactPoint'])) {
+            if (isset($item['contactPoint']['areaServed'])) {
+                $item['contactPoint']['areaServed'] = deduplicateAreaServed($item['contactPoint']['areaServed']);
+            } else {
+                foreach ($item['contactPoint'] as $k => $cp) {
+                    if (is_array($cp) && isset($cp['areaServed'])) {
+                        $item['contactPoint'][$k]['areaServed'] = deduplicateAreaServed($cp['areaServed']);
+                    }
+                }
+            }
+        }
+        return $item;
+    }
+
+    if (array_intersect($types, ['BlogPosting', 'Article'])) {
+        if (isset($item['mainEntityOfPage']['@id']) && is_string($item['mainEntityOfPage']['@id'])) {
+            $item['mainEntityOfPage']['@id'] = cleanCanonicalSchemaUrl($item['mainEntityOfPage']['@id']);
+        } elseif (isset($item['mainEntityOfPage']) && is_string($item['mainEntityOfPage'])) {
+            $item['mainEntityOfPage'] = cleanCanonicalSchemaUrl($item['mainEntityOfPage']);
+        }
+        return $item;
+    }
+
+    if (in_array('Service', $types, true)) {
+        if (isset($item['areaServed'])) {
+            $item['areaServed'] = deduplicateAreaServed($item['areaServed']);
+        }
+        return $item;
+    }
+
+    if (in_array('BreadcrumbList', $types, true) && !empty($item['itemListElement']) && is_array($item['itemListElement'])) {
+        foreach ($item['itemListElement'] as $idx => $el) {
+            if (is_array($el) && !empty($el['item']) && is_string($el['item'])) {
+                $item['itemListElement'][$idx]['item'] = cleanCanonicalSchemaUrl($el['item']);
+            }
+        }
+        return $item;
+    }
+
+    return $item;
+}
+
+/**
+ * Build live ItemList schema for Blog Listing (/blogs) from published blog_posts.
+ */
+function buildBlogListingItemListSchema(): ?array {
+    try {
+        $db = getDb();
+        $rows = $db->query("SELECT title, slug FROM blog_posts WHERE status = 'published' AND (published_at IS NULL OR published_at <= NOW()) ORDER BY published_at DESC")->fetchAll(PDO::FETCH_ASSOC);
+        if (empty($rows)) return null;
+        $base = function_exists('getLlmCanonicalBaseUrl') ? rtrim(getLlmCanonicalBaseUrl(), '/') : 'https://myugcvideo.in';
+        $items = [];
+        foreach ($rows as $i => $r) {
+            $items[] = [
+                '@type'    => 'ListItem',
+                'position' => $i + 1,
+                'name'     => $r['title'],
+                'url'      => $base . '/blog/' . $r['slug'],
+            ];
+        }
+        return [
+            '@context'        => 'https://schema.org',
+            '@type'           => 'ItemList',
+            '@id'             => $base . '/blogs#itemlist',
+            'name'            => 'The Creator Journal — UGC Insights, Trends & Strategy',
+            'url'             => $base . '/blogs',
+            'numberOfItems'   => count($items),
+            'itemListElement' => $items,
+        ];
+    } catch (Throwable $e) {
+        return null;
+    }
+}
+
+/**
+ * Build ItemList schema for Services Listing (/services) from the 9 service pages.
+ */
+function buildServicesListingItemListSchema(): ?array {
+    $services = getPublicServicePages();
+    if (empty($services)) return null;
+    $base = function_exists('getLlmCanonicalBaseUrl') ? rtrim(getLlmCanonicalBaseUrl(), '/') : 'https://myugcvideo.in';
+    $items = [];
+    foreach (array_values($services) as $i => $sp) {
+        $items[] = [
+            '@type'    => 'ListItem',
+            'position' => $i + 1,
+            'name'     => $sp['title'],
+            'url'      => cleanCanonicalSchemaUrl($sp['url']),
+        ];
+    }
+    return [
+        '@context'        => 'https://schema.org',
+        '@type'           => 'ItemList',
+        '@id'             => $base . '/services#itemlist',
+        'name'            => 'MY UGC VIDEO Services',
+        'url'             => $base . '/services',
+        'numberOfItems'   => count($items),
+        'itemListElement' => $items,
+    ];
+}
+
+/**
+ * Build WebPage schema for a published Blog Detail page.
+ */
+function buildBlogDetailWebPageSchema(string $slug): ?array {
+    try {
+        $db = getDb();
+        $st = $db->prepare("SELECT title, excerpt, meta_description FROM blog_posts WHERE slug = :s AND status = 'published' LIMIT 1");
+        $st->execute([':s' => $slug]);
+        $post = $st->fetch(PDO::FETCH_ASSOC);
+        if (!$post) return null;
+        $base = function_exists('getLlmCanonicalBaseUrl') ? rtrim(getLlmCanonicalBaseUrl(), '/') : 'https://myugcvideo.in';
+        $url = $base . '/blog/' . $slug;
+        return [
+            '@context'    => 'https://schema.org',
+            '@type'       => 'WebPage',
+            '@id'         => $url . '#webpage',
+            'url'         => $url,
+            'name'        => $post['title'],
+            'description' => trim((string)($post['meta_description'] ?: $post['excerpt'])),
+            'inLanguage'  => 'en-IN',
+        ];
+    } catch (Throwable $e) {
+        return null;
+    }
+}
+
+/**
+ * Validate whether a VideoObject has genuine complete metadata (no empty/image video URLs).
+ */
+function isCompleteVideoObjectSchema(array $item): bool {
+    if (($item['@type'] ?? '') !== 'VideoObject') {
+        return false;
+    }
+    foreach (['name', 'description', 'duration'] as $req) {
+        if (empty($item[$req]) || !is_string($item[$req]) || trim($item[$req]) === '') {
+            return false;
+        }
+    }
+    if (!preg_match('/^P(?:\d+Y)?(?:\d+M)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?$/i', trim((string)$item['duration']))) {
+        return false;
+    }
+    foreach (['contentUrl', 'publisher', 'provider', 'author', 'creator', 'interactionStatistic'] as $disallowed) {
+        if (array_key_exists($disallowed, $item)) {
+            return false;
+        }
+    }
+    if (!empty($item['embedUrl']) && !filter_var($item['embedUrl'], FILTER_VALIDATE_URL)) {
+        return false;
+    }
+    if (!empty($item['thumbnailUrl']) && !filter_var($item['thumbnailUrl'], FILTER_VALIDATE_URL)) {
+        return false;
+    }
+    if (!empty($item['uploadDate']) && strtotime((string)$item['uploadDate']) === false) {
+        return false;
+    }
+    return true;
+}
+
+function getManagedVideoSettingKey(string $pageKey): ?string {
+    if ($pageKey === 'homepage') return 'homepage_videos_json';
+    if ($pageKey === 'services') return 'services_videos_json';
+    return null;
+}
+
+function getDefaultInitialVideoDrafts(string $pageKey): array {
+    $drafts = [];
+    for ($i = 1; $i <= 5; $i++) {
+        $drafts[] = [
+            'uid'           => $pageKey . '_v_' . $i,
+            'video_id'      => 'video-' . $i,
+            'name'          => '',
+            'description'   => '',
+            'thumbnailUrl'  => '',
+            'contentUrl'    => '',
+            'embedUrl'      => '',
+            'uploadDate'    => '',
+            'duration'      => '',
+            'watchUrl'      => '',
+            'status'        => 'draft',
+            'display_order' => $i,
+        ];
+    }
+    return $drafts;
+}
+
+function getManagedVideoEntries(string $pageKey): array {
+    $key = getManagedVideoSettingKey($pageKey);
+    if (!$key) return [];
+    try {
+        $db = getDb();
+        $st = $db->prepare("SELECT setting_value FROM schema_settings WHERE setting_key = :k LIMIT 1");
+        $st->execute([':k' => $key]);
+        $raw = $st->fetchColumn();
+        if ($raw === false || trim((string)$raw) === '') {
+            $defaults = getDefaultInitialVideoDrafts($pageKey);
+            saveManagedVideoEntries($pageKey, $defaults, false);
+            return $defaults;
+        }
+        $arr = json_decode((string)$raw, true);
+        if (!is_array($arr)) return [];
+        usort($arr, fn($a, $b) => ((int)($a['display_order'] ?? 999)) <=> ((int)($b['display_order'] ?? 999)));
+        return array_values($arr);
+    } catch (Throwable $e) {
+        return [];
+    }
+}
+
+function saveManagedVideoEntries(string $pageKey, array $entries, bool $syncStatic = true): bool {
+    $key = getManagedVideoSettingKey($pageKey);
+    if (!$key) return false;
+    usort($entries, fn($a, $b) => ((int)($a['display_order'] ?? 999)) <=> ((int)($b['display_order'] ?? 999)));
+    $normalized = [];
+    foreach (array_values($entries) as $idx => $e) {
+        $e['display_order'] = $idx + 1;
+        if (empty($e['uid'])) {
+            $e['uid'] = $pageKey . '_v_' . bin2hex(random_bytes(4));
+        }
+        if (empty($e['video_id'])) {
+            $e['video_id'] = 'video-' . ($idx + 1);
+        }
+        $e['status'] = (($e['status'] ?? 'draft') === 'published') ? 'published' : 'draft';
+        $normalized[] = $e;
+    }
+    try {
+        $db = getDb();
+        $json = json_encode($normalized, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        $st = $db->prepare("INSERT INTO schema_settings (setting_key, setting_value, updated_at) VALUES (:k, :v, NOW()) ON DUPLICATE KEY UPDATE setting_value = :v2, updated_at = NOW()");
+        $st->execute([':k' => $key, ':v' => $json, ':v2' => $json]);
+        if ($syncStatic && function_exists('syncPublishedSchemasToStaticFile')) {
+            syncPublishedSchemasToStaticFile($pageKey);
+        }
+        return true;
+    } catch (Throwable $e) {
+        return false;
+    }
+}
+
+function buildManagedVideoObjectEntity(array $entry, string $pageKey, int $fallbackIdx): ?array {
+    if (($entry['status'] ?? 'draft') !== 'published') return null;
+
+    if (!empty($entry['schema_json']) && is_string($entry['schema_json'])) {
+        $decoded = json_decode($entry['schema_json'], true);
+        if (!is_array($decoded)) return null;
+        return isCompleteVideoObjectSchema($decoded) ? $decoded : null;
+    }
+
+    $obj = [
+        '@context' => 'https://schema.org',
+        '@type'    => 'VideoObject',
+    ];
+    if (!empty($entry['embedUrl']))     $obj['embedUrl']     = trim((string)$entry['embedUrl']);
+    if (!empty($entry['thumbnailUrl'])) $obj['thumbnailUrl'] = cleanCanonicalSchemaUrl((string)$entry['thumbnailUrl']);
+    $obj['name']        = trim((string)($entry['name'] ?? ''));
+    $obj['description'] = trim((string)($entry['description'] ?? ''));
+    $obj['duration']    = strtoupper(trim((string)($entry['duration'] ?? '')));
+    if (!empty($entry['uploadDate']))   $obj['uploadDate']   = trim((string)$entry['uploadDate']);
+
+    return isCompleteVideoObjectSchema($obj) ? $obj : null;
+}
+
+function getPublishedManagedVideoObjects(string $pageKey): array {
+    $entries = getManagedVideoEntries($pageKey);
+    $out = [];
+    $idx = 1;
+    foreach ($entries as $e) {
+        $built = buildManagedVideoObjectEntity($e, $pageKey, $idx);
+        if ($built !== null) {
+            $out[] = $built;
+            $idx++;
+        }
+    }
+    return $out;
 }
 
 /**
@@ -1561,7 +2011,21 @@ function autoCreateAndPublishAllMissingSchemas(): array {
         $schemas = getPublishedPageSchemas('blog-listing');
         if (!empty($schemas)) {
             $newSchemaBlock = "  <!-- Centralized Schema Manager JSON-LD -->\n";
-            foreach ($schemas as $s) {
+            $hasWebSiteOnPage = false;
+    foreach ($schemas as $chkS) {
+        $chkDec = json_decode(trim($chkS['schema_data'] ?? ''), true);
+        if (is_array($chkDec)) {
+            $chkList = isset($chkDec['@graph']) && is_array($chkDec['@graph']) ? $chkDec['@graph'] : [$chkDec];
+            foreach ($chkList as $ci) {
+                if (is_array($ci) && (($ci['@type'] ?? '') === 'WebSite')) {
+                    $hasWebSiteOnPage = true;
+                    break 2;
+                }
+            }
+        }
+    }
+
+    foreach ($schemas as $s) {
                 $json = trim($s['schema_data']);
                 if ($json !== '') {
                     $newSchemaBlock .= "  <script type=\"application/ld+json\">\n  " . $json . "\n  </script>\n";

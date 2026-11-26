@@ -435,11 +435,6 @@ function generateBlogSchema(array $post, array $faqs = []): array {
             "@type"    => "Person",
             "name"     => $post['author_name'] ?? 'MY UGC VIDEO Editorial Team',
             "jobTitle" => $post['author_role'] ?? 'UGC Creative Studio'
-        ],
-        "publisher"        => [
-            "@type" => "Organization",
-            "name"  => "MY UGC VIDEO",
-            "url"   => $baseUrl . "/"
         ]
     ];
 
@@ -867,8 +862,22 @@ function parseMarkdownInline(string $str): string {
  * Convert HTML to Clean Markdown with Table Support
  */
 function htmlToMarkdown(string $html): string {
-    $text = trim($html);
+    $text = str_replace(["\r\n", "\r"], "\n", trim($html));
     if ($text === '') return '';
+
+    // Protect <pre> / <pre><code> blocks as fenced code blocks so internal indentation is preserved
+    $codeBlocks = [];
+    $text = preg_replace_callback('/<pre[^>]*>(?:\s*<code(?:[^>]*class=["\'][^"\']*language-([a-z0-9_+-]+)[^"\']*["\'][^>]*)?>)?(.*?)(?:<\/code>\s*)?<\/pre>/is', function($m) use (&$codeBlocks) {
+        $lang = trim((string)($m[1] ?? ''));
+        $code = html_entity_decode((string)$m[2], ENT_QUOTES, 'UTF-8');
+        $code = trim($code, "\n");
+        $token = '__MD_CODE_BLOCK_' . count($codeBlocks) . '__';
+        $codeBlocks[$token] = "\n\n```{$lang}\n{$code}\n```\n\n";
+        return $token;
+    }, $text);
+
+    // Protect <br> tags before collapsing HTML source-formatting newlines
+    $text = preg_replace('/<br\s*\/?>/is', '__MD_BR__', $text);
 
     // Convert HTML Tables into Markdown Pipe Tables before stripping tags
     $text = preg_replace_callback('/<table[^>]*>(.*?)<\/table>/is', function($matches) {
@@ -879,7 +888,7 @@ function htmlToMarkdown(string $html): string {
             $cells = [];
             if (preg_match_all('/<th[^>]*>(.*?)<\/th>/is', $tr, $thMatches)) {
                 foreach ($thMatches[1] as $c) {
-                    $clean = trim(strip_tags($c));
+                    $clean = trim(preg_replace('/\s+/', ' ', strip_tags($c)));
                     $clean = str_replace('|', '\|', $clean);
                     $cells[] = $clean;
                 }
@@ -889,7 +898,7 @@ function htmlToMarkdown(string $html): string {
                 $hasHeader = true;
             } elseif (preg_match_all('/<td[^>]*>(.*?)<\/td>/is', $tr, $tdMatches)) {
                 foreach ($tdMatches[1] as $c) {
-                    $clean = trim(strip_tags($c));
+                    $clean = trim(preg_replace('/\s+/', ' ', strip_tags($c)));
                     $clean = str_replace('|', '\|', $clean);
                     $cells[] = $clean;
                 }
@@ -906,18 +915,45 @@ function htmlToMarkdown(string $html): string {
         return "\n\n" . implode("\n", $rows) . "\n\n";
     }, $text);
 
-    // Convert Headings
+    // Convert Headings (collapse source-formatting newlines/spaces inside heading)
     for ($i = 6; $i >= 1; $i--) {
         $hashes = str_repeat('#', $i);
-        $text = preg_replace('/<h' . $i . '[^>]*>(.*?)<\/h' . $i . '>/is', "\n\n{$hashes} $1\n\n", $text);
+        $text = preg_replace_callback('/<h' . $i . '[^>]*>(.*?)<\/h' . $i . '>/is', function($m) use ($hashes) {
+            $inner = trim(preg_replace('/[ \t]*\n[ \t]*/', ' ', $m[1]));
+            return "\n\n{$hashes} {$inner}\n\n";
+        }, $text);
     }
 
     // Convert Blockquotes
-    $text = preg_replace('/<blockquote[^>]*>(.*?)<\/blockquote>/is', "\n\n> $1\n\n", $text);
+    $text = preg_replace_callback('/<blockquote[^>]*>(.*?)<\/blockquote>/is', function($m) {
+        $inner = trim(preg_replace('/[ \t]*\n[ \t]*/', ' ', $m[1]));
+        return "\n\n> {$inner}\n\n";
+    }, $text);
 
-    // Convert Lists
-    $text = preg_replace('/<li[^>]*>(.*?)<\/li>/is', "- $1\n", $text);
-    $text = preg_replace('/<\/?(ul|ol)[^>]*>/is', "\n", $text);
+    // Convert Lists (preserve intentional nested list indentation)
+    $listDepth = 0;
+    $text = preg_replace_callback('/<\/?(?:ul|ol|li)[^>]*>/is', function($m) use (&$listDepth) {
+        $tag = strtolower($m[0]);
+        if (str_starts_with($tag, '<ul') || str_starts_with($tag, '<ol')) {
+            $listDepth++;
+            return $listDepth === 1 ? "\n" : '';
+        }
+        if (str_starts_with($tag, '</ul') || str_starts_with($tag, '</ol')) {
+            $listDepth = max(0, $listDepth - 1);
+            return $listDepth === 0 ? "\n" : '';
+        }
+        if (str_starts_with($tag, '<li')) {
+            $indent = str_repeat('  ', max(0, $listDepth - 1));
+            return "\n{$indent}- ";
+        }
+        return '';
+    }, $text);
+    $text = preg_replace('/^((?:  )*- )[ \t]*\n?[ \t]*/m', '$1', $text);
+
+    // Convert Inline Code
+    $text = preg_replace_callback('/<code[^>]*>(.*?)<\/code>/is', function($m) {
+        return '`' . trim($m[1]) . '`';
+    }, $text);
 
     // Convert Bold
     $text = preg_replace('/<(strong|b)[^>]*>(.*?)<\/(strong|b)>/is', '**$2**', $text);
@@ -928,7 +964,7 @@ function htmlToMarkdown(string $html): string {
     // Convert Links - Normalize relative internal links to root-relative
     $text = preg_replace_callback('/<a\s+[^>]*href=["\']([^"\']+)["\'][^>]*>(.*?)<\/a>/is', function($m) {
         $href = trim($m[1]);
-        $anchor = $m[2];
+        $anchor = trim(preg_replace('/[ \t]*\n[ \t]*/', ' ', $m[2]));
         if (!str_starts_with($href, 'http://') && !str_starts_with($href, 'https://') && !str_starts_with($href, '#') && !str_starts_with($href, 'mailto:') && !str_starts_with($href, 'tel:')) {
             $cleanHref = preg_replace('#^(\.\./|\./)+#', '', $href);
             if ($cleanHref === 'blogs.html') {
@@ -939,19 +975,41 @@ function htmlToMarkdown(string $html): string {
         return "[{$anchor}]({$href})";
     }, $text);
 
-    // Convert Paragraphs & Breaks
-    $text = preg_replace('/<p[^>]*>(.*?)<\/p>/is', "$1\n\n", $text);
-    $text = preg_replace('/<br\s*\/?>/is', "\n", $text);
+    // Convert Paragraphs & Horizontal Rules
+    $text = preg_replace_callback('/<p[^>]*>(.*?)<\/p>/is', function($m) {
+        $inner = trim(preg_replace('/[ \t]*\n[ \t]*/', ' ', $m[1]));
+        return $inner === '' ? '' : "{$inner}\n\n";
+    }, $text);
     $text = preg_replace('/<hr\s*\/?>/is', "\n\n---\n\n", $text);
 
     // Strip leftover tags
     $text = strip_tags($text);
 
+    // Restore <br> line breaks
+    $text = str_replace('__MD_BR__', "\n", $text);
+
     // Decode HTML entities
     $text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
 
-    // Clean up excessive blank lines
+    // Strip whitespace-only lines and unintended leading spaces on non-list lines
+    $text = preg_replace('/^[ \t]+$/m', '', $text);
+    $text = preg_replace('/^((?:  )*- [^\n]+)\n+(?=(?:  )*- )/m', "$1\n", $text);
+    $text = preg_replace_callback('/^([ \t]+)(.+)$/m', function($m) {
+        // Keep intentional nested list indentation (2 spaces per level before "- ")
+        if (preg_match('/^(?:  )+- /', $m[0])) {
+            return $m[0];
+        }
+        return $m[2];
+    }, $text);
+
+    // Clean up excessive blank lines (max 1 blank line = "\n\n")
     $text = preg_replace("/\n{3,}/", "\n\n", $text);
+
+    // Restore protected fenced code blocks
+    if (!empty($codeBlocks)) {
+        $text = strtr($text, $codeBlocks);
+        $text = preg_replace("/\n{3,}/", "\n\n", $text);
+    }
 
     return trim($text);
 }
@@ -1111,7 +1169,6 @@ function generateBlogPostSchema(array $post, array $tags = []): array {
         ],
         'url'              => $canonicalUrl,
         'author'           => $authorObj,
-        'publisher'        => $publisherObj,
         'datePublished'    => $datePub,
         'dateModified'     => $dateMod
     ];
@@ -1174,9 +1231,6 @@ function validateBlogPostSchema(array $schema): array {
     if (empty($schema['author']['name'])) {
         return ['valid' => false, 'error' => 'Schema author name is missing.'];
     }
-    if (empty($schema['publisher']['name'])) {
-        return ['valid' => false, 'error' => 'Schema publisher name is missing.'];
-    }
     if (empty($schema['mainEntityOfPage']['@id'])) {
         return ['valid' => false, 'error' => 'Schema mainEntityOfPage is missing.'];
     }
@@ -1214,6 +1268,173 @@ function atomicWriteFile(string $targetPath, string $content): bool {
 /**
  * Remove obsolete/stale generated artifacts for a blog post
  */
+/**
+ * Migrate blog-specific page_schemas records when a blog post slug changes,
+ * avoiding duplicate (page_key, schema_type) rows and preserving valid overrides.
+ */
+function migrateBlogPageSchemasSlug(string $oldSlug, string $newSlug, string $newTitle = ''): void {
+    $oldSlug = trim($oldSlug);
+    $newSlug = trim($newSlug);
+    if ($oldSlug === '' || $newSlug === '' || $oldSlug === $newSlug) {
+        return;
+    }
+
+    $oldKey = 'blog-' . $oldSlug;
+    $newKey = 'blog-' . $newSlug;
+
+    try {
+        $db = getDb();
+        $stmt = $db->prepare("SELECT id, schema_type FROM page_schemas WHERE page_key = :pk");
+        $stmt->execute([':pk' => $oldKey]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($rows as $row) {
+            $chk = $db->prepare("SELECT id FROM page_schemas WHERE page_key = :npk AND schema_type = :st LIMIT 1");
+            $chk->execute([':npk' => $newKey, ':st' => $row['schema_type']]);
+            if ($chk->fetchColumn()) {
+                $del = $db->prepare("DELETE FROM page_schemas WHERE id = :id");
+                $del->execute([':id' => (int)$row['id']]);
+            } else {
+                $upd = $db->prepare(
+                    "UPDATE page_schemas
+                     SET page_key = :npk,
+                         page_title = COALESCE(NULLIF(:pt, ''), page_title),
+                         updated_at = NOW()
+                     WHERE id = :id"
+                );
+                $upd->execute([
+                    ':npk' => $newKey,
+                    ':pt'  => trim($newTitle),
+                    ':id'  => (int)$row['id'],
+                ]);
+            }
+        }
+    } catch (Throwable $e) {
+        error_log("migrateBlogPageSchemasSlug error: " . $e->getMessage());
+    }
+}
+
+/**
+ * Remove only blog-specific page_schemas records for a deleted blog post.
+ * Never deletes shared schemas (homepage, about, services, blog-listing, etc.).
+ */
+function deleteBlogPageSchemas(string $slug): void {
+    $slug = trim($slug);
+    if ($slug === '') {
+        return;
+    }
+    $pageKey = 'blog-' . $slug;
+    if ($pageKey === 'blog-' || $pageKey === 'blog-listing' || !str_starts_with($pageKey, 'blog-')) {
+        return;
+    }
+
+    try {
+        $db = getDb();
+        $stmt = $db->prepare("DELETE FROM page_schemas WHERE page_key = :pk");
+        $stmt->execute([':pk' => $pageKey]);
+    } catch (Throwable $e) {
+        error_log("deleteBlogPageSchemas error: " . $e->getMessage());
+    }
+}
+
+/**
+ * Dynamically render the latest 3 published blog cards into the homepage
+ * THE CREATOR JOURNAL section without altering its layout or CSS classes.
+ */
+function injectDynamicHomepageJournalCards(string $html): string {
+    if (!str_contains($html, 'journal-magazine-layout')) {
+        return $html;
+    }
+
+    try {
+        $result = getPosts([
+            'status'         => 'published',
+            'include_future' => false,
+            'per_page'       => 3,
+            'page'           => 1,
+        ]);
+        $posts = $result['posts'] ?? [];
+    } catch (Throwable $e) {
+        error_log("injectDynamicHomepageJournalCards error: " . $e->getMessage());
+        return $html;
+    }
+
+    if (empty($posts)) {
+        return $html;
+    }
+
+    $cardsHtml = "\n";
+    foreach ($posts as $idx => $post) {
+        $isFeaturedCard = ($idx === 0);
+        $cardClass = $isFeaturedCard ? 'journal-card journal-featured-card' : 'journal-card journal-side-card';
+        $mediaClass = $isFeaturedCard ? 'journal-card-media journal-featured-media camera-focus-media' : 'journal-card-media journal-side-media camera-focus-media';
+        $bodyClass = $isFeaturedCard ? 'journal-card-body journal-featured-body' : 'journal-card-body journal-side-body';
+        $titleClass = $isFeaturedCard ? 'journal-card-title journal-featured-title font-display' : 'journal-card-title journal-side-title font-display';
+        $excerptClass = $isFeaturedCard ? 'journal-card-excerpt journal-featured-excerpt' : 'journal-card-excerpt journal-side-excerpt';
+
+        $catName = trim((string)($post['category_name'] ?? '')) ?: 'UGC Insights';
+        $catSlug = trim((string)($post['category_slug'] ?? '')) ?: slugify($catName);
+        $pubDate = !empty($post['published_at']) ? date('F j, Y', strtotime($post['published_at'])) : date('F j, Y');
+        $readTime = trim((string)($post['reading_time'] ?? '')) ?: '5 Min Read';
+        $title = (string)($post['title'] ?? '');
+        $slug = (string)($post['slug'] ?? '');
+        $href = 'blog/' . rawurlencode($slug);
+        $excerpt = trim((string)($post['excerpt'] ?? ''));
+        $author = trim((string)($post['author_name'] ?? '')) ?: 'MY UGC VIDEO';
+        $alt = trim((string)($post['featured_image_alt'] ?? '')) ?: $title;
+
+        $imgSrc = trim((string)($post['featured_image'] ?? ''));
+        if ($imgSrc === '') {
+            $imgSrc = 'images/blogs/blog-1.jpg';
+        } elseif (preg_match('#^https?://(?:www\.)?myugcvideo\.in/(.+)$#i', $imgSrc, $im)) {
+            $imgSrc = ltrim($im[1], '/');
+        } else {
+            $imgSrc = ltrim($imgSrc, '/');
+        }
+
+        $dimAttrs = '';
+        $localImgPath = CMS_ROOT . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $imgSrc);
+        if (file_exists($localImgPath)) {
+            $sz = @getimagesize($localImgPath);
+            if ($sz && !empty($sz[0]) && !empty($sz[1])) {
+                $dimAttrs = ' width="' . (int)$sz[0] . '" height="' . (int)$sz[1] . '"';
+            }
+        }
+
+        $cardsHtml .= '          <article class="' . $cardClass . '" data-category="' . htmlspecialchars($catSlug, ENT_QUOTES, 'UTF-8') . '">' . "\n";
+        $cardsHtml .= '            <div class="' . $mediaClass . '">' . "\n";
+        $cardsHtml .= '              <img src="' . htmlspecialchars($imgSrc, ENT_QUOTES, 'UTF-8') . '" alt="' . htmlspecialchars($alt, ENT_QUOTES, 'UTF-8') . '"' . $dimAttrs . ' loading="lazy">' . "\n";
+        $cardsHtml .= '            </div>' . "\n";
+        $cardsHtml .= '            <div class="' . $bodyClass . '">' . "\n";
+        $cardsHtml .= '              <div class="journal-card-meta blog-meta-compact">' . "\n";
+        $cardsHtml .= '                <span class="category-pill-badge category-pill">' . htmlspecialchars($catName, ENT_QUOTES, 'UTF-8') . '</span>' . "\n";
+        $cardsHtml .= '                <span class="meta-dot" aria-hidden="true">&bull;</span>' . "\n";
+        $cardsHtml .= '                <span class="journal-card-date">' . htmlspecialchars($pubDate, ENT_QUOTES, 'UTF-8') . '</span>' . "\n";
+        $cardsHtml .= '                <span class="meta-dot" aria-hidden="true">&bull;</span>' . "\n";
+        $cardsHtml .= '                <span class="journal-card-read">' . htmlspecialchars($readTime, ENT_QUOTES, 'UTF-8') . '</span>' . "\n";
+        $cardsHtml .= '              </div>' . "\n";
+        $cardsHtml .= '              <h3 class="' . $titleClass . '">' . "\n";
+        $cardsHtml .= '                <a href="' . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '</a>' . "\n";
+        $cardsHtml .= '              </h3>' . "\n";
+        $cardsHtml .= '              <p class="' . $excerptClass . '">' . "\n";
+        $cardsHtml .= '                ' . htmlspecialchars($excerpt, ENT_QUOTES, 'UTF-8') . "\n";
+        $cardsHtml .= '              </p>' . "\n";
+        $cardsHtml .= '              <div class="journal-card-footer blog-card-footer">' . "\n";
+        $cardsHtml .= '                <span class="journal-card-author blog-card-author">By ' . htmlspecialchars($author, ENT_QUOTES, 'UTF-8') . '</span>' . "\n";
+        $cardsHtml .= '                <a href="' . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') . '" class="slider-link-action">Read Article &rarr;</a>' . "\n";
+        $cardsHtml .= '              </div>' . "\n";
+        $cardsHtml .= '            </div>' . "\n";
+        $cardsHtml .= '          </article>' . "\n\n";
+    }
+
+    $pattern = '/(<div class="journal-magazine-layout">)(.*?)(<\/div>\s*<div class="journal-cta text-center">)/is';
+    $replaced = preg_replace_callback($pattern, static function ($m) use ($cardsHtml) {
+        return $m[1] . $cardsHtml . '        ' . $m[3];
+    }, $html, 1);
+
+    return $replaced !== null ? $replaced : $html;
+}
+
 function removeBlogPostArtifacts(int $postId, ?string $slug = null): bool {
     $patterns = [
         CMS_ROOT . DIRECTORY_SEPARATOR . 'markdown' . DIRECTORY_SEPARATOR . 'blogs' . DIRECTORY_SEPARATOR . "post-{$postId}-*.md",

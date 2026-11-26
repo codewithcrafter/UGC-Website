@@ -711,7 +711,7 @@ function setActiveNavLinks() {
 
     // Check if on homepage
     if ((currentPath.endsWith('/') || currentPath.endsWith('index.html') || currentPath === '') &&
-        (linkPath === 'index.html' || linkPath === './' || linkPath === '/')) {
+      (linkPath === 'index.html' || linkPath === './' || linkPath === '/')) {
       link.classList.add('active');
     } else if (linkPath !== 'index.html' && linkPath !== './' && currentPath.includes(linkPath.replace('./', '').replace('/', ''))) {
       link.classList.add('active');
@@ -1131,6 +1131,61 @@ function initUgcCategoryTabs() {
    video triggers with automatic image/video mode detection, zero layout shift,
    accessible keyboard navigation, and clean playback cleanup on dismissal.
    -------------------------------------------------------------------------- */
+function decodeVideoPreviewFrame(video, shouldRemainPaused = true) {
+  if (!video || video.dataset.previewLoaded === '1') return;
+  const dataSrc = video.getAttribute('data-video-src') || video.getAttribute('src');
+  if (!dataSrc) return;
+
+  video.dataset.previewLoaded = '1';
+  video.muted = true;
+  video.playsInline = true;
+  video.preload = 'auto';
+
+  const revealFrame = () => {
+    if (video.readyState < 2) return;
+    requestAnimationFrame(() => {
+      video.classList.add('has-frame');
+      if (shouldRemainPaused && !video.dataset.userPlaying) {
+        if (!video.paused) video.pause();
+        video.preload = 'metadata';
+      }
+    });
+  };
+
+  const seekAndReveal = () => {
+    const dur = Number.isFinite(video.duration) && video.duration > 0 ? video.duration : 10;
+    const targetTime = Math.min(1.0, Math.max(0.5, dur * 0.02));
+    if (Math.abs(video.currentTime - targetTime) > 0.05) {
+      const onSeeked = () => {
+        if (video.readyState >= 2) {
+          revealFrame();
+        } else {
+          video.addEventListener('canplay', revealFrame, { once: true });
+        }
+      };
+      video.addEventListener('seeked', onSeeked, { once: true });
+      try {
+        video.currentTime = targetTime;
+      } catch (e) {
+        revealFrame();
+      }
+    } else if (video.readyState >= 2) {
+      revealFrame();
+    } else {
+      video.addEventListener('canplay', revealFrame, { once: true });
+    }
+  };
+
+  if (!video.getAttribute('src')) {
+    video.setAttribute('src', dataSrc);
+  }
+  if (video.readyState >= 1) {
+    seekAndReveal();
+  } else {
+    video.addEventListener('loadedmetadata', seekAndReveal, { once: true });
+  }
+}
+
 function initVideoModal() {
   const modal = document.querySelector('#videoModal');
   if (!modal) return;
@@ -1202,7 +1257,7 @@ function initVideoModal() {
       if (modalImg) modalImg.style.display = 'none';
       if (modalVideo) {
         modalVideo.style.display = 'block';
-        if (imgSrc) modalVideo.poster = imgSrc;
+        modalVideo.removeAttribute('poster');
         modalVideo.src = videoSrc.trim();
         modalVideo.load();
         modalVideo.play().catch(() => {
@@ -1234,8 +1289,24 @@ function initVideoModal() {
     }
   };
 
-  // 1. Attach click listener to Video Formats Section 4 portfolio cards
+  // 1. Attach click listener and lazy video-frame preview loader to Video Formats Section 4 portfolio cards
   const formatCards = document.querySelectorAll('.format-portfolio-card');
+  const formatPreviewVideos = document.querySelectorAll('video.format-portfolio-bg[data-video-src]');
+  if (formatPreviewVideos.length) {
+    if ('IntersectionObserver' in window) {
+      const previewObserver = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            decodeVideoPreviewFrame(entry.target, true);
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '500px 0px' });
+      formatPreviewVideos.forEach(v => previewObserver.observe(v));
+    } else {
+      formatPreviewVideos.forEach(v => decodeVideoPreviewFrame(v, true));
+    }
+  }
   formatCards.forEach(card => {
     card.setAttribute('role', 'button');
     card.setAttribute('tabindex', '0');
@@ -1243,16 +1314,16 @@ function initVideoModal() {
 
     const handleCardActivation = (e) => {
       e.preventDefault();
-      
+
       const imgEl = card.querySelector('.format-portfolio-bg') || card.querySelector('img');
       const triggerBtn = card.querySelector('.video-play-trigger');
-      
+
       const imgSrc = (triggerBtn && triggerBtn.getAttribute('data-video-poster')) ||
-                     (imgEl && imgEl.getAttribute('src')) || '';
+        (imgEl && imgEl.getAttribute('src')) || '';
       const videoSrc = card.getAttribute('data-video-src') ||
-                       (triggerBtn && triggerBtn.getAttribute('data-video-src')) || '';
+        (triggerBtn && triggerBtn.getAttribute('data-video-src')) || '';
       const title = (triggerBtn && triggerBtn.getAttribute('data-video-title')) ||
-                    (card.querySelector('.format-caption-title') && card.querySelector('.format-caption-title').textContent.trim()) || '';
+        (card.querySelector('.format-caption-title') && card.querySelector('.format-caption-title').textContent.trim()) || '';
       const sub = (triggerBtn && triggerBtn.getAttribute('data-video-meta')) || '';
 
       openMediaModal({ imgSrc, videoSrc, title, sub }, card);
@@ -1336,11 +1407,54 @@ function init3DVideoCarousel() {
   let autoplayTimer = null;
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
+  // Helper: check if the active center video is currently playing
+  const isCenterVideoPlaying = () => {
+    const activeCard = cards[currentIndex];
+    const activeVideo = activeCard ? activeCard.querySelector('video') : null;
+    return !!(activeVideo && !activeVideo.paused && !activeVideo.ended);
+  };
+
+  // Helper: sync all sound button icons & ARIA states to actual video.muted state
+  const syncSoundButtons = () => {
+    cards.forEach(card => {
+      const btn = card.querySelector('.portfolio-sound-btn');
+      const v = card.querySelector('video');
+      if (!btn) return;
+      const isUnmuted = !!(v && !v.muted);
+      btn.setAttribute('aria-pressed', isUnmuted ? 'true' : 'false');
+      btn.setAttribute('aria-label', isUnmuted ? 'Mute video' : 'Unmute video');
+    });
+  };
+
+  // Helper: ensure only one video can ever have audio unmuted
+  const muteAllCarouselVideos = (exceptVideo = null) => {
+    cards.forEach(card => {
+      const v = card.querySelector('video');
+      if (v && v !== exceptVideo) {
+        v.muted = true;
+      }
+    });
+  };
+
+  // Helper: lazily assign video src and decode preview frame when card is visible/active
+  const hydrateCardVideo = (card, shouldRemainPaused = true) => {
+    if (!card) return null;
+    const video = card.querySelector('video');
+    if (!video) return null;
+    decodeVideoPreviewFrame(video, shouldRemainPaused);
+    return video;
+  };
+
   // Autoplay control functions
   const startAutoplay = () => {
     if (prefersReducedMotion && prefersReducedMotion.matches) return;
+    if (isCenterVideoPlaying()) return;
     stopAutoplay();
     autoplayTimer = setInterval(() => {
+      if (isCenterVideoPlaying()) {
+        stopAutoplay();
+        return;
+      }
       updateCarousel(currentIndex + 1);
     }, AUTOPLAY_INTERVAL);
   };
@@ -1365,7 +1479,10 @@ function init3DVideoCarousel() {
     'beverage': 2,
     'technology': 3,
     'lifestyle': 4,
-    'beauty': 5
+    'beauty': 5,
+    'demonstration': 6,
+    'testimonial': 7,
+    'unboxing': 8
   };
 
   const updateCarousel = (newIndex, immediate = false) => {
@@ -1382,12 +1499,16 @@ function init3DVideoCarousel() {
     // Circular index calculation: 0 <= newIndex < totalCards
     newIndex = ((newIndex % totalCards) + totalCards) % totalCards;
 
-    // Pause old center video & remove playing class
+    // Pause old center video, mute it safely & remove playing class
     const oldCenterCard = cards[currentIndex];
     if (oldCenterCard && oldCenterCard !== cards[newIndex]) {
       const oldVideo = oldCenterCard.querySelector('video');
-      if (oldVideo && !oldVideo.paused) {
-        oldVideo.pause();
+      if (oldVideo) {
+        oldVideo.muted = true;
+        delete oldVideo.dataset.userPlaying;
+        if (!oldVideo.paused) {
+          oldVideo.pause();
+        }
       }
       oldCenterCard.classList.remove('is-playing');
     }
@@ -1413,27 +1534,36 @@ function init3DVideoCarousel() {
       } else if (diff === totalCards - 1) {
         card.classList.add('pos-left');
         card.setAttribute('aria-hidden', 'true');
+        hydrateCardVideo(card, true);
       } else if (diff === 1) {
         card.classList.add('pos-right');
         card.setAttribute('aria-hidden', 'true');
+        hydrateCardVideo(card, true);
       } else if (diff === totalCards - 2) {
         card.classList.add('pos-far-left');
         card.setAttribute('aria-hidden', 'true');
+        hydrateCardVideo(card, true);
       } else if (diff === 2) {
         card.classList.add('pos-far-right');
         card.setAttribute('aria-hidden', 'true');
+        hydrateCardVideo(card, true);
       } else {
         card.classList.add('pos-hidden');
         card.setAttribute('aria-hidden', 'true');
       }
 
-      // Ensure all non-center videos are strictly paused
+      // Ensure all non-center videos are strictly paused and muted
       if (diff !== 0) {
         const v = card.querySelector('video');
-        if (v && !v.paused) v.pause();
+        if (v) {
+          v.muted = true;
+          delete v.dataset.userPlaying;
+          if (!v.paused) v.pause();
+        }
         card.classList.remove('is-playing');
       }
     });
+    syncSoundButtons();
 
     // Update Dots indicator
     dots.forEach((dot, idx) => {
@@ -1456,16 +1586,20 @@ function init3DVideoCarousel() {
     // Autoplay center video muted if video source is available
     const newCenterCard = cards[currentIndex];
     if (newCenterCard) {
-      const newVideo = newCenterCard.querySelector('video');
-      if (newVideo && newVideo.src) {
+      const newVideo = hydrateCardVideo(newCenterCard, false);
+      if (newVideo && newVideo.getAttribute('src')) {
         newVideo.muted = true;
+        newVideo.dataset.userPlaying = '1';
+        syncSoundButtons();
         const playPromise = newVideo.play();
         if (playPromise !== undefined) {
           playPromise
             .then(() => {
               newCenterCard.classList.add('is-playing');
+              stopAutoplay();
             })
             .catch(() => {
+              delete newVideo.dataset.userPlaying;
               newCenterCard.classList.remove('is-playing');
             });
         }
@@ -1473,44 +1607,96 @@ function init3DVideoCarousel() {
     }
   };
 
+  // Independent Sound ON/OFF Button Handler
+  cards.forEach(card => {
+    const soundBtn = card.querySelector('.portfolio-sound-btn');
+    if (!soundBtn) return;
+    soundBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (!card.classList.contains('pos-center')) {
+        return;
+      }
+
+      const video = hydrateCardVideo(card, false);
+      if (!video) return;
+
+      if (video.muted) {
+        muteAllCarouselVideos(video);
+        video.muted = false;
+        video.dataset.userPlaying = '1';
+        syncSoundButtons();
+        if (video.paused) {
+          stopAutoplay();
+          const p = video.play();
+          if (p !== undefined) {
+            p.then(() => {
+              card.classList.add('is-playing');
+              stopAutoplay();
+            }).catch(() => {
+              // Browser rejected unmuted playback; revert safely to muted
+              video.muted = true;
+              delete video.dataset.userPlaying;
+              syncSoundButtons();
+            });
+          }
+        }
+      } else {
+        video.muted = true;
+        syncSoundButtons();
+      }
+    });
+  });
+
   // Click & Playback Interaction on Cards
   cards.forEach((card, idx) => {
     card.addEventListener('click', (e) => {
+      if (e.target.closest('.portfolio-sound-btn')) {
+        return;
+      }
       // Never trigger modal, popup, fullscreen or zoom
       e.preventDefault();
       e.stopPropagation();
-      resetAutoplay();
 
       if (card.classList.contains('pos-center')) {
         // Center card click toggles play/pause inside card
-        const video = card.querySelector('video');
-        if (video && video.src) {
+        const video = hydrateCardVideo(card, false);
+        if (video && video.getAttribute('src')) {
           if (video.paused) {
-            video.muted = true;
+            video.dataset.userPlaying = '1';
+            stopAutoplay();
             const p = video.play();
             if (p !== undefined) {
               p.then(() => {
                 card.classList.add('is-playing');
+                stopAutoplay();
               }).catch(() => {
+                delete video.dataset.userPlaying;
                 card.classList.toggle('is-playing');
               });
             } else {
               card.classList.add('is-playing');
             }
           } else {
+            delete video.dataset.userPlaying;
             video.pause();
             card.classList.remove('is-playing');
+            resetAutoplay();
           }
         } else {
           card.classList.toggle('is-playing');
         }
       } else if (card.classList.contains('pos-left')) {
         // Left side card click smoothly slides to center
+        resetAutoplay();
         updateCarousel(currentIndex - 1);
       } else if (card.classList.contains('pos-right')) {
         // Right side card click smoothly slides to center
+        resetAutoplay();
         updateCarousel(currentIndex + 1);
       } else {
+        resetAutoplay();
         updateCarousel(idx);
       }
     });
@@ -2583,26 +2769,26 @@ function isContactPopupEligiblePage() {
 
     // 1. Exclude Admin, Login, Config, API, includes, etc.
     if (pathname.includes('/admin') ||
-        pathname.includes('/api') ||
-        pathname.includes('/config') ||
-        pathname.includes('/includes') ||
-        pathname.includes('/login') ||
-        pathname.includes('/logout')) {
+      pathname.includes('/api') ||
+      pathname.includes('/config') ||
+      pathname.includes('/includes') ||
+      pathname.includes('/login') ||
+      pathname.includes('/logout')) {
       return false;
     }
 
     // 2. Exclude Contact page
     if (pathname.endsWith('/contact') ||
-        pathname.endsWith('/contact/') ||
-        pathname.endsWith('/contact.html') ||
-        pathname.includes('/contact.')) {
+      pathname.endsWith('/contact/') ||
+      pathname.endsWith('/contact.html') ||
+      pathname.includes('/contact.')) {
       return false;
     }
 
     // 3. Exclude Dedicated Service pages (Note: /services, /services.html is ELIGIBLE)
     const isServicesOverview = pathname.endsWith('/services') ||
-                               pathname.endsWith('/services/') ||
-                               pathname.endsWith('/services.html');
+      pathname.endsWith('/services/') ||
+      pathname.endsWith('/services.html');
     if (pathname.includes('/services/')) {
       const parts = pathname.split('/services/');
       const sub = parts[1] ? parts[1].trim() : '';

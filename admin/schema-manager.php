@@ -1263,6 +1263,168 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && (isset($_POST['action']) || isset($
         exit;
     }
 
+    // L. MULTI-VIDEOOBJECT MANAGER HANDLERS (HOMEPAGE & SERVICES LISTING ONLY)
+    if (in_array($action, ['save_managed_video', 'toggle_managed_video_status', 'delete_managed_video', 'reorder_managed_video'], true)) {
+        header('Content-Type: application/json; charset=utf-8');
+        $vPageKey = trim($_POST['page_key'] ?? '');
+        if (!in_array($vPageKey, ['homepage', 'services'], true)) {
+            echo json_encode(['success' => false, 'message' => 'Multi-VideoObject Manager is only enabled for Homepage and Services Listing.']);
+            exit;
+        }
+
+        $entries = getManagedVideoEntries($vPageKey);
+
+        $validateVideoForPublish = static function (array $e): ?string {
+            $raw = trim((string)($e['schema_json'] ?? ''));
+            if ($raw === '') {
+                return 'VideoObject JSON is required.';
+            }
+            $decoded = json_decode($raw, true);
+            if (!is_array($decoded) || json_last_error() !== JSON_ERROR_NONE) {
+                return 'Invalid JSON syntax: ' . json_last_error_msg();
+            }
+            $allowedKeys = ['@context', '@type', 'embedUrl', 'thumbnailUrl', 'name', 'description', 'duration', 'uploadDate'];
+            foreach (array_keys($decoded) as $k) {
+                if (!in_array($k, $allowedKeys, true)) {
+                    return 'Property "' . $k . '" is not allowed. Allowed properties: ' . implode(', ', $allowedKeys) . '.';
+                }
+            }
+            if (($decoded['@context'] ?? '') !== 'https://schema.org') {
+                return '"@context" must be "https://schema.org".';
+            }
+            if (($decoded['@type'] ?? '') !== 'VideoObject') {
+                return '"@type" must be "VideoObject".';
+            }
+            if (trim((string)($decoded['name'] ?? '')) === '' || trim((string)($decoded['description'] ?? '')) === '') {
+                return '"name" and "description" are required.';
+            }
+            $dur = trim((string)($decoded['duration'] ?? ''));
+            if ($dur === '' || !preg_match('/^P(?:\d+Y)?(?:\d+M)?(?:\d+D)?(?:T(?:\d+H)?(?:\d+M)?(?:\d+S)?)?$/i', $dur)) {
+                return 'A valid ISO 8601 "duration" (e.g. PT50S, PT1M4S) is required.';
+            }
+            if (!empty($decoded['embedUrl']) && !filter_var($decoded['embedUrl'], FILTER_VALIDATE_URL)) {
+                return '"embedUrl" must be a valid URL if provided.';
+            }
+            if (!empty($decoded['thumbnailUrl']) && !filter_var($decoded['thumbnailUrl'], FILTER_VALIDATE_URL)) {
+                return '"thumbnailUrl" must be a valid URL if provided.';
+            }
+            if (!empty($decoded['uploadDate']) && strtotime((string)$decoded['uploadDate']) === false) {
+                return '"uploadDate" must be a valid ISO 8601 date if provided.';
+            }
+            return null;
+        };
+
+        if ($action === 'save_managed_video') {
+            $uid = trim($_POST['uid'] ?? '');
+            $status = ($_POST['status'] ?? 'draft') === 'published' ? 'published' : 'draft';
+            $order = max(1, (int)($_POST['display_order'] ?? (count($entries) + 1)));
+            $rawJson = trim((string)($_POST['schema_json'] ?? ''));
+
+            $decoded = json_decode($rawJson, true);
+            if (!is_array($decoded) || json_last_error() !== JSON_ERROR_NONE) {
+                echo json_encode(['success' => false, 'message' => 'Invalid JSON syntax: ' . json_last_error_msg()]);
+                exit;
+            }
+
+            $prettyJson = json_encode($decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            $newEntry = [
+                'uid'           => $uid !== '' ? $uid : ($vPageKey . '_v_' . bin2hex(random_bytes(4))),
+                'video_id'      => 'video-' . $order,
+                'name'          => trim((string)($decoded['name'] ?? '')),
+                'description'   => trim((string)($decoded['description'] ?? '')),
+                'thumbnailUrl'  => trim((string)($decoded['thumbnailUrl'] ?? '')),
+                'embedUrl'      => trim((string)($decoded['embedUrl'] ?? '')),
+                'uploadDate'    => trim((string)($decoded['uploadDate'] ?? '')),
+                'duration'      => strtoupper(trim((string)($decoded['duration'] ?? ''))),
+                'schema_json'   => $prettyJson,
+                'status'        => $status,
+                'display_order' => $order,
+            ];
+
+            if ($status === 'published') {
+                $err = $validateVideoForPublish($newEntry);
+                if ($err !== null) {
+                    echo json_encode(['success' => false, 'message' => $err]);
+                    exit;
+                }
+            }
+
+            $found = false;
+            foreach ($entries as $idx => $ex) {
+                if (($ex['uid'] ?? '') === $newEntry['uid']) {
+                    $entries[$idx] = $newEntry;
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                $entries[] = $newEntry;
+            }
+
+            $ok = saveManagedVideoEntries($vPageKey, $entries, true);
+            echo json_encode([
+                'success' => $ok,
+                'uid'     => $newEntry['uid'],
+                'message' => $ok ? 'VideoObject saved (' . $status . ').' : 'Failed to save VideoObject.'
+            ]);
+            exit;
+        }
+
+        if ($action === 'toggle_managed_video_status') {
+            $uid = trim($_POST['uid'] ?? '');
+            $targetStatus = ($_POST['status'] ?? 'draft') === 'published' ? 'published' : 'draft';
+            foreach ($entries as $idx => $ex) {
+                if (($ex['uid'] ?? '') === $uid) {
+                    $ex['status'] = $targetStatus;
+                    if ($targetStatus === 'published') {
+                        $err = $validateVideoForPublish($ex);
+                        if ($err !== null) {
+                            echo json_encode(['success' => false, 'message' => $err]);
+                            exit;
+                        }
+                    }
+                    $entries[$idx] = $ex;
+                    $ok = saveManagedVideoEntries($vPageKey, $entries, true);
+                    echo json_encode(['success' => $ok, 'message' => $ok ? "VideoObject status set to {$targetStatus}." : 'Failed to update status.']);
+                    exit;
+                }
+            }
+            echo json_encode(['success' => false, 'message' => 'VideoObject entry not found.']);
+            exit;
+        }
+
+        if ($action === 'delete_managed_video') {
+            $uid = trim($_POST['uid'] ?? '');
+            $filtered = array_values(array_filter($entries, fn($e) => ($e['uid'] ?? '') !== $uid));
+            $ok = saveManagedVideoEntries($vPageKey, $filtered, true);
+            echo json_encode(['success' => $ok, 'message' => $ok ? 'VideoObject entry deleted.' : 'Failed to delete entry.']);
+            exit;
+        }
+
+        if ($action === 'reorder_managed_video') {
+            $uid = trim($_POST['uid'] ?? '');
+            $dir = ($_POST['direction'] ?? 'up') === 'down' ? 1 : -1;
+            $pos = -1;
+            foreach ($entries as $i => $e) {
+                if (($e['uid'] ?? '') === $uid) { $pos = $i; break; }
+            }
+            $swap = $pos + $dir;
+            if ($pos >= 0 && $swap >= 0 && $swap < count($entries)) {
+                $tmp = $entries[$pos];
+                $entries[$pos] = $entries[$swap];
+                $entries[$swap] = $tmp;
+                foreach ($entries as $i => $e) {
+                    $entries[$i]['display_order'] = $i + 1;
+                }
+                $ok = saveManagedVideoEntries($vPageKey, $entries, true);
+                echo json_encode(['success' => $ok, 'message' => $ok ? 'Display order updated.' : 'Reorder failed.']);
+                exit;
+            }
+            echo json_encode(['success' => true, 'message' => 'Order unchanged.']);
+            exit;
+        }
+    }
+
     echo json_encode(['success' => false, 'message' => 'Unknown action requested.']);
     exit;
 }
@@ -2838,6 +3000,84 @@ require_once CMS_ROOT . '/admin/includes/header.php';
         </div>
       <?php endif; ?>
     </div>
+
+    <?php if (in_array($activePageKey, ['homepage', 'services'], true)): ?>
+      <?php
+        $managedVideos = getManagedVideoEntries($activePageKey);
+        $voMgrTitle = $activePageKey === 'homepage' ? 'Homepage VideoObject Manager' : 'Services Listing VideoObject Manager';
+        $voIdPrefix = $activePageKey === 'homepage' ? 'https://myugcvideo.in/#' : 'https://myugcvideo.in/services#';
+      ?>
+      <!-- SECTION 3: MULTI-VIDEOOBJECT MANAGER (HOMEPAGE & SERVICES LISTING) -->
+      <div style="margin-top:2rem;" id="multiVideoObjectSection">
+        <div class="sm-section-header">
+          <div>
+            <h3 class="sm-section-title">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+              <?= sm_e($voMgrTitle) ?>
+            </h3>
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.2rem;">
+              Manage independent <code>VideoObject</code> entities for <?= sm_e($activePageInfo['canonical']) ?>. Draft entries are stored safely and never appear in public JSON-LD until published with genuine video metadata.
+            </div>
+          </div>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <span class="sm-badge custom"><?= count($managedVideos) ?> Entries</span>
+            <button type="button" class="btn btn-sm btn-primary" onclick="openManagedVideoModal('<?= sm_e($activePageKey) ?>', null)">
+              + Add VideoObject
+            </button>
+          </div>
+        </div>
+
+        <?php if (!empty($managedVideos)): ?>
+          <div class="sm-cards-grid">
+            <?php foreach ($managedVideos as $vIdx => $mv): ?>
+              <?php
+                $isPub = ($mv['status'] ?? 'draft') === 'published';
+                $vTitle = trim((string)($mv['name'] ?? '')) !== '' ? $mv['name'] : 'Untitled Draft Video #' . ($vIdx + 1);
+                $vIdDisplay = $voIdPrefix . ($mv['video_id'] ?? ('video-' . ($vIdx + 1)));
+              ?>
+              <div class="sm-card" data-video-uid="<?= sm_e($mv['uid']) ?>">
+                <div class="sm-card-head">
+                  <div class="sm-card-title">
+                    <span class="sm-badge" style="font-size:0.7rem;">#<?= (int)($mv['display_order'] ?? ($vIdx + 1)) ?></span>
+                    <span style="font-size:0.95rem;"><?= sm_e($vTitle) ?></span>
+                  </div>
+                  <div class="sm-card-badges">
+                    <span class="sm-badge <?= $isPub ? 'published' : 'draft' ?>"><?= $isPub ? 'Published' : 'Draft' ?></span>
+                  </div>
+                </div>
+                <div class="sm-card-body">
+                  <div class="sm-card-meta">
+                    <span style="font-family:var(--font-mono); font-size:0.75rem;"><?= sm_e($vIdDisplay) ?></span>
+                  </div>
+                  <div class="sm-card-snippet" style="font-size:0.78rem;">
+                    <?= sm_e(!empty($mv['description']) ? substr($mv['description'], 0, 130) : 'No description yet — fill in genuine video metadata before publishing.') ?>
+                  </div>
+                  <div style="font-size:0.73rem; color:var(--text-dim); display:flex; justify-content:space-between; gap:0.5rem;">
+                    <span>Duration: <?= sm_e(!empty($mv['duration']) ? $mv['duration'] : '—') ?></span>
+                    <span>Upload: <?= sm_e(!empty($mv['uploadDate']) ? $mv['uploadDate'] : '—') ?></span>
+                  </div>
+                </div>
+                <div class="sm-card-foot">
+                  <div class="sm-foot-actions">
+                    <button type="button" class="btn btn-sm btn-secondary" onclick='openManagedVideoModal("<?= sm_e($activePageKey) ?>", <?= json_encode($mv, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>)'>Edit</button>
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="toggleManagedVideoStatus('<?= sm_e($activePageKey) ?>', '<?= sm_e($mv['uid']) ?>', '<?= $isPub ? 'draft' : 'published' ?>')"><?= $isPub ? 'To Draft' : 'Publish' ?></button>
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="reorderManagedVideo('<?= sm_e($activePageKey) ?>', '<?= sm_e($mv['uid']) ?>', 'up')" <?= $vIdx === 0 ? 'disabled' : '' ?> title="Move Up">↑</button>
+                    <button type="button" class="btn btn-sm btn-secondary" onclick="reorderManagedVideo('<?= sm_e($activePageKey) ?>', '<?= sm_e($mv['uid']) ?>', 'down')" <?= $vIdx === count($managedVideos) - 1 ? 'disabled' : '' ?> title="Move Down">↓</button>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-danger" onclick="deleteManagedVideo('<?= sm_e($activePageKey) ?>', '<?= sm_e($mv['uid']) ?>', '<?= sm_e(addslashes($vTitle)) ?>')">Delete</button>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        <?php else: ?>
+          <div class="card" style="padding:2rem; text-align:center; background:rgba(0,0,0,0.15); border-style:dashed;">
+            <p style="color:var(--text-muted); font-size:0.9rem; margin:0 0 1rem 0;">No VideoObject entries configured for this page yet.</p>
+            <button type="button" class="btn btn-sm btn-primary" onclick="openManagedVideoModal('<?= sm_e($activePageKey) ?>', null)">+ Add First VideoObject</button>
+          </div>
+        <?php endif; ?>
+      </div>
+    <?php endif; ?>
+
     <?php endif; // End activePageKey && activePageInfo ?>
 
     <!-- Services Section Pages Directory (10 Pages) -->
@@ -3948,5 +4188,166 @@ function validateAddJsonNow() {
 }
 </script>
 
+<!-- MODAL: DIRECT VIDEOOBJECT JSON EDITOR -->
+<div id="managedVideoModal" class="sm-modal-backdrop" onclick="closeModalOnBackdrop(event, 'managedVideoModal')">
+  <div class="sm-modal-dialog" style="max-width:760px;" onclick="event.stopPropagation()">
+    <div class="sm-modal-header">
+      <div>
+        <h3 id="mvModalTitle" style="color:#fff; margin:0 0 0.2rem 0; font-family:var(--font-heading); font-size:1.25rem;">Edit VideoObject JSON</h3>
+        <span id="mvModalSubtitle" style="font-family:var(--font-mono); font-size:0.82rem; color:var(--text-muted);">VideoObject Direct JSON Editor</span>
+      </div>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('managedVideoModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="sm-modal-body">
+      <input type="hidden" id="mv_page_key" value="">
+      <input type="hidden" id="mv_uid" value="">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.85rem;">
+        <div>
+          <label class="form-label" style="font-size:0.8rem;">Display Order</label>
+          <input type="number" id="mv_order" class="form-control" min="1" value="1">
+        </div>
+        <div>
+          <label class="form-label" style="font-size:0.8rem;">Status</label>
+          <select id="mv_status" class="form-control">
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">
+          <label class="form-label" style="font-size:0.8rem; margin:0;">VideoObject JSON *</label>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="formatManagedVideoJson()">Format JSON</button>
+        </div>
+        <textarea id="mv_json" class="form-control" rows="13" spellcheck="false" style="font-family:var(--font-mono); font-size:0.84rem; line-height:1.45;" placeholder='{"@context":"https://schema.org","@type":"VideoObject","name":"...","description":"...","duration":"PT50S"}'></textarea>
+        <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.35rem;">
+          Allowed keys: <code>@context</code>, <code>@type</code>, <code>embedUrl</code>, <code>thumbnailUrl</code>, <code>name</code>, <code>description</code>, <code>duration</code>, <code>uploadDate</code>. Omit optional keys if genuine values are unavailable.
+        </div>
+      </div>
+      <div id="mv_validation_msg" style="font-size:0.82rem; color:var(--text-muted);"></div>
+    </div>
+    <div class="sm-modal-footer">
+      <button type="button" class="btn btn-secondary" onclick="document.getElementById('managedVideoModal').classList.remove('open')">Cancel</button>
+      <button type="button" class="btn btn-secondary" onclick="submitManagedVideo('draft')">Save Draft</button>
+      <button type="button" class="btn btn-primary" onclick="submitManagedVideo('published')">Save & Publish</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function buildStarterVideoObjectJson(entry) {
+  if (entry && entry.schema_json) {
+    try {
+      return JSON.stringify(JSON.parse(entry.schema_json), null, 2);
+    } catch (e) {
+      return entry.schema_json;
+    }
+  }
+  const obj = {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": (entry && entry.name) ? entry.name : "",
+    "description": (entry && entry.description) ? entry.description : "",
+    "duration": (entry && entry.duration) ? entry.duration : "PT50S"
+  };
+  if (entry && entry.embedUrl) obj.embedUrl = entry.embedUrl;
+  if (entry && entry.thumbnailUrl) obj.thumbnailUrl = entry.thumbnailUrl;
+  if (entry && entry.uploadDate) obj.uploadDate = entry.uploadDate;
+  return JSON.stringify(obj, null, 2);
+}
+
+function formatManagedVideoJson() {
+  const ta = document.getElementById('mv_json');
+  const msg = document.getElementById('mv_validation_msg');
+  try {
+    const parsed = JSON.parse(ta.value);
+    ta.value = JSON.stringify(parsed, null, 2);
+    msg.innerHTML = '<span style="color:var(--success, #36D9B0);">Valid JSON formatted.</span>';
+  } catch (err) {
+    msg.innerHTML = '<span style="color:var(--danger);">Invalid JSON syntax: ' + err.message + '</span>';
+  }
+}
+
+function openManagedVideoModal(pageKey, entry) {
+  document.getElementById('mv_page_key').value = pageKey;
+  document.getElementById('mv_uid').value = entry ? (entry.uid || '') : '';
+  document.getElementById('mv_order').value = entry ? (entry.display_order || 1) : 99;
+  document.getElementById('mv_status').value = entry ? (entry.status || 'draft') : 'draft';
+  document.getElementById('mv_json').value = buildStarterVideoObjectJson(entry);
+  document.getElementById('mvModalTitle').textContent = entry ? 'Edit VideoObject JSON' : 'Add VideoObject JSON';
+  document.getElementById('mvModalSubtitle').textContent = pageKey + ' — Direct VideoObject JSON Manager';
+  document.getElementById('mv_validation_msg').textContent = '';
+  document.getElementById('managedVideoModal').classList.add('open');
+}
+
+function submitManagedVideo(forceStatus) {
+  const rawJson = document.getElementById('mv_json').value;
+  const msgEl = document.getElementById('mv_validation_msg');
+  let parsed;
+  try {
+    parsed = JSON.parse(rawJson);
+  } catch (err) {
+    msgEl.innerHTML = '<span style="color:var(--danger);">Invalid JSON syntax: ' + err.message + '</span>';
+    return;
+  }
+
+  const fd = new FormData();
+  fd.append('action', 'save_managed_video');
+  fd.append('page_key', document.getElementById('mv_page_key').value);
+  fd.append('uid', document.getElementById('mv_uid').value);
+  fd.append('schema_json', JSON.stringify(parsed, null, 2));
+  fd.append('display_order', document.getElementById('mv_order').value);
+  fd.append('status', forceStatus || document.getElementById('mv_status').value);
+  fd.append('csrf_token', CSRF_TOKEN);
+
+  fetch(ADMIN_API, { method: 'POST', body: fd })
+    .then(r => r.json())
+    .then(d => {
+      if (d.success) {
+        window.location.reload();
+      } else {
+        msgEl.innerHTML = '<span style="color:var(--danger);">' + (d.message || 'Validation failed.') + '</span>';
+      }
+    });
+}
+
+function toggleManagedVideoStatus(pageKey, uid, status) {
+  const fd = new FormData();
+  fd.append('action', 'toggle_managed_video_status');
+  fd.append('page_key', pageKey);
+  fd.append('uid', uid);
+  fd.append('status', status);
+  fd.append('csrf_token', CSRF_TOKEN);
+  fetch(ADMIN_API, { method: 'POST', body: fd }).then(r => r.json()).then(d => {
+    if (d.success) window.location.reload();
+    else alert(d.message || 'Failed to update status.');
+  });
+}
+
+function reorderManagedVideo(pageKey, uid, direction) {
+  const fd = new FormData();
+  fd.append('action', 'reorder_managed_video');
+  fd.append('page_key', pageKey);
+  fd.append('uid', uid);
+  fd.append('direction', direction);
+  fd.append('csrf_token', CSRF_TOKEN);
+  fetch(ADMIN_API, { method: 'POST', body: fd }).then(r => r.json()).then(d => {
+    if (d.success) window.location.reload();
+  });
+}
+
+function deleteManagedVideo(pageKey, uid, title) {
+  if (!confirm('Delete VideoObject "' + title + '"?')) return;
+  const fd = new FormData();
+  fd.append('action', 'delete_managed_video');
+  fd.append('page_key', pageKey);
+  fd.append('uid', uid);
+  fd.append('csrf_token', CSRF_TOKEN);
+  fetch(ADMIN_API, { method: 'POST', body: fd }).then(r => r.json()).then(d => {
+    if (d.success) window.location.reload();
+    else alert(d.message || 'Delete failed.');
+  });
+}
+</script>
 <?php
 include CMS_ROOT . '/admin/includes/footer.php';

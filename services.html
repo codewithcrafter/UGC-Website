@@ -860,6 +860,15 @@
       z-index: 1;
     }
 
+    video.format-portfolio-bg {
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    video.format-portfolio-bg.has-frame {
+      opacity: 1;
+    }
+
     .format-portfolio-card:hover .format-portfolio-bg {
       transform: none !important;
     }
@@ -1752,9 +1761,6 @@
   </style>
 
   <!-- Structured Data: CollectionPage & Service -->
-
-  
-  
   <!-- Centralized Dynamic Schema Manager JSON-LD -->
   <script type="application/ld+json">
   {
@@ -1820,9 +1826,6 @@
     "@context": "https://schema.org",
     "@type": "FAQPage",
     "@id": "https://myugcvideo.in/services#faq",
-    "url": "https://myugcvideo.in/services",
-    "name": "Frequently Asked Questions | MY UGC VIDEO Services",
-    "inLanguage": "en-IN",
     "mainEntity": [
         {
             "@type": "Question",
@@ -1882,10 +1885,127 @@
     "@id": "https://myugcvideo.in/services#webpage",
     "url": "https://myugcvideo.in/services",
     "name": "UGC Video Production Services Directory",
-    "description": "Explore our comprehensive suite of user-generated content video production services, from performance video ads to unboxings and reviews.",
-    "isPartOf": {
-        "@id": "https://myugcvideo.in/#website"
-    }
+    "description": "Explore our comprehensive suite of user-generated content video production services, from performance video ads to unboxings and reviews."
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "@id": "https://myugcvideo.in/services#itemlist",
+    "name": "MY UGC VIDEO Services",
+    "url": "https://myugcvideo.in/services",
+    "numberOfItems": 9,
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "UGC Video Creation Services",
+            "url": "https://myugcvideo.in/services/ugc-video-creation-company"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "UGC Video Ads",
+            "url": "https://myugcvideo.in/services/ugc-video-ads-company"
+        },
+        {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "AI UGC Video Creation",
+            "url": "https://myugcvideo.in/services/ai-ugc-video-creation-company"
+        },
+        {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "UGC Product Video",
+            "url": "https://myugcvideo.in/services/ugc-product-video-company"
+        },
+        {
+            "@type": "ListItem",
+            "position": 5,
+            "name": "UGC Product Reviews Videos",
+            "url": "https://myugcvideo.in/services/ugc-product-review-videos-company"
+        },
+        {
+            "@type": "ListItem",
+            "position": 6,
+            "name": "UGC Video Company in Delhi",
+            "url": "https://myugcvideo.in/services/ugc-video-company-in-delhi"
+        },
+        {
+            "@type": "ListItem",
+            "position": 7,
+            "name": "UGC Unboxing Videos",
+            "url": "https://myugcvideo.in/services/ugc-unboxing-videos-company"
+        },
+        {
+            "@type": "ListItem",
+            "position": 8,
+            "name": "UGC Testimonial Videos",
+            "url": "https://myugcvideo.in/services/ugc-testimonial-videos-company"
+        },
+        {
+            "@type": "ListItem",
+            "position": 9,
+            "name": "UGC Video Editing Service",
+            "url": "https://myugcvideo.in/services/ugc-video-editing-company"
+        }
+    ]
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "Macro Texture & Application Demo",
+    "description": "Product demonstration videos with close shots of the texture and how it goes on or works.",
+    "duration": "PT50S"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "Sensory Tech Unboxing Experience",
+    "description": "The parcel arrives, it gets opened, and we catch the first reaction.",
+    "duration": "PT1M4S"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "Problem-Solution Direct-Response Hook",
+    "description": "Problem-solution video ads start with a small everyday annoyance. Then the product fixes it.",
+    "duration": "PT54S"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "Daily Living Routine Integration",
+    "description": "The product in a normal day, at home or out.",
+    "duration": "PT1M0S"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "Authentic Peer-to-Peer Review",
+    "description": "A person talking straight to camera. What they doubted before buying, and what changed.",
+    "duration": "PT56S"
+}
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    "name": "AI Assisted Regional Testing Asset",
+    "description": "Virtual presenters and different voices, for quickly trying out new openings.",
+    "duration": "PT1M8S"
 }
   </script>
 </head>
@@ -2593,10 +2713,8 @@
         <div class="formats-portfolio-grid">
 
           <!-- Format 1: Product Demonstrations -->
-          <div class="format-portfolio-card camera-focus-media" data-video-src="">
-            <img src="images/services/service-product-videos.jpg"
-              alt="Macro product demonstration showing texture and formula application" class="format-portfolio-bg"
-              width="1000" height="1500" loading="lazy">
+          <div class="format-portfolio-card camera-focus-media" data-video-src="assets/videos/optimized/video-01.mp4">
+            <video class="format-portfolio-bg" data-video-src="assets/videos/optimized/video-01.mp4" muted playsinline webkit-playsinline preload="none" aria-label="Macro product demonstration showing texture and formula application"></video>
             <div class="format-portfolio-overlay">
               <div class="format-top-tags">
                 <span class="format-tag-badge">DEMONSTRATION </span>
@@ -2604,7 +2722,6 @@
               </div>
               <div class="format-center-trigger">
                 <button class="video-play-btn-pulse video-play-trigger" aria-label="Play Product Demonstration Example"
-                  data-video-poster="images/services/service-product-videos.jpg"
                   data-video-title="Macro Texture &amp; Application Demo"
                   data-video-meta="Format: Product Demonstrations • 9:16 Vertical Video">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
@@ -2622,9 +2739,8 @@
           </div>
 
           <!-- Format 2: Unboxing & First Impressions -->
-          <div class="format-portfolio-card camera-focus-media" data-video-src="">
-            <img src="images/services/service-unboxing.jpg" alt="First-person sensory packaging unboxing reveal"
-              class="format-portfolio-bg" width="1000" height="667" loading="lazy">
+          <div class="format-portfolio-card camera-focus-media" data-video-src="assets/videos/optimized/video-02.mp4">
+            <video class="format-portfolio-bg" data-video-src="assets/videos/optimized/video-02.mp4" muted playsinline webkit-playsinline preload="none" aria-label="First-person sensory packaging unboxing reveal"></video>
             <div class="format-portfolio-overlay">
               <div class="format-top-tags">
                 <span class="format-tag-badge">UNBOXING </span>
@@ -2632,7 +2748,6 @@
               </div>
               <div class="format-center-trigger">
                 <button class="video-play-btn-pulse video-play-trigger" aria-label="Play Unboxing Example"
-                  data-video-poster="images/services/service-unboxing.jpg"
                   data-video-title="Sensory Tech Unboxing Experience"
                   data-video-meta="Format: Unboxing &amp; First Impressions • 9:16 Vertical Video">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
@@ -2650,10 +2765,8 @@
           </div>
 
           <!-- Format 3: Problem-Solution Hooks -->
-          <div class="format-portfolio-card camera-focus-media" data-video-src="">
-            <img src="images/services/service-problem-solution.jpg"
-              alt="Problem solution direct response hook demonstrating product utility" class="format-portfolio-bg"
-              width="380" height="590" loading="lazy">
+          <div class="format-portfolio-card camera-focus-media" data-video-src="assets/videos/optimized/video-03.mp4">
+            <video class="format-portfolio-bg" data-video-src="assets/videos/optimized/video-03.mp4" muted playsinline webkit-playsinline preload="none" aria-label="Problem solution direct response hook demonstrating product utility"></video>
             <div class="format-portfolio-overlay">
               <div class="format-top-tags">
                 <span class="format-tag-badge">PROBLEM-SOLUTION</span>
@@ -2661,7 +2774,6 @@
               </div>
               <div class="format-center-trigger">
                 <button class="video-play-btn-pulse video-play-trigger" aria-label="Play Problem-Solution Example"
-                  data-video-poster="images/services/service-problem-solution.jpg"
                   data-video-title="Problem-Solution Direct-Response Hook"
                   data-video-meta="Format: Problem-Solution Hooks • 9:16 Vertical Video">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
@@ -2679,10 +2791,8 @@
           </div>
 
           <!-- Format 4: Everyday Lifestyle Integration -->
-          <div class="format-portfolio-card camera-focus-media" data-video-src="">
-            <img src="images/services/service-lifestyle.jpg"
-              alt="Lifestyle creator incorporating product into domestic routine" class="format-portfolio-bg"
-              width="380" height="590" loading="lazy">
+          <div class="format-portfolio-card camera-focus-media" data-video-src="assets/videos/optimized/video-04.mp4">
+            <video class="format-portfolio-bg" data-video-src="assets/videos/optimized/video-04.mp4" muted playsinline webkit-playsinline preload="none" aria-label="Lifestyle creator incorporating product into domestic routine"></video>
             <div class="format-portfolio-overlay">
               <div class="format-top-tags">
                 <span class="format-tag-badge">LIFESTYLE </span>
@@ -2690,7 +2800,6 @@
               </div>
               <div class="format-center-trigger">
                 <button class="video-play-btn-pulse video-play-trigger" aria-label="Play Lifestyle Example"
-                  data-video-poster="images/services/service-lifestyle.jpg"
                   data-video-title="Daily Living Routine Integration"
                   data-video-meta="Format: Everyday Lifestyle Integration • 9:16 Vertical Video">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
@@ -2708,10 +2817,8 @@
           </div>
 
           <!-- Format 5: Authentic Creator Testimonials -->
-          <div class="format-portfolio-card camera-focus-media" data-video-src="">
-            <img src="images/services/service-testimonial.jpg"
-              alt="Creator sharing honest conversational review in domestic interior" class="format-portfolio-bg"
-              width="1000" height="1498" loading="lazy">
+          <div class="format-portfolio-card camera-focus-media" data-video-src="assets/videos/optimized/video-05.mp4">
+            <video class="format-portfolio-bg" data-video-src="assets/videos/optimized/video-05.mp4" muted playsinline webkit-playsinline preload="none" aria-label="Creator sharing honest conversational review in domestic interior"></video>
             <div class="format-portfolio-overlay">
               <div class="format-top-tags">
                 <span class="format-tag-badge">TESTIMONIAL </span>
@@ -2719,7 +2826,6 @@
               </div>
               <div class="format-center-trigger">
                 <button class="video-play-btn-pulse video-play-trigger" aria-label="Play Testimonial Example"
-                  data-video-poster="images/services/service-testimonial.jpg"
                   data-video-title="Authentic Peer-to-Peer Review"
                   data-video-meta="Format: Authentic Creator Testimonials • 9:16 Vertical Video">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
@@ -2737,9 +2843,8 @@
           </div>
 
           <!-- Format 6: AI-Assisted Creative Variants -->
-          <div class="format-portfolio-card camera-focus-media" data-video-src="">
-            <img src="images/services/service-ai-ugc.jpg" alt="AI virtual presenter testing dynamic regional hooks"
-              class="format-portfolio-bg" width="1000" height="1250" loading="lazy">
+          <div class="format-portfolio-card camera-focus-media" data-video-src="assets/videos/optimized/video-06.mp4">
+            <video class="format-portfolio-bg" data-video-src="assets/videos/optimized/video-06.mp4" muted playsinline webkit-playsinline preload="none" aria-label="AI virtual presenter testing dynamic regional hooks"></video>
             <div class="format-portfolio-overlay">
               <div class="format-top-tags">
                 <span class="format-tag-badge">AI UGC</span>
@@ -2747,7 +2852,6 @@
               </div>
               <div class="format-center-trigger">
                 <button class="video-play-btn-pulse video-play-trigger" aria-label="Play AI Creative Example"
-                  data-video-poster="images/services/service-ai-ugc.jpg"
                   data-video-title="AI Assisted Regional Testing Asset"
                   data-video-meta="Format: AI-Assisted Creative Variants • 9:16 Vertical Video">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
@@ -3369,7 +3473,7 @@
         <img id="videoModalImg" src="images/services/service-product-videos.jpg" alt="Video Format Preview" class="video-modal-media-element video-modal-poster"
           loading="lazy">
         <video id="videoModalPlayer" class="video-modal-media-element video-modal-video" controls playsinline
-          preload="metadata" style="display: none;">
+          preload="none" style="display: none;">
           Your browser does not support HTML5 video.
         </video>
       </div>

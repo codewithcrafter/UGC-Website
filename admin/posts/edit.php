@@ -174,6 +174,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $unfeat->execute([':id' => $postId]);
         }
 
+        $oldAutoCanonical = 'https://myugcvideo.in/blog/' . $post['slug'];
+        if ($slug !== $post['slug'] && rtrim($canonicalUrl, '/') === $oldAutoCanonical) {
+            $canonicalUrl = 'https://myugcvideo.in/blog/' . $slug;
+        }
         if (empty($canonicalUrl) || str_contains($canonicalUrl, 'example.com') || str_contains($canonicalUrl, 'demo.myugcvideo') || str_ends_with($canonicalUrl, '.html') || str_contains($canonicalUrl, 'blog.php')) {
             $canonicalUrl = 'https://myugcvideo.in/blog/' . $slug;
         }
@@ -239,6 +243,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Automatically synchronize to Markdown & BlogPosting Schema
         $oldSlug = $post['slug'];
+        if ($oldSlug !== $slug && function_exists('migrateBlogPageSchemasSlug')) {
+            migrateBlogPageSchemasSlug($oldSlug, $slug, $title);
+        }
         $syncRes = syncBlogPostArtifacts((int) $postId, $oldSlug);
         $syncNote = $syncRes['success'] ? ' & Markdown/Schema synchronized' : '';
 
@@ -2133,13 +2140,13 @@ function updateLiveSchema() {
   const chipFaqLabel = document.getElementById('chipFaqLabel');
   const chipFaqIcon = document.getElementById('chipFaqIcon');
   if (validFaqs.length > 0) {
-    chipFaq.classList.add('active');
-    chipFaqIcon.innerHTML = '&#10003;';
-    chipFaqLabel.textContent = `FAQPage (${validFaqs.length} FAQs)`;
+    if (chipFaq) chipFaq.classList.add('active');
+    if (chipFaqIcon) chipFaqIcon.innerHTML = '&#10003;';
+    if (chipFaqLabel) chipFaqLabel.textContent = `FAQPage (${validFaqs.length} FAQs)`;
   } else {
-    chipFaq.classList.remove('active');
-    chipFaqIcon.innerHTML = '&bull;';
-    chipFaqLabel.textContent = 'FAQPage (0 FAQs)';
+    if (chipFaq) chipFaq.classList.remove('active');
+    if (chipFaqIcon) chipFaqIcon.innerHTML = '&bull;';
+    if (chipFaqLabel) chipFaqLabel.textContent = 'FAQPage (0 FAQs)';
   }
 
   const badge = document.getElementById('schemaStatusBadge');

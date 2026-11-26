@@ -11848,6 +11848,64 @@ section.hero .container>div>div>div[style*="position: relative"]:focus-visible::
   display: block;
   z-index: 1;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.portfolio-3d-video.has-frame {
+  opacity: 1;
+}
+
+.portfolio-sound-btn {
+  position: absolute;
+  right: 0.9rem;
+  bottom: 0.9rem;
+  z-index: 5;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(54, 217, 176, 0.45);
+  background: rgba(0, 23, 19, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #D9E5DF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+}
+
+.portfolio-sound-btn:hover,
+.portfolio-sound-btn:focus-visible {
+  transform: scale(1.06);
+  border-color: #36D9B0;
+  color: #36D9B0;
+  outline: none;
+}
+
+.portfolio-sound-btn[aria-pressed="true"] {
+  background: rgba(0, 191, 165, 0.22);
+  border-color: #36D9B0;
+  color: #36D9B0;
+}
+
+.portfolio-sound-btn .sound-on-icon {
+  display: none;
+}
+
+.portfolio-sound-btn[aria-pressed="true"] .sound-off-icon {
+  display: none;
+}
+
+.portfolio-sound-btn[aria-pressed="true"] .sound-on-icon {
+  display: block;
+}
+
+.portfolio-card-info {
+  padding-right: 3rem;
 }
 
 .portfolio-3d-poster {
