@@ -50,6 +50,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
+// Handle Update/Rename Category
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update') {
+    verifyCsrfOrDie();
+    $catId = (int) ($_POST['category_id'] ?? 0);
+    $name  = trim($_POST['name'] ?? '');
+    if ($catId > 0 && $name !== '') {
+        $stmt = $db->prepare("UPDATE categories SET name = :name WHERE id = :id");
+        $stmt->execute([':name' => $name, ':id' => $catId]);
+        if (function_exists('reconcileAllBlogsToMarkdown')) {
+            reconcileAllBlogsToMarkdown();
+        }
+        if (function_exists('syncBlogsMd')) {
+            syncBlogsMd();
+        }
+        setFlash('success', 'Category updated & blog Markdown synchronized.');
+        header('Location: ' . ADMIN_URL . '/categories');
+        exit;
+    }
+}
+
 // Handle Delete Category
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
     verifyCsrfOrDie();
@@ -57,7 +77,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     if ($catId > 0) {
         $stmt = $db->prepare("DELETE FROM categories WHERE id = :id");
         $stmt->execute([':id' => $catId]);
-        setFlash('success', 'Category deleted successfully. Associated articles have been set to Uncategorized.');
+        if (function_exists('reconcileAllBlogsToMarkdown')) {
+            reconcileAllBlogsToMarkdown();
+        }
+        if (function_exists('syncBlogsMd')) {
+            syncBlogsMd();
+        }
+        setFlash('success', 'Category deleted successfully. Associated articles have been set to Uncategorized & Markdown synchronized.');
         header('Location: ' . ADMIN_URL . '/categories');
         exit;
     }

@@ -21,6 +21,9 @@
 define('CMS_ROOT', __DIR__);
 require_once CMS_ROOT . '/config/config.php';
 require_once CMS_ROOT . '/includes/auth.php';
+if (file_exists(CMS_ROOT . '/includes/website-markdown-sync.php')) {
+    require_once CMS_ROOT . '/includes/website-markdown-sync.php';
+}
 
 // 1. Retrieve & sanitize requested path
 $rawPath = trim($_GET['path'] ?? '');
@@ -198,6 +201,15 @@ if ($prefix === 'root') {
 }
 
 // 3. Final Path Verification and Realpath Security Traversal Check
+if ($targetFile && file_exists($targetFile) && class_exists('WebsiteMarkdownSync')) {
+    if ($prefix === 'root' && $slug === 'blogs') {
+        WebsiteMarkdownSync::syncBlogsListingIfStale();
+    } elseif ($prefix === 'root' && in_array($slug, ['about', 'services', 'contact'], true)) {
+        WebsiteMarkdownSync::syncHtmlPageIfStale($slug);
+    } elseif ($prefix === 'services' && !empty($slug)) {
+        WebsiteMarkdownSync::syncHtmlPageIfStale('services/' . $slug);
+    }
+}
 if (!$targetFile || !file_exists($targetFile)) {
     serveError(404, 'Markdown Document Not Found: The requested document does not exist.');
 }

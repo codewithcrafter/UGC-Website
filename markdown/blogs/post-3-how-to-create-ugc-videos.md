@@ -5,7 +5,7 @@ slug: "how-to-create-ugc-videos"
 status: "published"
 is_featured: 0
 category: "Creator Tips"
-tags: ["UGC video","creator marketing","Creator Tips"]
+tags: ["creator marketing","Creator Tips","UGC video"]
 author: "MY UGC VIDEO Editorial Team"
 author_role: "UGC Creative Studio"
 published_at: "2026-10-22T08:30:00+02:00"

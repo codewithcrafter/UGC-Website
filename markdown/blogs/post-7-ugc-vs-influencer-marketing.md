@@ -5,7 +5,7 @@ slug: "ugc-vs-influencer-marketing"
 status: "published"
 is_featured: 0
 category: "UGC Marketing"
-tags: ["UGC video","creator marketing","UGC Marketing"]
+tags: ["creator marketing","UGC Marketing","UGC video"]
 author: "MY UGC VIDEO Editorial Team"
 author_role: "UGC Creative Studio"
 published_at: "2026-10-20T11:00:00+02:00"

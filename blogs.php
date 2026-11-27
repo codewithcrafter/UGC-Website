@@ -8,6 +8,14 @@
 
 define('CMS_ROOT', __DIR__);
 require_once CMS_ROOT . '/config/config.php';
+if (file_exists(CMS_ROOT . '/includes/website-markdown-sync.php')) {
+    require_once CMS_ROOT . '/includes/website-markdown-sync.php';
+    try {
+        WebsiteMarkdownSync::syncBlogsListingIfStale();
+    } catch (Throwable $e) {
+        error_log('blogs.php markdown auto-sync error: ' . $e->getMessage());
+    }
+}
 
 // Tag and pagination parameter handling
 $tagParam = !empty($_GET['tag']) ? trim($_GET['tag']) : null;

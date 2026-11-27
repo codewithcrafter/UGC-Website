@@ -515,6 +515,83 @@ class WebsiteMarkdownSync {
         return trim($md) . "\n";
     }
 
+    private static function getStatusFilePath(): string {
+        return CMS_ROOT . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . 'markdown_sync_status.json';
+    }
+
+    private static function getStoredSourceHash(string $pageKey): ?string {
+        $logFile = self::getStatusFilePath();
+        if (!file_exists($logFile) || !is_readable($logFile)) {
+            return null;
+        }
+        $raw = @file_get_contents($logFile);
+        if ($raw === false || trim($raw) === '') {
+            return null;
+        }
+        $data = json_decode($raw, true);
+        if (!is_array($data)) {
+            return null;
+        }
+        $h = $data['pages'][$pageKey]['source_hash'] ?? null;
+        return (is_string($h) && $h !== '') ? $h : null;
+    }
+
+    /**
+     * SHA-256 source-content freshness check: syncs an existing HTML-backed page's .md file
+     * only if both the HTML source and existing .md file exist and the HTML SHA-256 differs
+     * from the last successfully synchronized source_hash. Never creates new .md files.
+     */
+    public static function syncHtmlPageIfStale(string $pageKey): bool {
+        if ($pageKey === 'homepage' || $pageKey === 'blogs') {
+            return false;
+        }
+        $inventory = self::getPageInventory();
+        if (!isset($inventory[$pageKey])) {
+            if (str_starts_with($pageKey, 'service-') && isset($inventory['services/' . substr($pageKey, 8)])) {
+                $pageKey = 'services/' . substr($pageKey, 8);
+            } elseif (isset($inventory['services/' . $pageKey])) {
+                $pageKey = 'services/' . $pageKey;
+            } else {
+                return false;
+            }
+        }
+        $page = $inventory[$pageKey];
+        $sourcePath = CMS_ROOT . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $page['source_file']);
+        $targetPath = CMS_ROOT . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $page['markdown_file']);
+        if (!file_exists($sourcePath) || !file_exists($targetPath)) {
+            return false;
+        }
+
+        $currentSourceHash = @hash_file('sha256', $sourcePath);
+        if ($currentSourceHash === false || $currentSourceHash === '') {
+            return false;
+        }
+        if (self::getStoredSourceHash($pageKey) === $currentSourceHash) {
+            return false;
+        }
+
+        $lockPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'ugc_md_sync_' . md5($targetPath) . '.lock';
+        $lockFp = @fopen($lockPath, 'c');
+        if ($lockFp !== false) {
+            @flock($lockFp, LOCK_EX);
+        }
+
+        try {
+            // Re-check inside lock so concurrent requests do not duplicate work
+            $latestSourceHash = @hash_file('sha256', $sourcePath);
+            if ($latestSourceHash === false || self::getStoredSourceHash($pageKey) === $latestSourceHash) {
+                return false;
+            }
+            $res = self::syncHtmlPage($pageKey, false);
+            return !empty($res['success']) && !empty($res['changed']);
+        } finally {
+            if ($lockFp !== false) {
+                @flock($lockFp, LOCK_UN);
+                @fclose($lockFp);
+            }
+        }
+    }
+
     /**
      * Synchronize a single HTML page to its Markdown counterpart atomically
      */
@@ -542,6 +619,7 @@ class WebsiteMarkdownSync {
         if ($htmlContent === false || trim($htmlContent) === '') {
             return ['success' => false, 'error' => "Source HTML file is empty or unreadable: {$page['source_file']}"];
         }
+        $sourceHash = hash('sha256', $htmlContent);
 
         $meta = self::extractMetadata($htmlContent, $page);
         $newMarkdown = self::convertHtmlToMarkdown($htmlContent, $meta);
@@ -561,6 +639,7 @@ class WebsiteMarkdownSync {
                 'source_file'   => $page['source_file'],
                 'markdown_file' => $page['markdown_file'],
                 'canonical_url' => $page['canonical_url'],
+                'source_hash'   => $sourceHash,
                 'hash'          => $newHash,
                 'bytes'         => strlen($newMarkdown),
                 'synced_at'     => date('c')
@@ -595,6 +674,7 @@ class WebsiteMarkdownSync {
             'source_file'   => $page['source_file'],
             'markdown_file' => $page['markdown_file'],
             'canonical_url' => $page['canonical_url'],
+            'source_hash'   => $sourceHash,
             'hash'          => $newHash,
             'bytes'         => strlen($newMarkdown),
             'synced_at'     => date('c')
@@ -619,6 +699,8 @@ class WebsiteMarkdownSync {
         }
 
         $content = generateBlogsMd();
+        $blogsPhpPath = CMS_ROOT . DIRECTORY_SEPARATOR . 'blogs.php';
+        $sourceHash = file_exists($blogsPhpPath) ? (@hash_file('sha256', $blogsPhpPath) ?: null) : null;
         $target1 = CMS_ROOT . DIRECTORY_SEPARATOR . 'markdown' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'blogs.md';
         $target2 = CMS_ROOT . DIRECTORY_SEPARATOR . 'blogs.md';
 
@@ -635,6 +717,7 @@ class WebsiteMarkdownSync {
                 'source_file'   => 'blogs.php',
                 'markdown_file' => 'markdown/pages/blogs.md',
                 'canonical_url' => $baseUrl . '/blogs.md',
+                'source_hash'   => $sourceHash,
                 'hash'          => $hash,
                 'bytes'         => strlen($content),
                 'synced_at'     => date('c')
@@ -656,6 +739,7 @@ class WebsiteMarkdownSync {
             'source_file'   => 'blogs.php',
             'markdown_file' => 'markdown/pages/blogs.md',
             'canonical_url' => $baseUrl . '/blogs.md',
+            'source_hash'   => $sourceHash,
             'hash'          => $hash,
             'bytes'         => strlen($content),
             'synced_at'     => date('c')
@@ -667,6 +751,52 @@ class WebsiteMarkdownSync {
             'action'  => 'written',
             'bytes'   => strlen($content)
         ];
+    }
+
+    /**
+     * Synchronize blogs.md and markdown/pages/blogs.md when blogs.php changes or mirrors are missing/diverged
+     */
+    public static function syncBlogsListingIfStale(): bool {
+        $blogsPhpPath = CMS_ROOT . DIRECTORY_SEPARATOR . 'blogs.php';
+        $target1 = CMS_ROOT . DIRECTORY_SEPARATOR . 'markdown' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'blogs.md';
+        $target2 = CMS_ROOT . DIRECTORY_SEPARATOR . 'blogs.md';
+
+        if (!file_exists($blogsPhpPath)) {
+            return false;
+        }
+
+        $currentSourceHash = @hash_file('sha256', $blogsPhpPath);
+        if ($currentSourceHash === false || $currentSourceHash === '') {
+            return false;
+        }
+
+        $bothExist = file_exists($target1) && file_exists($target2);
+        $mirrorsMatch = $bothExist && (hash_file('sha256', $target1) === hash_file('sha256', $target2));
+        if ($mirrorsMatch && self::getStoredSourceHash('blogs') === $currentSourceHash) {
+            return false;
+        }
+
+        $lockPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'ugc_md_sync_' . md5($target1) . '.lock';
+        $lockFp = @fopen($lockPath, 'c');
+        if ($lockFp !== false) {
+            @flock($lockFp, LOCK_EX);
+        }
+
+        try {
+            $latestSourceHash = @hash_file('sha256', $blogsPhpPath);
+            $bothExistNow = file_exists($target1) && file_exists($target2);
+            $mirrorsMatchNow = $bothExistNow && (hash_file('sha256', $target1) === hash_file('sha256', $target2));
+            if ($mirrorsMatchNow && $latestSourceHash !== false && self::getStoredSourceHash('blogs') === $latestSourceHash) {
+                return false;
+            }
+            $res = self::syncBlogsListing(false);
+            return !empty($res['success']) && !empty($res['changed']);
+        } finally {
+            if ($lockFp !== false) {
+                @flock($lockFp, LOCK_UN);
+                @fclose($lockFp);
+            }
+        }
     }
 
     /**
@@ -764,41 +894,67 @@ class WebsiteMarkdownSync {
     }
 
     /**
+     * Thread-safe atomic read-modify-write helper for markdown_sync_status.json
+     */
+    private static function mutateStatusFile(callable $mutator): void {
+        $logFile = self::getStatusFilePath();
+        $lockPath = $logFile . '.lock';
+        $dir = dirname($logFile);
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0755, true);
+        }
+        $lockFp = @fopen($lockPath, 'c');
+        if ($lockFp !== false) {
+            @flock($lockFp, LOCK_EX);
+        }
+        try {
+            $current = [];
+            if (file_exists($logFile)) {
+                $decoded = json_decode((string)@file_get_contents($logFile), true);
+                if (is_array($decoded)) {
+                    $current = $decoded;
+                }
+            }
+            $updated = $mutator($current);
+            $encoded = json_encode($updated, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+            if ($encoded !== false) {
+                self::atomicWrite($logFile, $encoded);
+            }
+        } finally {
+            if ($lockFp !== false) {
+                @flock($lockFp, LOCK_UN);
+                @fclose($lockFp);
+            }
+        }
+    }
+
+    /**
      * Log status for a single page
      */
     private static function updatePageSyncLog(string $pageKey, array $data): void {
-        $logFile = CMS_ROOT . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . 'markdown_sync_status.json';
-        $current = [];
-        if (file_exists($logFile)) {
-            $current = json_decode(file_get_contents($logFile), true) ?: [];
-        }
-        $current['pages'][$pageKey] = array_merge($current['pages'][$pageKey] ?? [], $data);
-        $current['last_updated'] = date('c');
-
-        @file_put_contents($logFile, json_encode($current, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), LOCK_EX);
+        self::mutateStatusFile(function (array $current) use ($pageKey, $data): array {
+            $current['pages'][$pageKey] = array_merge($current['pages'][$pageKey] ?? [], $data);
+            $current['last_updated'] = date('c');
+            return $current;
+        });
     }
 
     /**
      * Save overall reconciliation summary
      */
     private static function saveOverallStatus(array $results): void {
-        $logFile = CMS_ROOT . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR . 'markdown_sync_status.json';
-        $current = [];
-        if (file_exists($logFile)) {
-            $current = json_decode(file_get_contents($logFile), true) ?: [];
-        }
-
-        $current['reconciliation'] = [
-            'last_run'     => date('c'),
-            'total_pages'  => $results['total'],
-            'synced_pages' => $results['synced'],
-            'updated'      => $results['updated'],
-            'unchanged'    => $results['unchanged'],
-            'errors'       => $results['errors'],
-            'blog_posts'   => $results['blog_stats']['synced'] ?? 10
-        ];
-
-        @file_put_contents($logFile, json_encode($current, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), LOCK_EX);
+        self::mutateStatusFile(function (array $current) use ($results): array {
+            $current['reconciliation'] = [
+                'last_run'     => date('c'),
+                'total_pages'  => $results['total'],
+                'synced_pages' => $results['synced'],
+                'updated'      => $results['updated'],
+                'unchanged'    => $results['unchanged'],
+                'errors'       => $results['errors'],
+                'blog_posts'   => $results['blog_stats']['synced'] ?? 10
+            ];
+            return $current;
+        });
     }
 
     /**

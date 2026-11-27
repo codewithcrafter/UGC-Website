@@ -57,7 +57,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
     $stmt = $db->prepare("UPDATE blog_posts SET is_featured = :feat WHERE id = :id");
     $stmt->execute([':feat' => $newFeatured, ':id' => $postId]);
-    setFlash('success', $newFeatured ? "Article marked as Featured Spotlight." : "Article removed from Featured.");
+    if ($newFeatured === 1 && function_exists('reconcileAllBlogsToMarkdown')) {
+        reconcileAllBlogsToMarkdown();
+    } elseif (function_exists('syncBlogPostArtifacts')) {
+        syncBlogPostArtifacts($postId);
+    }
+    if (function_exists('syncBlogsMd')) {
+        syncBlogsMd();
+    }
+    setFlash('success', $newFeatured ? "Article marked as Featured Spotlight & Markdown synchronized." : "Article removed from Featured & Markdown synchronized.");
     header('Location: ' . ADMIN_URL . '/posts');
     exit;
 }

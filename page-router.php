@@ -17,6 +17,9 @@
 define('CMS_ROOT', __DIR__);
 require_once CMS_ROOT . '/config/config.php';
 require_once CMS_ROOT . '/includes/schema-renderer.php';
+if (file_exists(CMS_ROOT . '/includes/website-markdown-sync.php')) {
+    require_once CMS_ROOT . '/includes/website-markdown-sync.php';
+}
 
 // 1. Identify current canonical request and resolve page identifier
 $page = trim($_GET['page'] ?? '');
@@ -108,6 +111,11 @@ $finalHtml = injectDynamicSchemasIntoHtml($html, $dynamicSchemas);
 
 // 6. Inject dynamic asset versions for automatic cache-busting (filemtime-based)
 $finalHtml = injectDynamicAssetVersions($finalHtml);
+
+// 6.5 Keep existing page Markdown synchronized if HTML source was modified directly
+if ($pageKey && $pageKey !== 'homepage' && class_exists('WebsiteMarkdownSync')) {
+    WebsiteMarkdownSync::syncHtmlPageIfStale($pageKey);
+}
 
 // 7. Set HTTP headers and output
 header('Content-Type: text/html; charset=UTF-8');

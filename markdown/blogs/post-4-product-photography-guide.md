@@ -5,7 +5,7 @@ slug: "product-photography-guide"
 status: "published"
 is_featured: 0
 category: "E-commerce"
-tags: ["UGC video","creator marketing","E-commerce"]
+tags: ["creator marketing","E-commerce","UGC video"]
 author: "MY UGC VIDEO Editorial Team"
 author_role: "UGC Creative Studio"
 published_at: "2026-10-25T11:45:00+01:00"

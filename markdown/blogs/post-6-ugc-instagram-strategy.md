@@ -5,7 +5,7 @@ slug: "ugc-instagram-strategy"
 status: "published"
 is_featured: 0
 category: "Social Strategy"
-tags: ["UGC video","creator marketing","Social Strategy"]
+tags: ["creator marketing","Social Strategy","UGC video"]
 author: "MY UGC VIDEO Editorial Team"
 author_role: "UGC Creative Studio"
 published_at: "2026-10-27T08:00:00+01:00"

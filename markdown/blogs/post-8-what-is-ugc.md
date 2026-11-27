@@ -5,7 +5,7 @@ slug: "what-is-ugc"
 status: "published"
 is_featured: 0
 category: "UGC Trends"
-tags: ["UGC Trends","UGC video","creator marketing"]
+tags: ["creator marketing","UGC Trends","UGC video"]
 author: "MY UGC VIDEO Editorial Team"
 author_role: "UGC Creative Studio"
 published_at: "2026-10-15T09:00:00+02:00"

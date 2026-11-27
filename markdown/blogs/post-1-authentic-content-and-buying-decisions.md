@@ -3,13 +3,13 @@ id: 1
 title: "The Psychology of Authenticity: How UGC Directly Influences Consumer Purchasing"
 slug: "authentic-content-and-buying-decisions"
 status: "published"
-is_featured: 0
+is_featured: 1
 category: "UGC Trends"
-tags: ["UGC Trends","UGC video","creator marketing"]
+tags: ["creator marketing","UGC Trends","UGC video"]
 author: "MY UGC VIDEO Editorial Team"
 author_role: "UGC Creative Studio"
 published_at: "2026-10-26T10:00:00+01:00"
-updated_at: "2026-11-13T11:52:36+01:00"
+updated_at: "2026-11-27T11:02:09+01:00"
 canonical_url: "https://myugcvideo.in/blog/authentic-content-and-buying-decisions"
 featured_image: "https://myugcvideo.in/images/blogs/blog-8.jpg"
 featured_image_alt: "Person thoughtfully examining lifestyle product in calm home living space"

@@ -5,7 +5,7 @@ slug: "ugc-content-ideas"
 status: "published"
 is_featured: 0
 category: "Content Strategy"
-tags: ["UGC video","creator marketing","Content Strategy"]
+tags: ["Content Strategy","creator marketing","UGC video"]
 author: "MY UGC VIDEO Editorial Team"
 author_role: "UGC Creative Studio"
 published_at: "2026-10-23T14:00:00+02:00"

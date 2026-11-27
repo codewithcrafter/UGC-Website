@@ -6,138 +6,140 @@
             "source_file": "about.html",
             "markdown_file": "markdown/pages/about.md",
             "canonical_url": "https://myugcvideo.in/about.md",
-            "hash": "8e54980db068ab3b3fc6d17dcf966741f1b4c0a4d0dfa5f1b6bc6960b59e2274",
+            "hash": "a066099ee664c88c0d089d88cfb39e7a85df29c06201a20bdb410611020de693",
             "bytes": 4576,
-            "synced_at": "2026-11-25T09:43:18+01:00"
+            "synced_at": "2026-11-27T06:26:08+01:00",
+            "source_hash": "268b230f9514b01a136f772436cec0096ee767df9d1ad369e07e2fcbe37823d8"
         },
         "services": {
             "status": "synced",
-            "action": "written",
+            "action": "skipped_unchanged",
             "source_file": "services.html",
             "markdown_file": "markdown/pages/services.md",
             "canonical_url": "https://myugcvideo.in/services.md",
-            "hash": "2696115b862cfa36eecf24d704ba9967a21ba61815fdb17e1636a1d16ec28302",
+            "hash": "96e04d883cc922382b7ae7c3325a70b6059664f60510f2eb2c88dc5ce8ef15a3",
             "bytes": 10242,
-            "synced_at": "2026-11-25T09:43:18+01:00"
+            "synced_at": "2026-11-26T06:51:48+01:00"
         },
         "contact": {
             "status": "synced",
-            "action": "written",
+            "action": "skipped_unchanged",
             "source_file": "contact.html",
             "markdown_file": "markdown/pages/contact.md",
             "canonical_url": "https://myugcvideo.in/contact.md",
-            "hash": "11f106570bc8a8759db447e2c3a1daa76abd5f4e2781ac6924d72dcb6de92b46",
+            "hash": "3503d9f751b130d934541417edc8ea4e30f7919393c792efa3f65538b58251f2",
             "bytes": 2493,
-            "synced_at": "2026-11-25T09:43:18+01:00"
+            "synced_at": "2026-11-26T06:51:48+01:00"
         },
         "blogs": {
             "status": "synced",
-            "action": "skipped_unchanged",
+            "action": "written",
             "source_file": "blogs.php",
             "markdown_file": "markdown/pages/blogs.md",
             "canonical_url": "https://myugcvideo.in/blogs.md",
-            "hash": "26ee7ffa47a8bd0c46fc4d0d8734c694e51eebf27b192f3484eda5b49f116821",
-            "bytes": 4723,
-            "synced_at": "2026-11-25T09:43:18+01:00"
+            "hash": "de11a6896ef2030c2b92f9fe6f9c61a1af1239c64253fd01f2105ce43686e343",
+            "bytes": 7068,
+            "synced_at": "2026-11-27T06:32:10+01:00",
+            "source_hash": "6afac40f12949fe786ebf586fae642cf74cb75fcffe26d4abda445a714a6063b"
         },
         "services/ai-ugc-video-creation-company": {
             "status": "synced",
-            "action": "written",
+            "action": "skipped_unchanged",
             "source_file": "services/ai-ugc-video-creation-company.html",
             "markdown_file": "markdown/services/ai-ugc-video-creation-company.md",
             "canonical_url": "https://myugcvideo.in/services/ai-ugc-video-creation-company.md",
-            "hash": "e4a77054a42e21e7ae198e36e516b308da8c1fb6b62b6c9fbc4c46dd40dead84",
+            "hash": "12359b51a8c8fe1dfd7b1a93ff6f76fcc8c24ffadb1d96fa335e1d3f35065799",
             "bytes": 8819,
-            "synced_at": "2026-11-25T09:43:18+01:00"
+            "synced_at": "2026-11-26T06:51:48+01:00"
         },
         "services/ugc-product-review-videos-company": {
             "status": "synced",
-            "action": "written",
+            "action": "skipped_unchanged",
             "source_file": "services/ugc-product-review-videos-company.html",
             "markdown_file": "markdown/services/ugc-product-review-videos-company.md",
             "canonical_url": "https://myugcvideo.in/services/ugc-product-review-videos-company.md",
-            "hash": "02a1bffa936b2b5f1a2522a1e473335d5a9f40c3c9edc1b80bc3ba944bd50696",
+            "hash": "e92d114f90b8172a47ad6135f13f5ae4dc91bad80d1dcbe3985d3603b5542e9e",
             "bytes": 9130,
-            "synced_at": "2026-11-25T09:43:18+01:00"
+            "synced_at": "2026-11-26T06:51:48+01:00"
         },
         "services/ugc-product-video-company": {
             "status": "synced",
-            "action": "written",
+            "action": "skipped_unchanged",
             "source_file": "services/ugc-product-video-company.html",
             "markdown_file": "markdown/services/ugc-product-video-company.md",
             "canonical_url": "https://myugcvideo.in/services/ugc-product-video-company.md",
-            "hash": "6134dd7ae502464f7706bd20a926eb6a261909652b2deb95a3b9e149669e6e8b",
+            "hash": "0a6ba136936cc597b57dde09d7bf5489aaaabf79f9233f00bb411b6a6a4a79a5",
             "bytes": 8929,
-            "synced_at": "2026-11-25T09:43:18+01:00"
+            "synced_at": "2026-11-26T06:51:48+01:00"
         },
         "services/ugc-testimonial-videos-company": {
             "status": "synced",
-            "action": "written",
+            "action": "skipped_unchanged",
             "source_file": "services/ugc-testimonial-videos-company.html",
             "markdown_file": "markdown/services/ugc-testimonial-videos-company.md",
             "canonical_url": "https://myugcvideo.in/services/ugc-testimonial-videos-company.md",
-            "hash": "cbd280add530d4f446b10db8ea228459a29ff08c29b45c03dc4d863fade5e70a",
+            "hash": "b8ff96914184b9c50614ef0ac312783ee8a55ba19636b58186ac884ad6e5f94d",
             "bytes": 9187,
-            "synced_at": "2026-11-25T09:43:18+01:00"
+            "synced_at": "2026-11-26T06:51:48+01:00"
         },
         "services/ugc-unboxing-videos-company": {
             "status": "synced",
-            "action": "written",
+            "action": "skipped_unchanged",
             "source_file": "services/ugc-unboxing-videos-company.html",
             "markdown_file": "markdown/services/ugc-unboxing-videos-company.md",
             "canonical_url": "https://myugcvideo.in/services/ugc-unboxing-videos-company.md",
-            "hash": "e77e6bf82a0e5753fd0ee5a3b8628d2da0800c7f04242a0daf16eae896eedc01",
+            "hash": "792a55673c04100a737cb4a572695b27ff9ffbc0664db8cc97762f4676d365fd",
             "bytes": 9115,
-            "synced_at": "2026-11-25T09:43:18+01:00"
+            "synced_at": "2026-11-26T06:51:48+01:00"
         },
         "services/ugc-video-ads-company": {
             "status": "synced",
-            "action": "written",
+            "action": "skipped_unchanged",
             "source_file": "services/ugc-video-ads-company.html",
             "markdown_file": "markdown/services/ugc-video-ads-company.md",
             "canonical_url": "https://myugcvideo.in/services/ugc-video-ads-company.md",
-            "hash": "2a593693718d4feffd7cb1f4ffd33a857020538892721ba029b4de0a120a5818",
+            "hash": "3702619f95fb7e8e55be164fef17a56c5bf81a813a1db50013445be526e789c8",
             "bytes": 9027,
-            "synced_at": "2026-11-25T09:43:18+01:00"
+            "synced_at": "2026-11-26T06:51:48+01:00"
         },
         "services/ugc-video-company-in-delhi": {
             "status": "synced",
-            "action": "written",
+            "action": "skipped_unchanged",
             "source_file": "services/ugc-video-company-in-delhi.html",
             "markdown_file": "markdown/services/ugc-video-company-in-delhi.md",
             "canonical_url": "https://myugcvideo.in/services/ugc-video-company-in-delhi.md",
-            "hash": "1e67492deed33e94344d4e54c88fb2beeb99b550b1f332d7dd9b17da3a2bdb54",
+            "hash": "12af0facff28cb10733028a70d5138fc98b28bfc3b5b34d0552c675f59a63adc",
             "bytes": 9194,
-            "synced_at": "2026-11-25T09:43:18+01:00"
+            "synced_at": "2026-11-26T06:51:48+01:00"
         },
         "services/ugc-video-creation-company": {
             "status": "synced",
-            "action": "written",
+            "action": "skipped_unchanged",
             "source_file": "services/ugc-video-creation-company.html",
             "markdown_file": "markdown/services/ugc-video-creation-company.md",
             "canonical_url": "https://myugcvideo.in/services/ugc-video-creation-company.md",
-            "hash": "dc76c7335d6a3584e63a68e050b6ad2fb7c941f30c66858af6332e585b8c4031",
+            "hash": "ad84b8094507d9c13bf1f5d9ea7d0d47d6d4ce48c7793f3bb7475db990eaf90b",
             "bytes": 8297,
-            "synced_at": "2026-11-25T09:43:18+01:00"
+            "synced_at": "2026-11-26T06:51:48+01:00"
         },
         "services/ugc-video-editing-company": {
             "status": "synced",
-            "action": "written",
+            "action": "skipped_unchanged",
             "source_file": "services/ugc-video-editing-company.html",
             "markdown_file": "markdown/services/ugc-video-editing-company.md",
             "canonical_url": "https://myugcvideo.in/services/ugc-video-editing-company.md",
-            "hash": "1c860c9af444b1f0b3d9fccfb30d543a8679ee76fbbcc1aea4bea28142e565f2",
+            "hash": "c665c2ac2ec5fd2e626d4e73f50c5cc6e10dcfa11845e454c99ccdaca1babf5e",
             "bytes": 8364,
-            "synced_at": "2026-11-25T09:43:18+01:00"
+            "synced_at": "2026-11-26T06:51:48+01:00"
         }
     },
-    "last_updated": "2026-11-25T09:43:18+01:00",
+    "last_updated": "2026-11-27T06:32:10+01:00",
     "reconciliation": {
-        "last_run": "2026-11-25T09:43:19+01:00",
+        "last_run": "2026-11-26T06:51:48+01:00",
         "total_pages": 13,
         "synced_pages": 13,
-        "updated": 12,
-        "unchanged": 1,
+        "updated": 0,
+        "unchanged": 13,
         "errors": [],
         "blog_posts": 10
     }

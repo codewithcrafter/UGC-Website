@@ -8,6 +8,3 @@ Allow: /
 
 # Canonical XML Sitemap
 Sitemap: https://myugcvideo.in/sitemap.xml
-
-# LLM & AI Crawler Directives
-# LLMs.txt: https://myugcvideo.in/llms.txt

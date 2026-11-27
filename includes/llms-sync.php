@@ -1982,75 +1982,336 @@ function triggerLlmsSynchronization(string $action = 'auto', array $changedUrls 
  */
 
 /**
- * Generate the content of blogs.md from published blog posts in the database.
+ * Extract clean plain text from an HTML snippet, decoding entities and normalizing whitespace.
  */
-function generateBlogsMd(): string {
-    $baseUrl  = getLlmCanonicalBaseUrl();
-    $articles = [];
+function extractBlogsSectionText(string $html): string {
+    $text = html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $text = preg_replace('/\s+/u', ' ', trim($text));
+    return $text ?? '';
+}
 
-    try {
-        $db   = getDb();
-        $stmt = $db->query(
-            "SELECT p.id, p.title, p.slug, p.excerpt, p.meta_description,
-                    p.published_at, p.updated_at,
-                    c.name AS category_name
-             FROM blog_posts p
-             LEFT JOIN categories c ON p.category_id = c.id
-             WHERE p.status = 'published' AND p.published_at <= NOW()
-             ORDER BY p.published_at DESC, p.id DESC"
-        );
-        $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (Throwable $e) {
-        error_log("generateBlogsMd: DB fetch failed: " . $e->getMessage());
+/**
+ * Extract static Hero and CTA copy from blogs.php with safe defaults.
+ *
+ * @return array{
+ *   hero_eyebrow: string,
+ *   hero_title: string,
+ *   hero_desc: string,
+ *   topics_eyebrow: string,
+ *   topics_title: string,
+ *   cta_eyebrow: string,
+ *   cta_title: string,
+ *   cta_desc: string,
+ *   cta_primary_text: string,
+ *   cta_primary_href: string,
+ *   cta_secondary_text: string,
+ *   cta_secondary_href: string
+ * }
+ */
+function extractBlogsPageSections(string $baseUrl): array {
+    $defaults = [
+        'hero_eyebrow'       => 'THE CREATOR JOURNAL',
+        'hero_title'         => 'UGC Marketing Tips and Creator Trends',
+        'hero_desc'          => 'Fresh ideas on UGC video, creator culture and the way brands tell their stories today. Our team shares practical UGC marketing tips, video ad trends and creator content strategies you can put to work right away.',
+        'topics_eyebrow'     => 'EXPLORE PERSPECTIVES',
+        'topics_title'       => 'Explore by Topic',
+        'cta_eyebrow'        => 'PUT STRATEGY INTO ACTION',
+        'cta_title'          => 'Ready to Make Content That Sells?',
+        'cta_desc'           => 'Work with MY UGC VIDEO to build real, creator-led video campaigns that get your brand noticed and bring in customers.',
+        'cta_primary_text'   => 'START A PROJECT',
+        'cta_primary_href'   => $baseUrl . '/contact',
+        'cta_secondary_text' => 'EXPLORE OUR SERVICES',
+        'cta_secondary_href' => $baseUrl . '/services',
+    ];
+
+    $blogsPhpPath = CMS_ROOT . DIRECTORY_SEPARATOR . 'blogs.php';
+    $source = @file_get_contents($blogsPhpPath);
+    if (!is_string($source) || $source === '') {
+        return $defaults;
+    }
+    // Strip PHP open/close tags so they do not terminate HTML tag regexes prematurely
+    $source = preg_replace('/<\?(?:php|=).*?\?' . '>/is', '', $source) ?? $source;
+
+    if (preg_match('/<section[^>]*class="[^"]*blog-hero-editorial[^"]*"[^>]*>(.*?)<\/section>/is', $source, $heroSec)) {
+        $heroHtml = $heroSec[1];
+        if (preg_match('/class="[^"]*blog-hero-eyebrow[^"]*"[^>]*>(.*?)<\/span>/is', $heroHtml, $m)) {
+            $val = extractBlogsSectionText($m[1]);
+            if ($val !== '') $defaults['hero_eyebrow'] = $val;
+        }
+        if (preg_match('/<h1[^>]*id="blog-hero-title"[^>]*>(.*?)<\/h1>/is', $heroHtml, $m)) {
+            $val = extractBlogsSectionText($m[1]);
+            if ($val !== '') $defaults['hero_title'] = $val;
+        }
+        if (preg_match('/<p[^>]*class="[^"]*blog-hero-desc[^"]*"[^>]*>(.*?)<\/p>/is', $heroHtml, $m)) {
+            $val = extractBlogsSectionText($m[1]);
+            if ($val !== '') $defaults['hero_desc'] = $val;
+        }
     }
 
-    $now   = date('Y-m-d');
-    $count = count($articles);
+    if (preg_match('/<section[^>]*class="[^"]*latest-blogs-section[^"]*"[^>]*>(.*?)<\/section>/is', $source, $latestSec)) {
+        $latestHtml = $latestSec[1];
+        if (preg_match('/class="[^"]*about-eyebrow[^"]*"[^>]*>(.*?)<\/span>/is', $latestHtml, $m)) {
+            $val = extractBlogsSectionText($m[1]);
+            if ($val !== '') $defaults['topics_eyebrow'] = $val;
+        }
+        if (preg_match('/<h2[^>]*id="latest-heading"[^>]*>(.*?)<\/h2>/is', $latestHtml, $m)) {
+            $val = extractBlogsSectionText($m[1]);
+            if ($val !== '') $defaults['topics_title'] = $val;
+        }
+    }
+
+    if (preg_match('/<section[^>]*class="[^"]*blog-closing-cta-section[^"]*"[^>]*>(.*?)<\/section>/is', $source, $ctaSec)) {
+        $ctaHtml = $ctaSec[1];
+        if (preg_match('/class="[^"]*about-eyebrow[^"]*"[^>]*>(.*?)<\/span>/is', $ctaHtml, $m)) {
+            $val = extractBlogsSectionText($m[1]);
+            if ($val !== '') $defaults['cta_eyebrow'] = $val;
+        }
+        if (preg_match('/<h2[^>]*id="blog-cta-heading"[^>]*>(.*?)<\/h2>/is', $ctaHtml, $m)) {
+            $val = extractBlogsSectionText($m[1]);
+            if ($val !== '') $defaults['cta_title'] = $val;
+        }
+        if (preg_match('/<p[^>]*class="[^"]*about-cta-desc[^"]*"[^>]*>(.*?)<\/p>/is', $ctaHtml, $m)) {
+            $val = extractBlogsSectionText($m[1]);
+            if ($val !== '') $defaults['cta_desc'] = $val;
+        }
+        if (preg_match_all('/<a\b[^>]*>(.*?)<\/a>/is', $ctaHtml, $links) && count($links[1]) >= 2) {
+            $pText = extractBlogsSectionText($links[1][0]);
+            $sText = extractBlogsSectionText($links[1][1]);
+            if ($pText !== '') $defaults['cta_primary_text'] = $pText;
+            if ($sText !== '') $defaults['cta_secondary_text'] = $sText;
+        }
+    }
+
+    return $defaults;
+}
+
+/**
+ * Generate the content of blogs.md from blogs.php sections and published blog data in MySQL.
+ */
+function generateBlogsMd(): string {
+    $baseUrl      = getLlmCanonicalBaseUrl();
+    $sections     = extractBlogsPageSections($baseUrl);
+    $featuredPost = null;
+    $categories   = [];
+    $gridPosts    = [];
+
+    try {
+        if (function_exists('getFeaturedPost')) {
+            $featuredPost = getFeaturedPost();
+        }
+        if (function_exists('getAllCategories')) {
+            $categories = array_values(array_filter(
+                getAllCategories(),
+                static fn($c) => (int)($c['post_count'] ?? 0) > 0
+            ));
+        }
+        if (function_exists('getPosts')) {
+            $gridArgs = [
+                'status'   => 'published',
+                'page'     => 1,
+                'per_page' => 50,
+            ];
+            if ($featuredPost !== null) {
+                $gridArgs['is_featured'] = 0;
+            }
+            $gridResult = getPosts($gridArgs);
+            $gridPosts  = $gridResult['posts'] ?? [];
+            $gridTotal  = (int)($gridResult['total'] ?? count($gridPosts));
+        } else {
+            $db   = getDb();
+            $stmt = $db->query(
+                "SELECT p.*, c.name AS category_name, c.slug AS category_slug
+                 FROM blog_posts p
+                 LEFT JOIN categories c ON p.category_id = c.id
+                 WHERE p.status = 'published' AND p.published_at <= NOW()
+                 ORDER BY p.published_at DESC, p.id DESC"
+            );
+            $all = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($all as $row) {
+                if ((int)($row['is_featured'] ?? 0) === 1 && $featuredPost === null) {
+                    $featuredPost = $row;
+                } else {
+                    $gridPosts[] = $row;
+                }
+            }
+            $gridTotal = count($gridPosts);
+        }
+    } catch (Throwable $e) {
+        error_log("generateBlogsMd: DB fetch failed: " . $e->getMessage());
+        $gridTotal = 0;
+    }
+
+    $totalPublishedCount = ($featuredPost !== null ? 1 : 0) + ($gridTotal ?? count($gridPosts));
+    $now = date('Y-m-d');
 
     $lines = [];
-    $lines[] = "# MY UGC VIDEO — Blogs";
+
+    // 0. Introductory Information Block
+    $lines[] = "# MY UGC VIDEO — Published Blogs";
     $lines[] = "";
     $lines[] = "Published blog articles from MY UGC VIDEO — a UGC video production company helping brands drive authentic content and performance marketing results.";
     $lines[] = "";
     $lines[] = "Website: {$baseUrl}/";
     $lines[] = "Blogs: {$baseUrl}/blogs";
-    $lines[] = "Total published articles: {$count}";
+    $lines[] = "Total published articles: {$totalPublishedCount}";
     $lines[] = "Last updated: {$now}";
     $lines[] = "";
     $lines[] = "---";
     $lines[] = "";
 
-    if (empty($articles)) {
-        $lines[] = "No published blog articles found.";
+    // 1. Blogs Hero Section
+    $lines[] = "# {$sections['hero_title']}";
+    $lines[] = "";
+    $lines[] = "**{$sections['hero_eyebrow']}**";
+    $lines[] = "";
+    $lines[] = $sections['hero_desc'];
+    $lines[] = "";
+    $lines[] = "- **URL:** {$baseUrl}/blogs";
+    $lines[] = "";
+    $lines[] = "---";
+    $lines[] = "";
+
+    // 2. Featured Article (if a published post is marked is_featured = 1)
+    if ($featuredPost !== null) {
+        $featTitle   = trim((string)$featuredPost['title']);
+        $featSlug    = trim((string)$featuredPost['slug']);
+        $featUrl     = $baseUrl . '/blog/' . rawurlencode($featSlug);
+        $featCat     = !empty($featuredPost['category_name']) ? trim((string)$featuredPost['category_name']) : 'UGC Trends';
+        $featDate    = !empty($featuredPost['published_at'])
+            ? (function_exists('formatDate') ? formatDate($featuredPost['published_at']) : date('F j, Y', strtotime($featuredPost['published_at'])))
+            : '';
+        $featRead    = trim((string)($featuredPost['reading_time'] ?? ''));
+        $featExcerpt = trim((string)($featuredPost['excerpt'] ?? ''));
+        if ($featExcerpt === '' && !empty($featuredPost['meta_description'])) {
+            $featExcerpt = trim((string)$featuredPost['meta_description']);
+        }
+        $featAuthor  = trim((string)($featuredPost['author_name'] ?? 'MY UGC VIDEO'));
+        $featAlt     = trim((string)($featuredPost['featured_image_alt'] ?? ''));
+
+        $lines[] = "## Featured Article";
+        $lines[] = "";
+        $lines[] = "### [{$featTitle}]({$featUrl})";
+        $lines[] = "";
+        $lines[] = "- **Category:** {$featCat}";
+        if ($featDate !== '') {
+            $lines[] = "- **Published:** {$featDate}";
+        }
+        if ($featRead !== '') {
+            $lines[] = "- **Reading Time:** {$featRead}";
+        }
+        $lines[] = "- **Author:** By {$featAuthor}";
+        if ($featAlt !== '') {
+            $lines[] = "- **Featured Image Alt:** {$featAlt}";
+        }
+        $lines[] = "- **URL:** {$featUrl}";
+        if ($featExcerpt !== '') {
+            $lines[] = "";
+            $lines[] = $featExcerpt;
+        }
+        $lines[] = "";
+        $lines[] = "[Read Featured Article]({$featUrl})";
+        $lines[] = "";
+        $lines[] = "---";
+        $lines[] = "";
+    }
+
+    // 3. Explore Perspectives / Topics
+    $lines[] = "## {$sections['topics_title']}";
+    $lines[] = "";
+    $lines[] = "**{$sections['topics_eyebrow']}**";
+    $lines[] = "";
+    if (!empty($categories)) {
+        foreach ($categories as $cat) {
+            $catName = trim((string)($cat['name'] ?? ''));
+            $catCount = (int)($cat['post_count'] ?? 0);
+            if ($catName !== '' && $catCount > 0) {
+                $unit = $catCount === 1 ? 'article' : 'articles';
+                $lines[] = "- **{$catName}** ({$catCount} {$unit})";
+            }
+        }
+    } else {
+        $lines[] = "- All Articles";
+    }
+    $lines[] = "";
+    $lines[] = "---";
+    $lines[] = "";
+
+    // 4. Blog Articles Listing
+    $lines[] = "## Blog Articles";
+    $lines[] = "";
+
+    if (empty($gridPosts)) {
+        $lines[] = "No additional published articles.";
         $lines[] = "";
     } else {
-        foreach ($articles as $post) {
-            $title    = trim($post['title']);
-            $slug     = trim($post['slug']);
-            $desc     = !empty($post['meta_description'])
-                ? trim($post['meta_description'])
-                : trim($post['excerpt'] ?? '');
-            if (empty($desc)) {
-                $desc = 'Strategic analysis and performance marketing insights on User Generated Content by MY UGC VIDEO.';
+        foreach ($gridPosts as $post) {
+            $title    = trim((string)$post['title']);
+            $slug     = trim((string)$post['slug']);
+            $url      = $baseUrl . '/blog/' . rawurlencode($slug);
+            $catName  = !empty($post['category_name']) ? trim((string)$post['category_name']) : 'UGC';
+            $pubDate  = !empty($post['published_at'])
+                ? (function_exists('formatDate') ? formatDate($post['published_at']) : date('F j, Y', strtotime($post['published_at'])))
+                : '';
+            $readTime = trim((string)($post['reading_time'] ?? ''));
+            $excerpt  = trim((string)($post['excerpt'] ?? ''));
+            if ($excerpt === '' && !empty($post['meta_description'])) {
+                $excerpt = trim((string)$post['meta_description']);
             }
-            $category    = !empty($post['category_name']) ? trim($post['category_name']) : 'Editorial';
-            $publishedAt = !empty($post['published_at']) ? date('Y-m-d', strtotime($post['published_at'])) : $now;
-            $updatedAt   = !empty($post['updated_at'])   ? date('Y-m-d', strtotime($post['updated_at']))   : $publishedAt;
-            $url         = $baseUrl . '/blog/' . rawurlencode($slug);
+            $author   = trim((string)($post['author_name'] ?? 'MY UGC VIDEO'));
 
-            $lines[] = "## [{$title}]({$url})";
+            $tagNames = [];
+            if (function_exists('getPostTags') && !empty($post['id'])) {
+                $cardTags = getPostTags((int)$post['id']);
+                foreach (array_slice($cardTags, 0, 3) as $ct) {
+                    $tName = trim((string)($ct['name'] ?? ''));
+                    if ($tName !== '') {
+                        $tagNames[] = '#' . $tName;
+                    }
+                }
+            }
+
+            $lines[] = "### [{$title}]({$url})";
             $lines[] = "";
-            $lines[] = $desc;
-            $lines[] = "";
-            $lines[] = "- **Category:** {$category}";
-            $lines[] = "- **Published:** {$publishedAt}";
-            $lines[] = "- **Last Updated:** {$updatedAt}";
+            $lines[] = "- **Category:** {$catName}";
+            if ($pubDate !== '') {
+                $lines[] = "- **Published:** {$pubDate}";
+            }
+            if ($readTime !== '') {
+                $lines[] = "- **Reading Time:** {$readTime}";
+            }
+            $lines[] = "- **Author:** By {$author}";
+            if (!empty($tagNames)) {
+                $lines[] = "- **Tags:** " . implode(', ', $tagNames);
+            }
             $lines[] = "- **URL:** {$url}";
+            if ($excerpt !== '') {
+                $lines[] = "";
+                $lines[] = $excerpt;
+            }
             $lines[] = "";
-            $lines[] = "---";
+        }
+
+        // 5. Meaningful article count note when more than 6 grid articles exist
+        $gridCount = count($gridPosts);
+        if ($gridCount > 6) {
+            $lines[] = "*Total articles in listing: {$gridCount}.*";
             $lines[] = "";
         }
     }
+
+    $lines[] = "---";
+    $lines[] = "";
+
+    // 6. PUT STRATEGY INTO ACTION CTA Section
+    $lines[] = "## {$sections['cta_title']}";
+    $lines[] = "";
+    $lines[] = "**{$sections['cta_eyebrow']}**";
+    $lines[] = "";
+    $lines[] = $sections['cta_desc'];
+    $lines[] = "";
+    $lines[] = "- [{$sections['cta_primary_text']}]({$sections['cta_primary_href']})";
+    $lines[] = "- [{$sections['cta_secondary_text']}]({$sections['cta_secondary_href']})";
+    $lines[] = "";
 
     return implode("\n", $lines);
 }
@@ -2062,6 +2323,21 @@ function generateBlogsMd(): string {
  */
 function syncBlogsMd(): array {
     try {
+        if (!class_exists('WebsiteMarkdownSync')) {
+            $syncFile = CMS_ROOT . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'website-markdown-sync.php';
+            if (file_exists($syncFile)) {
+                require_once $syncFile;
+            }
+        }
+        if (class_exists('WebsiteMarkdownSync')) {
+            $res = WebsiteMarkdownSync::syncBlogsListing(true);
+            return [
+                'success' => !empty($res['success']),
+                'bytes'   => (int)($res['bytes'] ?? 0),
+                'error'   => !empty($res['success']) ? '' : 'Failed to sync blogs.md via WebsiteMarkdownSync.',
+            ];
+        }
+
         $content  = generateBlogsMd();
         $destPath1 = CMS_ROOT . DIRECTORY_SEPARATOR . 'blogs.md';
         $destPath2 = CMS_ROOT . DIRECTORY_SEPARATOR . 'markdown' . DIRECTORY_SEPARATOR . 'pages' . DIRECTORY_SEPARATOR . 'blogs.md';
