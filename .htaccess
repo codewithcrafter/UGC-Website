@@ -3,8 +3,7 @@
 # =========================================================================
 
 # Serve .md files as plain text/markdown with UTF-8 charset
-AddType text/markdown .md
-AddCharset UTF-8 .md
+AddType "text/markdown; charset=UTF-8" .md
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
@@ -309,5 +308,10 @@ ErrorDocument 404 /404.html
   # Images, Fonts, Media
   <FilesMatch "\.(ico|jpg|jpeg|png|gif|webp|svg|woff|woff2|ttf|eot|mp4|webm)$">
     Header set Cache-Control "public, max-age=2592000, immutable"
+  </FilesMatch>
+
+  # Static Markdown files: explicitly enforce UTF-8 Content-Type header
+  <FilesMatch "\.md$">
+    Header set Content-Type "text/markdown; charset=UTF-8"
   </FilesMatch>
 </IfModule>
