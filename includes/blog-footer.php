@@ -14,7 +14,7 @@ if (!defined('CMS_ROOT')) {
     <div class="container">
       <div class="footer-top">
         <div class="footer-brand">
-          <a href="<?= SITE_URL ?>/" class="brand-logo" aria-label="MY UGC VIDEO Home">
+          <a href="<?= SITE_URL ?>/" class="brand-logo">
             <span class="brand-title">MY UGC VIDEO</span>
             <span class="brand-subtitle">UGC Creative Agency</span>
           </a>
@@ -48,7 +48,7 @@ if (!defined('CMS_ROOT')) {
         </div>
 
         <div>
-          <h4 class="footer-title">Navigation</h4>
+          <p class="footer-title">Navigation</p>
           <ul class="footer-links">
             <li><a href="<?= SITE_URL ?>/" class="footer-link">Home</a></li>
             <li><a href="<?= SITE_URL ?>/about" class="footer-link">About Studio</a></li>
@@ -59,7 +59,7 @@ if (!defined('CMS_ROOT')) {
         </div>
 
         <div>
-          <h4 class="footer-title">Our Services</h4>
+          <p class="footer-title">Our Services</p>
           <ul class="footer-links">
             <li><a href="<?= SITE_URL ?>/services/ugc-video-creation-company" class="footer-link">UGC Video Creation Services</a></li>
             <li><a href="<?= SITE_URL ?>/services/ugc-video-ads-company" class="footer-link">UGC Video Ads</a></li>
@@ -74,7 +74,7 @@ if (!defined('CMS_ROOT')) {
         </div>
 
         <div class="footer-newsletter">
-          <h4 class="footer-title">Studio Dispatches</h4>
+          <p class="footer-title">Studio Dispatches</p>
           <p>Join brand marketing leaders receiving our bi-weekly breakdown on UGC video performance, creative frameworks, and algorithmic updates.</p>
           <form class="newsletter-form" action="#" method="POST" novalidate>
             <div class="newsletter-input-wrap">
@@ -197,7 +197,7 @@ if (!defined('CMS_ROOT')) {
     </form>
   </div>
 
-  <script src="<?= SITE_URL ?>/js/main.js?v=<?= getAssetVersion('js/main.js') ?>"></script>
+  <script src="<?= SITE_URL ?>/js/main.js?v=<?= getAssetVersion('js/main.js') ?>" defer></script>
 </body>
 </html>
 

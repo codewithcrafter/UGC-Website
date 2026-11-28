@@ -4,7 +4,7 @@ description: "Get UGC video ads for Meta, TikTok and YouTube: creator-made, hook
 canonical_url: "https://myugcvideo.in/services/ugc-video-ads-company"
 page_type: "service"
 primary_keyword: "UGC video ads"
-last_updated: "2026-11-26"
+last_updated: "2026-11-28"
 
 ---
 

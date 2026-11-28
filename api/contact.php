@@ -22,6 +22,8 @@ require_once CMS_ROOT . '/includes/mail-service.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
+header('Cache-Control: private, no-store, no-cache, must-revalidate');
+header('Pragma: no-cache');
 
 // Support GET request to fetch or initialize CSRF token for static HTML pages
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {

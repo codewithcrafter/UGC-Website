@@ -45,7 +45,9 @@ $structuredData = $structuredData ?? null;
   <!-- Fonts & Styles -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&family=Sora:wght@700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&family=Sora:wght@700;800&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700&family=Sora:wght@700;800&display=swap"></noscript>
   <link rel="stylesheet" href="<?= SITE_URL ?>/css/style.css?v=<?= getAssetVersion('css/style.css') ?>">
   <script>window.SITE_URL = "<?= SITE_URL ?>";</script>
 
@@ -69,12 +71,12 @@ $structuredData = $structuredData ?? null;
       <div class="container site-top-bar-container">
         <!-- Left: Contact Information -->
         <div class="top-bar-left">
-          <a href="mailto:hello@myugcvideo.in" class="top-bar-link" aria-label="Email Us">
+          <a href="mailto:hello@myugcvideo.in" class="top-bar-link">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
             <span>hello@myugcvideo.in</span>
           </a>
           <span class="top-bar-divider" aria-hidden="true">|</span>
-          <a href="tel:+919876543210" class="top-bar-link" aria-label="Call Us">
+          <a href="tel:+919876543210" class="top-bar-link">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
             <span>+91 98765 43210</span>
           </a>
@@ -112,7 +114,7 @@ $structuredData = $structuredData ?? null;
   <header class="site-header" role="banner">
     <div class="container">
       <div class="nav-wrapper">
-        <a href="<?= SITE_URL ?>/" class="brand-logo" aria-label="MY UGC VIDEO Home">
+        <a href="<?= SITE_URL ?>/" class="brand-logo">
           <span class="brand-title">MY UGC VIDEO</span>
           <span class="brand-subtitle">UGC Creative Agency</span>
         </a>

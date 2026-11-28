@@ -295,7 +295,7 @@ ErrorDocument 404 /404.html
 <IfModule mod_headers.c>
   # HTML and PHP templates: always revalidate fresh
   <FilesMatch "\.(html|htm|php)$">
-    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Cache-Control "no-cache, must-revalidate"
     Header set Pragma "no-cache"
     Header set Expires 0
   </FilesMatch>
@@ -313,5 +313,29 @@ ErrorDocument 404 /404.html
   # Static Markdown files: explicitly enforce UTF-8 Content-Type header
   <FilesMatch "\.md$">
     Header set Content-Type "text/markdown; charset=UTF-8"
+  </FilesMatch>
+
+  # Baseline Security Headers (non-breaking, local-safe)
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# -------------------------------------------------------------------------
+# Server-Side Compression (Brotli priority with Gzip/mod_deflate fallback)
+# Compresses text-based MIME types only; excludes already-compressed binary
+# images, videos, audio, fonts, and archives.
+# -------------------------------------------------------------------------
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/css text/javascript application/javascript application/x-javascript application/json application/xml text/xml image/svg+xml application/rss+xml text/markdown
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript application/javascript application/x-javascript application/json application/xml text/xml image/svg+xml application/rss+xml text/markdown
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|htm|php|css|js|json|xml|svg|md|txt)$">
+    Header append Vary Accept-Encoding
   </FilesMatch>
 </IfModule>

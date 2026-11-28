@@ -27,9 +27,11 @@
   <!-- Fonts & Stylesheet -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap"
-    rel="stylesheet">
+  <link rel="preconnect" href="https://player.vimeo.com">
+  <link rel="preconnect" href="https://i.vimeocdn.com">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap"></noscript>
   <link rel="stylesheet" href="css/style.css?v=1795509431">
 
   <!-- JSON-LD Structured Data: Organization & Agency -->
@@ -268,7 +270,7 @@
       <div class="container site-top-bar-container">
         <!-- Left: Contact Information -->
         <div class="top-bar-left">
-          <a href="mailto:hello@myugcvideo.in" class="top-bar-link" aria-label="Email Us">
+          <a href="mailto:hello@myugcvideo.in" class="top-bar-link">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
@@ -277,7 +279,7 @@
             <span>hello@myugcvideo.in</span>
           </a>
           <span class="top-bar-divider" aria-hidden="true">|</span>
-          <a href="tel:+919876543210" class="top-bar-link" aria-label="Call Us">
+          <a href="tel:+919876543210" class="top-bar-link">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <path
@@ -335,7 +337,7 @@
     <header class="site-header" role="banner">
       <div class="container">
         <div class="nav-wrapper">
-          <a href="./" class="brand-logo" aria-label="MY UGC VIDEO Home">
+          <a href="./" class="brand-logo">
             <span class="brand-title">MY UGC VIDEO</span>
             <span class="brand-subtitle">UGC Creative Agency</span>
           </a>
@@ -732,11 +734,8 @@
             <article class="portfolio-3d-card" data-category="wellness" data-index="0" aria-label="Wellness Video">
               <div class="portfolio-card-inner">
                 <div class="portfolio-video-wrapper">
-                  <video class="portfolio-3d-video" playsinline
-                    webkit-playsinline disablepictureinpicture controlslist="nofullscreen nodownload noremoteplayback"
-                    muted loop data-video-src="assets/videos/optimized/video-01.mp4" preload="none">
-                  </video>
-                  <div class="portfolio-play-status" aria-label="Toggle Play/Pause">
+                  <div class="portfolio-vimeo-wrap" data-vimeo-src="https://player.vimeo.com/video/1250546350?autopause=0&amp;player_id=0&amp;app_id=58479&amp;title=0&amp;byline=0&amp;portrait=0&amp;controls=0" data-vimeo-title="video-01" style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;"><img class="portfolio-vimeo-poster" src="https://i.vimeocdn.com/video/2231208580-ddc301b7c1b1370681536a72386c56d63b2e5499057a99a5165468ab460b8c8b-d_640?region=us" alt="A Morning Routine with a Daily Supplement" loading="eager" decoding="async" width="640" height="1138" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;z-index:0;"></div>
+                  <div class="portfolio-play-status" aria-hidden="true">
                     <svg class="play-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
                       <polygon points="6 3 20 12 6 21 6 3"></polygon>
                     </svg>
@@ -775,11 +774,8 @@
             <article class="portfolio-3d-card" data-category="skincare" data-index="1" aria-label="Skincare Video">
               <div class="portfolio-card-inner">
                 <div class="portfolio-video-wrapper">
-                  <video class="portfolio-3d-video" playsinline
-                    webkit-playsinline disablepictureinpicture controlslist="nofullscreen nodownload noremoteplayback"
-                    muted loop data-video-src="assets/videos/optimized/video-02.mp4" preload="none">
-                  </video>
-                  <div class="portfolio-play-status" aria-label="Toggle Play/Pause">
+                  <div class="portfolio-vimeo-wrap" data-vimeo-src="https://player.vimeo.com/video/1250546348?autopause=0&amp;player_id=0&amp;app_id=58479&amp;title=0&amp;byline=0&amp;portrait=0&amp;controls=0" data-vimeo-title="video-02" style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;"><img class="portfolio-vimeo-poster" src="https://i.vimeocdn.com/video/2231208607-f18e9c6d7faa3548168769d4335f7512363703e805ab0d63de42ca5c0e8ef723-d_640?region=us" alt="Night Skincare, Start to Finish" loading="lazy" decoding="async" width="640" height="1138" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;z-index:0;"></div>
+                  <div class="portfolio-play-status" aria-hidden="true">
                     <svg class="play-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
                       <polygon points="6 3 20 12 6 21 6 3"></polygon>
                     </svg>
@@ -818,11 +814,8 @@
             <article class="portfolio-3d-card" data-category="beverage" data-index="2" aria-label="Beverage Video">
               <div class="portfolio-card-inner">
                 <div class="portfolio-video-wrapper">
-                  <video class="portfolio-3d-video" playsinline
-                    webkit-playsinline disablepictureinpicture controlslist="nofullscreen nodownload noremoteplayback"
-                    muted loop data-video-src="assets/videos/optimized/video-03.mp4" preload="none">
-                  </video>
-                  <div class="portfolio-play-status" aria-label="Toggle Play/Pause">
+                  <div class="portfolio-vimeo-wrap" data-vimeo-src="https://player.vimeo.com/video/1250546347?autopause=0&amp;player_id=0&amp;app_id=58479&amp;title=0&amp;byline=0&amp;portrait=0&amp;controls=0" data-vimeo-title="video-03" style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;"><img class="portfolio-vimeo-poster" src="https://i.vimeocdn.com/video/2231208597-7c9433a873487dc8d61e3e404631083616add7da1bde416169d0aba681924cf9-d_640?region=us" alt="The First Sip, Honest Reaction" loading="lazy" decoding="async" width="640" height="1138" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;z-index:0;"></div>
+                  <div class="portfolio-play-status" aria-hidden="true">
                     <svg class="play-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
                       <polygon points="6 3 20 12 6 21 6 3"></polygon>
                     </svg>
@@ -861,11 +854,8 @@
             <article class="portfolio-3d-card" data-category="technology" data-index="3" aria-label="Technology Video">
               <div class="portfolio-card-inner">
                 <div class="portfolio-video-wrapper">
-                  <video class="portfolio-3d-video" playsinline
-                    webkit-playsinline disablepictureinpicture controlslist="nofullscreen nodownload noremoteplayback"
-                    muted loop data-video-src="assets/videos/optimized/video-04.mp4" preload="none">
-                  </video>
-                  <div class="portfolio-play-status" aria-label="Toggle Play/Pause">
+                  <div class="portfolio-vimeo-wrap" data-vimeo-src="https://player.vimeo.com/video/1250546349?autopause=0&amp;player_id=0&amp;app_id=58479&amp;title=0&amp;byline=0&amp;portrait=0&amp;controls=0" data-vimeo-title="video-04" style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;"><img class="portfolio-vimeo-poster" src="https://i.vimeocdn.com/video/2231208505-66b0b66ac1af69c610999c821ac8e569db99ed7f377c8010518cdbac8bf7f5f0-d_640?region=us" alt="Headphones Unboxing and Setup" loading="lazy" decoding="async" width="640" height="1138" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;z-index:0;"></div>
+                  <div class="portfolio-play-status" aria-hidden="true">
                     <svg class="play-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
                       <polygon points="6 3 20 12 6 21 6 3"></polygon>
                     </svg>
@@ -904,11 +894,8 @@
             <article class="portfolio-3d-card" data-category="lifestyle" data-index="4" aria-label="Lifestyle Video">
               <div class="portfolio-card-inner">
                 <div class="portfolio-video-wrapper">
-                  <video class="portfolio-3d-video" playsinline
-                    webkit-playsinline disablepictureinpicture controlslist="nofullscreen nodownload noremoteplayback"
-                    muted loop data-video-src="assets/videos/optimized/video-05.mp4" preload="none">
-                  </video>
-                  <div class="portfolio-play-status" aria-label="Toggle Play/Pause">
+                  <div class="portfolio-vimeo-wrap" data-vimeo-src="https://player.vimeo.com/video/1250546374?autopause=0&amp;player_id=0&amp;app_id=58479&amp;title=0&amp;byline=0&amp;portrait=0&amp;controls=0" data-vimeo-title="video-05" style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;"><img class="portfolio-vimeo-poster" src="https://i.vimeocdn.com/video/2231208614-5b65c02b7e184988019ff8d1c47af7b1c244a5fe0f9b8e0c2054b3eff315e8f2-d_640?region=us" alt="One Outfit, Day to Night" loading="lazy" decoding="async" width="640" height="1138" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;z-index:0;"></div>
+                  <div class="portfolio-play-status" aria-hidden="true">
                     <svg class="play-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
                       <polygon points="6 3 20 12 6 21 6 3"></polygon>
                     </svg>
@@ -947,11 +934,8 @@
             <article class="portfolio-3d-card" data-category="beauty" data-index="5" aria-label="Beauty Video">
               <div class="portfolio-card-inner">
                 <div class="portfolio-video-wrapper">
-                  <video class="portfolio-3d-video" playsinline
-                    webkit-playsinline disablepictureinpicture controlslist="nofullscreen nodownload noremoteplayback"
-                    muted loop data-video-src="assets/videos/optimized/video-06.mp4" preload="none">
-                  </video>
-                  <div class="portfolio-play-status" aria-label="Toggle Play/Pause">
+                  <div class="portfolio-vimeo-wrap" data-vimeo-src="https://player.vimeo.com/video/1250546445?autopause=0&amp;player_id=0&amp;app_id=58479&amp;title=0&amp;byline=0&amp;portrait=0&amp;controls=0" data-vimeo-title="video-06" style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;"><img class="portfolio-vimeo-poster" src="https://i.vimeocdn.com/video/2231208666-2db1121a9df905b0d346b2316d61a1da22ef1d1aca7cd244696f110306af05e1-d_640?region=us" alt="Hydrating Serum on Skin" loading="lazy" decoding="async" width="640" height="1138" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;z-index:0;"></div>
+                  <div class="portfolio-play-status" aria-hidden="true">
                     <svg class="play-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
                       <polygon points="6 3 20 12 6 21 6 3"></polygon>
                     </svg>
@@ -990,11 +974,8 @@
             <article class="portfolio-3d-card" data-category="demonstration" data-index="6" aria-label="Product Demo Video">
               <div class="portfolio-card-inner">
                 <div class="portfolio-video-wrapper">
-                  <video class="portfolio-3d-video" playsinline
-                    webkit-playsinline disablepictureinpicture controlslist="nofullscreen nodownload noremoteplayback"
-                    muted loop data-video-src="assets/videos/optimized/video-07.mp4" preload="none">
-                  </video>
-                  <div class="portfolio-play-status" aria-label="Toggle Play/Pause">
+                  <div class="portfolio-vimeo-wrap" data-vimeo-src="https://player.vimeo.com/video/1250546447?autopause=0&amp;player_id=0&amp;app_id=58479&amp;title=0&amp;byline=0&amp;portrait=0&amp;controls=0" data-vimeo-title="video-07" style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;"><img class="portfolio-vimeo-poster" src="https://i.vimeocdn.com/video/2231208670-10b32e2ede42a2a5e2a0d3c832208d483990a1556e9876336223d2cea393aced-d_640?region=us" alt="Close-Up Product Demonstration" loading="lazy" decoding="async" width="640" height="1138" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;z-index:0;"></div>
+                  <div class="portfolio-play-status" aria-hidden="true">
                     <svg class="play-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
                       <polygon points="6 3 20 12 6 21 6 3"></polygon>
                     </svg>
@@ -1032,11 +1013,8 @@
             <article class="portfolio-3d-card" data-category="testimonial" data-index="7" aria-label="Testimonial Video">
               <div class="portfolio-card-inner">
                 <div class="portfolio-video-wrapper">
-                  <video class="portfolio-3d-video" playsinline
-                    webkit-playsinline disablepictureinpicture controlslist="nofullscreen nodownload noremoteplayback"
-                    muted loop data-video-src="assets/videos/optimized/video-08.mp4" preload="none">
-                  </video>
-                  <div class="portfolio-play-status" aria-label="Toggle Play/Pause">
+                  <div class="portfolio-vimeo-wrap" data-vimeo-src="https://player.vimeo.com/video/1250546456?autopause=0&amp;player_id=0&amp;app_id=58479&amp;title=0&amp;byline=0&amp;portrait=0&amp;controls=0" data-vimeo-title="video-08" style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;"><img class="portfolio-vimeo-poster" src="https://i.vimeocdn.com/video/2231208674-88efe930cbc430d5615ae32cba1e835a3727141b7083c45620478bbc893a08c7-d_640?region=us" alt="Creator Honest Review &amp; Reaction" loading="lazy" decoding="async" width="640" height="1138" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;z-index:0;"></div>
+                  <div class="portfolio-play-status" aria-hidden="true">
                     <svg class="play-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
                       <polygon points="6 3 20 12 6 21 6 3"></polygon>
                     </svg>
@@ -1074,11 +1052,8 @@
             <article class="portfolio-3d-card" data-category="unboxing" data-index="8" aria-label="Unboxing Video">
               <div class="portfolio-card-inner">
                 <div class="portfolio-video-wrapper">
-                  <video class="portfolio-3d-video" playsinline
-                    webkit-playsinline disablepictureinpicture controlslist="nofullscreen nodownload noremoteplayback"
-                    muted loop data-video-src="assets/videos/optimized/video-09.mp4" preload="none">
-                  </video>
-                  <div class="portfolio-play-status" aria-label="Toggle Play/Pause">
+                  <div class="portfolio-vimeo-wrap" data-vimeo-src="https://player.vimeo.com/video/1250546459?autopause=0&amp;player_id=0&amp;app_id=58479&amp;title=0&amp;byline=0&amp;portrait=0&amp;controls=0" data-vimeo-title="video-09" style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;"><img class="portfolio-vimeo-poster" src="https://i.vimeocdn.com/video/2231208675-f6237f0bd650c5959c1b80dfe49b1241d422b3fd9e2c216f34672abf3dbc9fdf-d_640?region=us" alt="First-Impression Unboxing Reel" loading="lazy" decoding="async" width="640" height="1138" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block;z-index:0;"></div>
+                  <div class="portfolio-play-status" aria-hidden="true">
                     <svg class="play-icon" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
                       <polygon points="6 3 20 12 6 21 6 3"></polygon>
                     </svg>
@@ -1917,7 +1892,7 @@
     <div class="video-modal-container">
       <button class="video-modal-close-btn" aria-label="Close video player">&times;</button>
       <div class="video-modal-content-inner">
-        <img id="videoModalImg" src="images/hero/hero-ugc-production.jpg" alt="Active UGC Video Preview Playback" width="1200" height="896">
+        <img id="videoModalImg" data-src="images/hero/hero-ugc-production.jpg" alt="Active UGC Video Preview Playback" width="1200" height="896" style="display:none;">
         <div class="video-modal-footer-caption">
           <div id="videoModalTitle" style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700;">UGC
             Video Showcase</div>
@@ -1936,7 +1911,7 @@
     <div class="container">
       <div class="footer-top">
         <div class="footer-brand">
-          <a href="./" class="brand-logo" aria-label="MY UGC VIDEO Home">
+          <a href="./" class="brand-logo">
             <span class="brand-title">MY UGC VIDEO</span>
             <span class="brand-subtitle">UGC Creative Agency</span>
           </a>
@@ -1970,7 +1945,7 @@
         </div>
 
         <div>
-          <h4 class="footer-title">Navigation</h4>
+          <p class="footer-title">Navigation</p>
           <ul class="footer-links">
             <li><a href="./" class="footer-link">Home</a></li>
             <li><a href="about" class="footer-link">About Studio</a></li>
@@ -1981,7 +1956,7 @@
         </div>
 
         <div>
-          <h4 class="footer-title">Our Services</h4>
+          <p class="footer-title">Our Services</p>
           <ul class="footer-links">
             <li><a href="services/ugc-video-creation-company" class="footer-link">UGC Video Creation
                 Services</a></li>
@@ -2000,7 +1975,7 @@
         </div>
 
         <div class="footer-newsletter">
-          <h4 class="footer-title">Studio Dispatches</h4>
+          <p class="footer-title">Studio Dispatches</p>
           <p>Join brand marketing leaders receiving our bi-weekly breakdown on UGC video performance, creative
             frameworks, and algorithmic updates.</p>
           <form class="newsletter-form" action="#" method="POST" novalidate>
@@ -2131,7 +2106,7 @@
   </div>
 
   <!-- Scripts -->
-  <script src="js/main.js?v=1795507813"></script>
+  <script src="js/main.js?v=1795842500" defer></script>
 </body>
 
 </html>

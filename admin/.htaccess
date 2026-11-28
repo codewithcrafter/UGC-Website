@@ -2,3 +2,10 @@
 # MY UGC VIDEO - Admin Directory Configuration
 # =========================================================================
 DirectoryIndex index.php
+
+# Ensure admin, login, and authenticated responses are never stored in shared/public caches
+<IfModule mod_headers.c>
+  Header always set Cache-Control "private, no-store, no-cache, must-revalidate"
+  Header always set Pragma "no-cache"
+  Header always set Expires "0"
+</IfModule>
